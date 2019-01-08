@@ -1,0 +1,2 @@
+class ServicePacksController < ApplicationController
+end
