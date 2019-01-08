@@ -32,13 +32,13 @@ module OpenProject::ServicePacks
 
       menu :project_menu,
            :assign,
-           {controller: '/project_assign', action: 'index'},
+           {controller: '/assigns', action: 'index'},
            after: :overview,
            param: :project_id,
            caption: 'project SP assign main page',
            html: {id: 'assign-menu-item'},
-           if: ->(project) {true}
+           # if: ->(project) {true}
     end
-    patches %i[Project TimeEntryActivity]
+    patches %i[Project]
   end
 end

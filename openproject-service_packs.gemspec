@@ -6,7 +6,7 @@ require 'open_project/service_packs/version'
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "openproject-service_packs"
-  s.version=OpenProject::ServicePacks::VERSION
+  s.version     =  OpenProject::ServicePacks::VERSION
   s.authors     = "OpenProject GmbH"
   s.email       = "info@openproject.org"
   s.homepage    = "https://community.openproject.org/projects/service-packs"
