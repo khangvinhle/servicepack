@@ -5,8 +5,9 @@ class ServicePack < ApplicationRecord
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :start_date, :total_units, :other, :management, :developent, :support, :testing, :specification
   validates_uniqueness_of :name
-  validates_numericality_of :total_units, only_integer: true, less_than: 10000
-  validates_numericality_of :threshold1, :threshold2, greater_than_or_equal_to: 1, less_than_or_equal_to: 100, :only_integer => false
+  validates_numericality_of :total_units, only_integer: true, greater_than: 0
+  validates_numericality_of :support, :specification, :developent, :testing, :management, :other, only_integer: true, greater_than: 0
+  validates_numericality_of :threshold1, :threshold2, greater_than_or_equal_to: 0, less_than_or_equal_to: 100, :only_integer => false
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
 
