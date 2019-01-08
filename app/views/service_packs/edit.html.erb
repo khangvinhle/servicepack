@@ -7,11 +7,9 @@
   <title>Document</title>
 </head>
 <body>
-<h1>
-  Create New Service Pack
-</h1>
+<%= form_with model: @sp, local: true do |form| %>
 
-<%= form_for @sp, as: :service_pack, url: service_packs_path, local: true do |form| %>
+  <!--  print errors if any-->
   <% if @sp.errors.any? %>
     <div id="error_explanation">
       <h2>
@@ -24,23 +22,13 @@
       </ul>
     </div>
   <% end %>
+
+  <!--  edit form-->
   <p>
     <%= form.label :name %><br>
     <%= form.text_field :name %>
   </p>
-
-  <p>
-    <%= form.label :total_units %><br>
-    <%= form.number_field :total_units %>
-  </p>
-  <p>
-    <%= form.label :start_date %><br>
-    <%= form.text_field :start_date %>
-  </p>
-  <p>
-    <%= form.label :expired_date %><br>
-    <%= form.text_field :expired_date %>
-  </p>
+  <h2>Mapping rates:</h2>
   <p>
     <%= form.label :threshold1 %><br>
     <%= form.number_field :threshold1 %>
@@ -75,8 +63,9 @@
   </p>
 
   <p>
-    <%= form.submit "Create" %>
+    <%= form.submit "Update" %>
   </p>
 <% end %>
+
 </body>
 </html>

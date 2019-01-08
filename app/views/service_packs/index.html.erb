@@ -1,5 +1,32 @@
-<h1>
-	This is list of Service Pack
-</h1>
-
-<%= link_to 'New', new_service_pack_path %>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<%= link_to 'New Service Pack', new_service_pack_path, :class => "button" %>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Toatal units</th>
+    <th>Remain units</th>
+    <th>Start date</th>
+    <th>Expired date</th>
+  </tr>
+  <% @sp.each do |s| %>
+    <tr>
+      <td>
+        <%= link_to s.name, service_pack_path(s) %>
+      </td>
+      <td><%= s.total_units %></td>
+      <td><%= s.remain_units %></td>
+      <td><%= s.start_date %></td>
+      <td><%= s.expired_date %></td>
+    </tr>
+  <% end %>
+</table>
+</body>
+</html>

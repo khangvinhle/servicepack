@@ -9,7 +9,7 @@ class CreateServicePacks < ActiveRecord::Migration[5.1]
       t.integer :threshold1, null: false
       t.integer :threshold2, null: false
       t.integer :management, null: false
-      t.integer :developent, null: false
+      t.integer :development, null: false
       t.integer :other, null: false
       t.integer :testing, null: false
       t.integer :support, null: false
