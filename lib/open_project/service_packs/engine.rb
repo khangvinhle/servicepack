@@ -27,7 +27,7 @@ module OpenProject::ServicePacks
            after: :overview,
            param: :project_id,
            caption: 'Service Packs',
-           #icon: 'icon2 icon-bug',
+           icon: 'icon2 icon-bug',
            html: {id: 'service_packs-menu-item'}
       # if: ->(project) {true}
 
@@ -40,6 +40,6 @@ module OpenProject::ServicePacks
            html: {id: 'assign-menu-item'}
            # if: ->(project) {true}
     end
-    patches %i[Project]
+    patches %i[Project TimeEntryActivity]
   end
 end

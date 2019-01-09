@@ -1,8 +1,8 @@
 class CreateAssigns < ActiveRecord::Migration[5.1]
   def change
     create_table :assigns do |t|
-      t.belongs_to :service_packs
-      t.belongs_to :projects
+      t.belongs_to :service_pack
+      t.belongs_to :project
       t.date :assign_date, null: false
       t.timestamps
     end

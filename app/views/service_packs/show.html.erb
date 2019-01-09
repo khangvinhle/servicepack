@@ -1,28 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
-<%= link_to "Back", service_packs_path %>
-<%= link_to "Update", edit_service_pack_url(@sp), :class => "button -highlight" %>
-<p><strong>Name:</strong> <%= @sp.name %></p>
-<p><strong>Total units:</strong> <%= @sp.total_units %></p>
-<p><strong>Remain units:</strong> <%= @sp.remain_units %></p>
-<p><strong>Start date:</strong> <%= @sp.start_date %></p>
-<p><strong>Expire date:</strong> <%= @sp.expired_date %></p>
-<p><strong>Threshold 1:</strong> <%= @sp.threshold1 %>%</p>
-<p><strong>Threshold 2:</strong> <%= @sp.threshold2 %>%</p>
-<hr>
-<p>Mapping rates:</p>
-<p><strong>Management:</strong> <%= @sp.management %></p>
-<p><strong>Specification:</strong> <%= @sp.specification %></p>
-<p><strong>Development:</strong> <%= @sp.development %></p>
-<p><strong>Testing:</strong> <%= @sp.testing %></p>
-<p><strong>Support:</strong> <%= @sp.support %></p>
-<p><strong>Other:</strong> <%= @sp.other %></p>
-</body>
-</html>
+<p>
+  <strong>Name:</strong>
+  <%= @article.name %>
+</p>
+ 
+<p>
+  <strong>Total Units:</strong>
+  <%= @article.total_units %>
+</p>
+
+<p>
+  <strong>Remanied Units:</strong>
+  <%= @article.remain_units %>
+</p>

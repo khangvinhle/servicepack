@@ -8,12 +8,6 @@ class CreateServicePacks < ActiveRecord::Migration[5.1]
       t.date :expired_date, null: false
       t.integer :threshold1, null: false
       t.integer :threshold2, null: false
-      t.integer :management, null: false
-      t.integer :development, null: false
-      t.integer :other, null: false
-      t.integer :testing, null: false
-      t.integer :support, null: false
-      t.integer :specification, null: false
       t.timestamps
     end
   end
