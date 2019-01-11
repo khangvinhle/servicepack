@@ -7,13 +7,32 @@ class ServicePacksController < ApplicationController
 	layout 'admin'
 	
 	def index
+		@service_packs = ServicePack.all 
 	end
 
 	def new
+		@service_pack = ServicePack.new
 	end
 
 	def show
 		@service_pack = ServicePack.find(params[:id])
 	end
+
+	def create
+		@service_pack = ServicePack.new(service_pack_params)
+
+		@service_pack.default_remained_units
+
+		if @service_pack.save
+			redirect_to @service_pack
+		else
+			render 'new'
+		end
+	end
+
+	private 
+		def service_pack_params
+			params.require(:service_pack).permit(:name, :total_units, :started_date, :expired_date, :threshold1, :threshold2)
+		end
 
 end

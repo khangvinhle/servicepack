@@ -1,14 +1,37 @@
-<p>
-  <strong>Name:</strong>
-  <%= @article.name %>
-</p>
- 
-<p>
-  <strong>Total Units:</strong>
-  <%= @article.total_units %>
-</p>
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+/*  background-color: #2196F3;*/
+  padding: 10px;
+}
 
-<p>
-  <strong>Remanied Units:</strong>
-  <%= @article.remain_units %>
-</p>
+.grid-container > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid black;
+  text-align: left;
+  font-size: 20px;
+}
+</style>
+
+<h2>
+  <strong><%= @service_pack.name %></strong>
+</h2>
+ 
+<div class="grid-container">
+  <div> Total Units: <%= @service_pack.total_units %> </div>
+  <div> Remained Units: <%= @service_pack.remained_units %> </div>
+  <div> Started Date: <%= @service_pack.started_date %> </div>  
+  <div> Expired Date: <%= @service_pack.expired_date %> </div>
+</div>
+
+<br>
+
+<h2>
+  Rates:
+</h2>
+
+<%= link_to 'Define new rates', new_service_pack_mapping_rate_path(@service_pack.id), :class => "button -alt-highlight" %>
+
+
+

@@ -1,5 +1,46 @@
-<h1>
-	This is list of Service Pack
-</h1>
+<style>
+	table {
+	  font-family: arial, sans-serif;
+	  border-collapse: collapse;
+	  width: 100%;
+	}
+
+	td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+	}
+
+	tr:nth-child(even) {
+	  background-color: #dddddd;
+	}
+</style>
+
 
 <%= link_to 'New', new_service_pack_path, :class => "button -alt-highlight" %>
+
+<table>
+  
+  <tr>
+    <th>Name</th>
+    <th>Total Units</th>
+    <th>Remained Units</th>
+	<th>Started Date</th>
+	<th>End Date</th>
+	<th>Threshold 1</th>
+	<th>Threshold 2</th>	    
+  </tr>
+ 
+  <% @service_packs.each do |sp| %>
+    <tr>
+      <td><%= link_to sp.name, service_pack_path(sp) %></td>
+      <td><%= sp.total_units %></td>
+      <td><%= sp.remained_units %></td>
+      <td><%= sp.started_date %></td>
+      <td><%= sp.expired_date %></td>
+      <td><%= sp.threshold1 %></td>
+      <td><%= sp.threshold2 %></td>
+    </tr>
+  <% end %>
+
+</table>
