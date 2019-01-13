@@ -8,7 +8,7 @@ class ServicePack < ApplicationRecord
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
   # example: User has many :pets, Dog is a :pets and has many :breeds. Breeds have ...
-  # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds) Use :source.
+  # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
 
   # validates_presence_of :name, :threshold1, :threshold2, :expired_date, :start_date, :total_units, :other, :management, :developent, :support, :testing, :specification
@@ -28,6 +28,18 @@ class ServicePack < ApplicationRecord
 
   def expired?
     true if Time.now > expired_date
+  end
+
+  def used_up?
+    true if remained_units <= 0
+  end
+
+  def unavailable? # available SP might not be assignable - TODO: solved by another module
+    used_up? && expired?
+  end
+
+  def available?
+    !unavailable?
   end
 
   private
