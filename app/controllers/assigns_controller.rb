@@ -7,13 +7,14 @@ class AssignsController < ApplicationController
 			render_400 and return
 		end
 		if @project.assigns.where(assigned: true)
-			flash[:now] = "You must unassign first!"
+			flash[:alert] = "You must unassign first!"
 			return
 		end
 		@service_pack = ServicePack.find(params[:service_pack])
 		if @service_pack.available?
-			if assignable = !(@service_pack.assigns.where(assigned: true))
+			if assignable = @service_pack.assigns.where(assigned: true).empty?
 				ActiveRecord::Base.transaction do
+					#one query only
 					@project.assigns.update_all!(assigned: false)
 					if @assign_record = ServicePack.assigns.where(project_id: @project.id) || @project.assigns.new
 						@assign_record.assigned = true
@@ -24,12 +25,12 @@ class AssignsController < ApplicationController
 				return
 			else
 				# already assigned
-				flash[:now] = "Service Pack #{@service_pack.name} has been already assigned"
+				flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
 				render_400 and return
 			end
 		end
-		flash[:now] = "Service Pack not found"
-		render_400
+		flash[:alert] = "Service Pack not found"
+		render_404
 	end
 
 	def unassign
@@ -37,10 +38,16 @@ class AssignsController < ApplicationController
 	end
 	def show
 		if !@project.module_enabled?(:service_packs)
-			render_502 and return
+			render_400 and return
 		end
 		# assigned now
-
+		@assignment = @project.assigns.where(assigned: true)
+		if @assignment.service_pack.unavailable?
+			@assignment.assigned = false
+			@assignment.save!
+			@assignment = nil # unassigned
+		end
 		# possible to assign
+		@assignables = ServicePacks.where("expire_date < ?", Date.today).assigns.not.where(assigned: true)
 	end
 end
