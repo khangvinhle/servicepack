@@ -38,7 +38,7 @@ module OpenProject::ServicePacks
            param: :project_id,
            caption: 'project SP assign main page',
            html: {id: 'assign-menu-item'}
-           # if: ->(project) {true}
+           # if: ->(project) {true} # todo: must turn on SP module first
     end
     patches %i[Project TimeEntryActivity]
   end
