@@ -6,6 +6,8 @@ class ServicePack < ApplicationRecord
   has_many :mapping_rates
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
 
+  accepts_nested_attributes_for :mapping_rates
+
   # validates_presence_of :name, :threshold1, :threshold2, :expired_date, :start_date, :total_units, :other, :management, :developent, :support, :testing, :specification
   validates_uniqueness_of :name
   validates_numericality_of :total_units, only_integer: true, greater_than: 0
@@ -34,7 +36,5 @@ class ServicePack < ApplicationRecord
     def end_after_start
       @errors.add(:expired_date, 'must be after start date') if expired_date < started_date
     end
-
-
 
 end
