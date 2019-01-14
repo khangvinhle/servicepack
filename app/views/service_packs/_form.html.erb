@@ -43,7 +43,7 @@
   <ul>
     <%= form.fields_for :mapping_rates do |rates_form| %>
       <li>
-        <%= rates_form.collection_select(:activity_id, TimeEntryActivity.all, :id, :name) %>       
+        <%= rates_form.collection_select(:activity_id, TimeEntryActivity.shared, :id, :name) %>       
         <%= rates_form.label :units_per_hour %>
         <%= rates_form.number_field :units_per_hour %>
       </li>

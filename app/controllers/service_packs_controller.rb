@@ -11,7 +11,7 @@ class ServicePacksController < ApplicationController
 
   def new
     @service_pack = ServicePack.new
-    TimeEntryActivity.count.times {@service_pack.mapping_rates.build}
+    TimeEntryActivity.shared.count.times {@service_pack.mapping_rates.build}
   end
 
   def show
