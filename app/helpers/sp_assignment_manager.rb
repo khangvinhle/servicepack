@@ -10,11 +10,13 @@ class SPAssignmentManager
 					@assign_record.assigned = true
 					@assign_record.service_pack_id = service_pack.id
 					@assign_record.save!
-				rescue return :failed
+				rescue
+					return :failed
 				end
 				return :successful
 			else
 				return :owned
+			end
 		end
 		return :unassignable
 	end
