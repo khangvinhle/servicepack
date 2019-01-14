@@ -6,7 +6,7 @@ class AssignsController < ApplicationController
 		if !@project.module_enabled?(:service_packs)
 			render_400 and return
 		end
-		if @project.assigns.where(assigned: true)
+		if !(@project.assigns.where(assigned: true).empty?)
 			flash[:alert] = "You must unassign first!"
 			return
 		end
@@ -14,17 +14,16 @@ class AssignsController < ApplicationController
 		if @service_pack.available?
 			if assignable = @service_pack.assigns.where(assigned: true).empty?
 				ActiveRecord::Base.transaction do
-					#one query only
+					# one query only
 					@project.assigns.update_all!(assigned: false)
-					if @assign_record = ServicePack.assigns.where(project_id: @project.id) || @project.assigns.new
-						@assign_record.assigned = true
-						@assign_record.service_pack_id = params[:service_pack]
-						@assign_record.save!					
-					end
+					@assign_record = ServicePack.assigns.where(project_id: @project.id).take || @project.assigns.new
+					@assign_record.assigned = true
+					@assign_record.service_pack_id = params[:service_pack]
+					@assign_record.save!
 				end
 				return
 			else
-				# already assigned
+				# already assigned for another project
 				flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
 				render_400 and return
 			end
@@ -34,7 +33,17 @@ class AssignsController < ApplicationController
 	end
 
 	def unassign
-
+		if !@project.module_enabled?(:service_packs)
+			render_400 and return
+		end
+		@assignment = @project.assigns.find_by(assigned: true)
+		if @assignment.nil?
+			flash[:alert] = "No ServicePack is assigned to this project"
+			render_404 and return
+		end
+		@assignment.assigned = false
+		@assignment.save!
+		# plan to redirect user.
 	end
 	def show
 		if !@project.module_enabled?(:service_packs)
@@ -42,12 +51,12 @@ class AssignsController < ApplicationController
 		end
 		# assigned now
 		@assignment = @project.assigns.where(assigned: true)
-		if @assignment.service_pack.unavailable?
+		if @assignment && @assignment.service_pack.unavailable?
 			@assignment.assigned = false
 			@assignment.save!
 			@assignment = nil # unassigned
 		end
 		# possible to assign
-		@assignables = ServicePacks.where("expire_date < ?", Date.today).assigns.not.where(assigned: true)
+		@assignables = ServicePacks.where("expire_date < ?", Date.today).assigns.exists.not(assigned: true)
 	end
 end
