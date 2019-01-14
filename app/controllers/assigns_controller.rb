@@ -16,9 +16,9 @@ class AssignsController < ApplicationController
 				ActiveRecord::Base.transaction do
 					# one query only
 					@project.assigns.update_all!(assigned: false)
-					@assign_record = ServicePack.assigns.where(project_id: @project.id).take || @project.assigns.new
+					@assign_record = ServicePack.assigns.find_by(project_id: @project.id) || @project.assigns.new
 					@assign_record.assigned = true
-					@assign_record.service_pack_id = params[:service_pack]
+					@assign_record.service_pack_id = params[:service_pack_id]
 					@assign_record.save!
 				end
 				return
@@ -45,16 +45,17 @@ class AssignsController < ApplicationController
 		@assignment.save!
 		# plan to redirect user.
 	end
+	
 	def show
 		if !@project.module_enabled?(:service_packs)
 			render_400 and return
 		end
 		# assigned now
-		@assignment = @project.assigns.where(assigned: true)
+		@assignment = @project.assigns.find_by(assigned: true)
 		if @assignment && @assignment.service_pack.unavailable?
 			@assignment.assigned = false
 			@assignment.save!
-			@assignment = nil # unassigned
+			@assignment = nil # overdue
 		end
 		# possible to assign
 		@assignables = ServicePacks.where("expire_date < ?", Date.today).assigns.exists.not(assigned: true)
