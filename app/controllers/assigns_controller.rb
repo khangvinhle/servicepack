@@ -3,14 +3,19 @@ class AssignsController < ApplicationController
 	before_action :require_admin, :find_project_by_project_id
 
 	def assign
-		if !@project.module_enabled?(:service_packs)
+=begin
+		if !@project.module_enabled?(:openproject_service_packs)
 			render_400 and return
 		end
+=end
+		pry.binding
+		# require 'pry-nav'
 		if !(@project.assigns.where(assigned: true).empty?)
 			flash[:alert] = "You must unassign first!"
-			return
+			render_400 and return
 		end
-		@service_pack = ServicePack.find(params[:service_pack])
+		@service_pack = ServicePack.find(params[:service_pack_id])
+		pry.binding
 		if @service_pack.available?
 			if assignable = @service_pack.assigns.where(assigned: true).empty?
 				ActiveRecord::Base.transaction do
@@ -21,7 +26,8 @@ class AssignsController < ApplicationController
 					@assign_record.service_pack_id = params[:service_pack_id]
 					@assign_record.save!
 				end
-				return
+				flash[:success] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
+				redirect_to action: "show" and return
 			else
 				# already assigned for another project
 				flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
@@ -33,23 +39,28 @@ class AssignsController < ApplicationController
 	end
 
 	def unassign
-		if !@project.module_enabled?(:service_packs)
+		if !@project.module_enabled?(:openproject_service_packs)
 			render_400 and return
 		end
 		@assignment = @project.assigns.find_by(assigned: true)
 		if @assignment.nil?
-			flash[:alert] = "No ServicePack is assigned to this project"
+			flash[:alert] = "No Service Pack is assigned to this project"
 			render_404 and return
 		end
 		@assignment.assigned = false
 		@assignment.save!
-		# plan to redirect user.
+		flash[:success] = "Unassigned a Service Pack from this project"
+		redirect_to action: "show"
 	end
 	
 	def show
-		if !@project.module_enabled?(:service_packs)
+=begin
+		if !@project.module_enabled?(:openproject_service_packs)
 			render_400 and return
 		end
+=end
+
+
 		# assigned now
 		@assignment = @project.assigns.find_by(assigned: true)
 		if @assignment && @assignment.service_pack.unavailable?
@@ -57,7 +68,20 @@ class AssignsController < ApplicationController
 			@assignment.save!
 			@assignment = nil # overdue
 		end
-		# possible to assign
-		@assignables = ServicePacks.where("expire_date < ?", Date.today).assigns.exists.not(assigned: true)
+		#binding.pry
+		if @assignment.nil?
+			# testing only
+			t = ServicePack.where("expired_date >= ?", Date.today)
+			#binding.pry
+			@assignables = []
+			t.each do |assignable|
+				if assignable.assigns.empty?
+					@assignables << assignable
+				end
+			end
+			#binding.pry
+		else
+			@sp = @assignment.service_pack
+		end
 	end
 end

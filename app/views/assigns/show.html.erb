@@ -1,0 +1,23 @@
+<% if @assignment %>
+	<div id="sp-display">
+		<h3>Service Pack name <%= @sp.name %> already assigned.</h3>
+		Activation Date: <%= @sp.started_date %>
+		Expiration Date: <%= @sp.expired_date %>
+		Remained: <%= @sp.remained_unit %>
+	</div>
+	<%= link_to "Unassign", assigns_unassign_path(@project), class: "button" %> <!-- unassign -->
+<% else %>
+	<div id="sp-assign">
+		<h3>No Service Pack is assigned to this project.</h3>
+		<%= form_with url: assigns_assign_path(@project), method: :post do |f| %>
+			<select id="sp-select">
+				<% @assignables.each do |assignable| %>
+					<%= content_tag(:option, assignable.name, value: assignable.id) %>
+				<% end %>
+			</select>
+			<br/>
+			<%= f.submit "Assign a Service Pack" %>
+		<% end %>
+	</div>
+	<div id="sp-content"><!-- todo: ajax --></div>
+<% end %>

@@ -11,6 +11,8 @@ class ServicePack < ApplicationRecord
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
 
+  scope :assigned, -> {Assign.active.where("id = service_pack_id").exists}
+
   # validates_presence_of :name, :threshold1, :threshold2, :expired_date, :start_date, :total_units, :other, :management, :developent, :support, :testing, :specification
   validates_uniqueness_of :name
   validates_numericality_of :total_units, only_integer: true, greater_than: 0

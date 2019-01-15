@@ -17,8 +17,8 @@ module OpenProject::ServicePacks
         # permission :create_ServicePacks, {ServicePacks: [:new, :create]}
         # permission :update_ServicePacks, {ServicePacks: [:edit]}
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
-        permission :assign_ServicePacks, {project_assign: [:assign]}
-        permission :unassign_ServicePacks, {project_unassign: [:unassign]}
+        permission :assign_ServicePacks, {project_assign: [:assign]}, require: :member
+        permission :unassign_ServicePacks, {project_unassign: [:unassign]}, require: :member
       end
 
       menu :admin_menu,
@@ -33,7 +33,7 @@ module OpenProject::ServicePacks
 
       menu :project_menu,
            :assign,
-           {controller: '/assigns', action: 'index'},
+           {controller: '/assigns', action: 'show'},
            after: :overview,
            param: :project_id,
            caption: 'project SP assign main page',

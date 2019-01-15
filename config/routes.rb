@@ -1,8 +1,8 @@
 OpenProject::Application.routes.draw do
-  resources :service_packs do
-  	resources :mapping_rates
-  end
+  resources :service_packs
   scope "/projects/:project_id" do
-  	resources :assigns
+  	get '/assigns', to: "assigns#show"
+  	post '/assigns/assign', to: "assigns#assign"
+  	post '/assigns/unassign', to: "assigns#unassign"
   end
 end
