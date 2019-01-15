@@ -35,7 +35,14 @@
   Rates:
 </h2>
 
-<%= link_to 'Define new rates', new_service_pack_mapping_rate_path(@service_pack.id), :class => "button -alt-highlight" %>
+<ul>
+  <% @rates.each do |rate| %>  
+    <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} (Units/hour)" %> </li>
+  <% end %>
+</ul>
+
+
+
 
 
 
