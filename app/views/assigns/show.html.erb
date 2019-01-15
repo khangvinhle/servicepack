@@ -3,18 +3,18 @@
 		<h3>Service Pack name <%= @sp.name %> already assigned.</h3>
 		Activation Date: <%= @sp.started_date %>
 		Expiration Date: <%= @sp.expired_date %>
-		Remained: <%= @sp.remained_unit %>
+    Remained: <%= @sp.remained_units %>
 	</div>
 	<%= link_to "Unassign", assigns_unassign_path(@project), class: "button" %> <!-- unassign -->
 <% else %>
 	<div id="sp-assign">
 		<h3>No Service Pack is assigned to this project.</h3>
-		<%= form_with url: assigns_assign_path(@project), method: :post do |f| %>
-			<select id="sp-select">
+    <%= form_with model: @assignment, url: assigns_assign_path(@project), method: :post do |f| %>
+      <%= f.select :service_pack_id do %>
 				<% @assignables.each do |assignable| %>
 					<%= content_tag(:option, assignable.name, value: assignable.id) %>
 				<% end %>
-			</select>
+      <% end %>
 			<br/>
 			<%= f.submit "Assign a Service Pack" %>
 		<% end %>
