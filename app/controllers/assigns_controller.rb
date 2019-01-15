@@ -14,7 +14,7 @@ class AssignsController < ApplicationController
       flash[:alert] = "You must unassign first!"
       render_400 and return
     end
-    @service_pack = ServicePack.find(params[:service_pack_id])
+    @service_pack = ServicePack.find(params[:assign][:service_pack_id])
     #pry.binding
     if @service_pack.available?
       if assignable = @service_pack.assigns.where(assigned: true).empty?
@@ -24,7 +24,7 @@ class AssignsController < ApplicationController
           @assign_record = @service_pack.assigns.find_by(project_id: @project.id) || @project.assigns.new
           @assign_record.assigned = true
           @assign_record.assign_date = Date.today
-          @assign_record.service_pack_id = params[:service_pack_id]
+          @assign_record.service_pack_id = params[:assign][:service_pack_id]
           @assign_record.save!
         end
         flash[:success] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
@@ -43,9 +43,10 @@ class AssignsController < ApplicationController
   end
 
   def unassign
-    if !@project.module_enabled?(:openproject_service_packs)
-      render_400 and return
-    end
+    #
+    # if !@project.module_enabled?(:openproject_service_packs)
+    #   render_400 and return
+    # end
     @assignment = @project.assigns.find_by(assigned: true)
     if @assignment.nil?
       flash[:alert] = "No Service Pack is assigned to this project"
@@ -64,7 +65,6 @@ class AssignsController < ApplicationController
 		end
 =end
 
-
     # assigned now
     @assignment = @project.assigns.find_by(assigned: true)
     if @assignment && @assignment.service_pack.unavailable?
@@ -76,10 +76,11 @@ class AssignsController < ApplicationController
     if @assignment.nil?
       # testing only
       t = ServicePack.where("expired_date >= ?", Date.today)
+      @assignment = Assign.new
       #binding.pry
       @assignables = []
       t.each do |assignable|
-        if assignable.assigns.empty?
+        if assignable.assigns.where(assigned: true).empty?
           @assignables << assignable
         end
       end
