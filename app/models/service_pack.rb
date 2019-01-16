@@ -8,6 +8,7 @@ class ServicePack < ApplicationRecord
 
   accepts_nested_attributes_for :mapping_rates, allow_destroy: true,  reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
 
+
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
   
   validates_uniqueness_of :name

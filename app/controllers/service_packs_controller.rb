@@ -28,6 +28,11 @@ class ServicePacksController < ApplicationController
     end
   end
 
+  def edit
+    @sp = ServicePack.find(params[:id])
+    @activity = @sp.time_entry_activities.build
+  end
+
   private
 
   def service_pack_params

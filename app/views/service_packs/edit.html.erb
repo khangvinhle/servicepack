@@ -7,7 +7,10 @@
   <title>Document</title>
 </head>
 <body>
-<%= form_with model: @sp, local: true do |form| %>
+
+
+
+<%= form_for @sp, url: service_packs_path, local: true do |form| %>
 
   <!--  print errors if any-->
   <% if @sp.errors.any? %>
@@ -28,7 +31,6 @@
     <%= form.label :name %><br>
     <%= form.text_field :name %>
   </p>
-  <h2>Mapping rates:</h2>
   <p>
     <%= form.label :threshold1 %><br>
     <%= form.number_field :threshold1 %>
@@ -37,30 +39,20 @@
     <%= form.label :threshold2 %><br>
     <%= form.number_field :threshold2 %>
   </p>
-  <p>
-    <%= form.label :management %><br>
-    <%= form.number_field :management %>
-  </p>
-  <p>
-    <%= form.label :development %><br>
-    <%= form.number_field :development %>
-  </p>
-  <p>
-    <%= form.label :testing %><br>
-    <%= form.number_field :testing %>
-  </p>
-  <p>
-    <%= form.label :support %><br>
-    <%= form.number_field :support %>
-  </p>
-  <p>
-    <%= form.label :specification %><br>
-    <%= form.number_field :specification %>
-  </p>
-  <p>
-    <%= form.label :other %><br>
-    <%= form.number_field :other %>
-  </p>
+
+  <h2>Mapping rates:</h2>
+
+  <ul>
+    <%= form.fields_for :mapping_rates do |rates_form| %>
+      <li>
+        <%= rates_form.label "#{rates_form.object.activity.name}" %>  
+        <%= rates_form.label :units_per_hour %>
+        <%= rates_form.number_field :units_per_hour %>
+        <%= rates_form.hidden_field :activity_id %>
+      </li>
+      <hr>
+    <% end %>
+  </ul>
 
   <p>
     <%= form.submit "Update" %>
