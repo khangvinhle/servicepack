@@ -40,6 +40,6 @@ module OpenProject::ServicePacks
            html: {id: 'assign-menu-item'}
            # if: ->(project) {true}
     end
-    patches %i[Project TimeEntryActivity]
+    patches %i[Project TimeEntryActivity TimeEntry]
   end
 end
