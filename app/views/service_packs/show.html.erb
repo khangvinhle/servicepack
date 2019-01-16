@@ -19,10 +19,14 @@
 </h2>
  
 <div class="grid-container">
-  <div> Total Units: <%= @service_pack.total_units %> </div>
-  <div> Remained Units: <%= @service_pack.remained_units %> </div>
-  <div> Started Date: <%= @service_pack.started_date %> </div>  
-  <div> Expired Date: <%= @service_pack.expired_date %> </div>
+  <div> Total Units: </div>
+  <div> <%= @service_pack.total_units %> </div>
+  <div> Remained Units: </div>
+  <div> <%= @service_pack.remained_units %> </div>
+  <div> Started Date: </div>  
+  <div> <%= @service_pack.started_date %> </div>
+  <div> Expired Date: </div>
+  <div> <%= @service_pack.expired_date %> </div>
 </div>
 
 <br>
@@ -31,7 +35,12 @@
   Rates:
 </h2>
 
-<%= link_to 'Define new rates', new_service_pack_mapping_rate_path(@service_pack.id), :class => "button -alt-highlight" %>
+<ul>
+  <% @rates.each do |rate| %>  
+    <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} (Units/hour)" %> </li>
+  <% end %>
+</ul>
+
 
 
 

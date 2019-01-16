@@ -1,0 +1,58 @@
+<%= form_for @service_pack, url: service_packs_path, local: true do |form| %>
+  
+  <% if @service_pack.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize(@service_pack.errors.count, "error") %> prohibited
+        this service_pack from being saved:
+      </h2>
+      <ul>
+        <% @service_pack.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <p>
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </p>
+  <p>
+    <%= form.label :total_units %>
+    <%= form.number_field :total_units %>
+  </p>
+  <p>
+    <%= form.label :started_date %>
+    <%= form.date_field :started_date %>
+  </p>
+  <p>
+    <%= form.label :expired_date %>
+    <%= form.date_field :expired_date %>
+  </p>
+  <p>
+    <%= form.label :threshold_1 %>
+    <%= form.number_field :threshold1 %>
+  </p>
+  <p>
+    <%= form.label :threshold_2 %>
+    <%= form.number_field :threshold2 %>
+  </p>
+
+  Rates:
+  <ul>
+    <%= form.fields_for :mapping_rates do |rates_form| %>
+      <li>
+        <%= rates_form.collection_select(:activity_id, TimeEntryActivity.shared, :id, :name) %>       
+        <%= rates_form.label :units_per_hour %>
+        <%= rates_form.number_field :units_per_hour %>
+      </li>
+      <hr>
+    <% end %>
+  </ul>
+ 
+  <p>
+    <%= form.submit %>
+  </p>
+  
+<% end %>
