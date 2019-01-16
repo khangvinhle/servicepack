@@ -1,15 +1,17 @@
-<% if @sp %>
+<% if @service_pack %>
   <div id="sp-display">
-    <h3>Service Pack name <%= @sp.name %> already assigned.</h3>
-    Activation Date: <%= @sp.started_date %>
-    Expiration Date: <%= @sp.expired_date %>
-    Remained: <%= @sp.remained_units %>
+    <h3>Service Pack <%= @service_pack.name %> already assigned to <%= @project.name %>.</h3>
+    Activation Date: <%= @service_pack.started_date %>
+    Expiration Date: <%= @service_pack.expired_date %>
+    Remained: <%= @service_pack.remained_units %>
   </div>
+  <br/>
   <%= link_to "Unassign", assigns_unassign_path(@project), method: :post, class: "button" %> <!-- unassign -->
 <% else %>
   <div id="sp-assign">
     <h3>No Service Pack is assigned to this project.</h3>
-    <%= form_with model: @assignment, url: assigns_assign_path(@project), method: :post do |f| %>
+    <%= form_with model: @assignment, url: assigns_assign_path(@project), local: true, method: :post do |f| %>
+      Choose a Service Pack to apply:
       <%= f.select :service_pack_id do %>
         <% @assignables.each do |assignable| %>
           <%= content_tag(:option, assignable.name, value: assignable.id) %>

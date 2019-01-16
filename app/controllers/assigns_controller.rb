@@ -8,26 +8,26 @@ class AssignsController < ApplicationController
 			render_400 and return
 		end
 =end
-    #pry.binding
     #require 'pry-nav'
     if !(@project.assigns.where(assigned: true).empty?)
       flash[:alert] = "You must unassign first!"
       render_400 and return
     end
     @service_pack = ServicePack.find(params[:assign][:service_pack_id])
-    #pry.binding
+    #binding.pry
     if @service_pack.available?
       if assignable = @service_pack.assigns.where(assigned: true).empty?
         ActiveRecord::Base.transaction do
           # one query only
-          # @project.assigns.update_all(assigned: false)
-          @assign_record = @service_pack.assigns.find_by(project_id: @project.id) || @project.assigns.new
-          @assign_record.assigned = true
-          @assign_record.assign_date = Date.today
-          @assign_record.service_pack_id = params[:assign][:service_pack_id]
-          @assign_record.save!
+          @project.assigns.update_all(assigned: false)
+          @assignment = @service_pack.assigns.find_by(project_id: @project.id) || @project.assigns.new
+          @assignment.assigned = true
+          @assignment.assign_date = Date.today
+          @assignment.service_pack_id = @service_pack.id
+          @assignment.save!
         end
-        flash[:success] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
+        #binding.pry
+        flash[:notice] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
         redirect_to action: "show" and return
       else
         # already assigned for another project
@@ -36,10 +36,7 @@ class AssignsController < ApplicationController
       end
     end
     flash[:alert] = "Service Pack not found"
-    render_404
-    #
-
-
+    render_404 and return
   end
 
   def unassign
@@ -54,7 +51,7 @@ class AssignsController < ApplicationController
     end
     @assignment.assigned = false
     @assignment.save!
-    flash[:success] = "Unassigned a Service Pack from this project"
+    flash[:notice] = "Unassigned a Service Pack from this project"
     redirect_to action: "show"
   end
 
@@ -75,7 +72,7 @@ class AssignsController < ApplicationController
     #binding.pry
     if @assignment.nil?
       # testing only
-      t = ServicePack.where("expired_date >= ?", Date.today)
+      t = ServicePack.where("expired_date >= ?", Date.today) if Rails.env.development?
       @assignment = Assign.new
       #binding.pry
       @assignables = []
@@ -86,7 +83,7 @@ class AssignsController < ApplicationController
       end
       #binding.pry
     else
-      @sp = @assignment.service_pack
+      @service_pack = @assignment.service_pack
     end
   end
 end

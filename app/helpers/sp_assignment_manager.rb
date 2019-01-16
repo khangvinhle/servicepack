@@ -5,7 +5,7 @@ class SPAssignmentManager
 			if assignable = service_pack.assigns.where(assigned: true).empty?
 				ActiveRecord::Base.transaction do
 					# one query only
-					project.assigns.update_all!(assigned: false)
+					# project.assigns.update_all!(assigned: false)
 					@assign_record = service_pack.assigns.find_by(project_id: project.id) || project.assigns.new
 					@assign_record.assigned = true
 					@assign_record.service_pack_id = service_pack.id
