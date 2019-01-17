@@ -8,7 +8,7 @@
 </head>
 <body>
 
-
+<h2> <%= @sp.name %> </h2>
 
 <%= form_for @sp, url: service_packs_path, local: true do |form| %>
 
@@ -28,12 +28,8 @@
 
   <!--  edit form-->
   <p>
-    <%= form.label :name %><br>
-    <%= form.text_field :name %>
-  </p>
-  <p>
     <%= form.label :threshold1 %><br>
-    <%= form.number_field :threshold1 %>
+    <%= form.number_field :threshold1, placeholder: "threshold1" %>
   </p>
   <p>
     <%= form.label :threshold2 %><br>
