@@ -1,3 +1,8 @@
-Rails.application.routes.draw do
+OpenProject::Application.routes.draw do
   resources :service_packs
+  scope "/projects/:project_id" do
+  	get '/assigns', to: "assigns#show"
+  	post '/assigns/assign', to: "assigns#assign"
+  	post '/assigns/unassign', to: "assigns#unassign"
+  end
 end

@@ -14,6 +14,9 @@ capybara-*.html
 rerun.txt
 pickle-email-*.html
 
+# This rule is for MacOS thumbnail files.
+**/.DS_Store*
+
 # TODO Comment out this rule if you are OK with secrets being uploaded to the repo
 config/initializers/secret_token.rb
 
