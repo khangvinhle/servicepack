@@ -37,17 +37,14 @@ class AssignsController < ApplicationController
     #   render_400 and return
     # end
     #binding.pry
-=begin
+
     if !assigned?(@project)
       flash[:alert] = "No Service Pack is assigned to this project"
       render_404 and return
     end
-=end
+
     #binding.pry
-    #_unassign(@project)
-    @assignment = @project.assigns.find_by(assigned: true)
-    #binding.pry
-    assignment_terminate(@assignment)
+    _unassign(@project)
     flash[:notice] = "Unassigned a Service Pack from this project"
     redirect_to action: "show" and return
   end
