@@ -1,5 +1,5 @@
 class AssignsController < ApplicationController
-  layout 'admin'
+  #layout 'admin'
   before_action :require_admin, :find_project_by_project_id
   include SPAssignmentManager
 
@@ -38,7 +38,7 @@ class AssignsController < ApplicationController
     # end
     #binding.pry
 
-    if !assigned?(@project)
+    if unassigned?(@project)
       flash[:alert] = "No Service Pack is assigned to this project"
       render_404 and return
     end

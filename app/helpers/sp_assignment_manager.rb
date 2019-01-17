@@ -17,8 +17,11 @@ module SPAssignmentManager
 		#binding.pry
 		assignment_terminate(@assignment)
 	end
+	def unassigned?(project)
+		project.assigns.where(assigned: true).empty?
+	end
 	def assigned?(project)
-		!(project.assigns.where(assigned: true).empty?)
+		!unassigned?(project)
 	end
 	def assignment_terminate(assignment)
 		assignment.assigned = false

@@ -12,13 +12,13 @@ module OpenProject::ServicePacks
              :author_url => 'https://openproject.org',
              :requires_openproject => '>= 6.0.0') do
 
-      project_module :ServicePacks_module do
+      project_module :service_packs do
         # permission :view_ServicePacks, {ServicePacks: [:index]}
         # permission :create_ServicePacks, {ServicePacks: [:new, :create]}
         # permission :update_ServicePacks, {ServicePacks: [:edit]}
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
-        permission :assign_ServicePacks, {project_assign: [:assign]}, require: :member
-        permission :unassign_ServicePacks, {project_unassign: [:unassign]}, require: :member
+        permission :assign_ServicePacks, {assigns: [:assign, :show]}, require: :member
+        permission :unassign_ServicePacks, {assigns: [:unassign, :show]}, require: :member
       end
 
       menu :admin_menu,
@@ -32,13 +32,13 @@ module OpenProject::ServicePacks
       # if: ->(project) {true}
 
       menu :project_menu,
-           :assign,
+           :assigns,
            {controller: '/assigns', action: 'show'},
            after: :overview,
            param: :project_id,
            caption: 'project SP assign main page',
            html: {id: 'assign-menu-item'}
-           # if: ->(project) {true} # todo: must turn on SP module first
+           if: ->(project) {true} # todo: must turn on SP module first
     end
     patches %i[Project TimeEntryActivity]
   end
