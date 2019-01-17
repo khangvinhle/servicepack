@@ -1,6 +1,7 @@
 class AssignsController < ApplicationController
   layout 'admin'
   before_action :require_admin, :find_project_by_project_id
+  include SPAssignmentManager
 
   def assign
 =begin
@@ -8,8 +9,8 @@ class AssignsController < ApplicationController
 			render_400 and return
 		end
 =end
-    #require 'pry-nav'
-    if !(@project.assigns.where(assigned: true).empty?)
+    #binding.pry
+    if assigned?(@project)
       flash[:alert] = "You must unassign first!"
       render_400 and return
     end
@@ -17,16 +18,7 @@ class AssignsController < ApplicationController
     #binding.pry
     if @service_pack.available?
       if assignable = @service_pack.assigns.where(assigned: true).empty?
-        ActiveRecord::Base.transaction do
-          # one query only
-          @project.assigns.update_all(assigned: false)
-          @assignment = @service_pack.assigns.find_by(project_id: @project.id) || @project.assigns.new
-          @assignment.assigned = true
-          @assignment.assign_date = Date.today
-          @assignment.service_pack_id = @service_pack.id
-          @assignment.save!
-        end
-        #binding.pry
+        assign_to(@service_pack, @project)
         flash[:notice] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
         redirect_to action: "show" and return
       else
@@ -44,15 +36,20 @@ class AssignsController < ApplicationController
     # if !@project.module_enabled?(:openproject_service_packs)
     #   render_400 and return
     # end
-    @assignment = @project.assigns.find_by(assigned: true)
-    if @assignment.nil?
+    #binding.pry
+=begin
+    if !assigned?(@project)
       flash[:alert] = "No Service Pack is assigned to this project"
       render_404 and return
     end
-    @assignment.assigned = false
-    @assignment.save!
+=end
+    #binding.pry
+    #_unassign(@project)
+    @assignment = @project.assigns.find_by(assigned: true)
+    #binding.pry
+    assignment_terminate(@assignment)
     flash[:notice] = "Unassigned a Service Pack from this project"
-    redirect_to action: "show"
+    redirect_to action: "show" and return
   end
 
   def show
@@ -63,18 +60,17 @@ class AssignsController < ApplicationController
 =end
 
     # assigned now
-    @assignment = @project.assigns.find_by(assigned: true)
-    if @assignment && @assignment.service_pack.unavailable?
-      @assignment.assigned = false
-      @assignment.save!
-      @assignment = nil # overdue
+    if @assignment = @project.assigns.find_by(assigned: true)
+      if @assignment.service_pack.unavailable?
+        assignment_terminate(@assignment)
+        @assignment = nil # overdue
+      end
     end
     #binding.pry
     if @assignment.nil?
       # testing only
       t = ServicePack.where("expired_date >= ?", Date.today) if Rails.env.development?
       @assignment = Assign.new
-      #binding.pry
       @assignables = []
       t.each do |assignable|
         if assignable.assigns.where(assigned: true).empty?
