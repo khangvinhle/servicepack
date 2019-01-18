@@ -3,7 +3,7 @@
     <h3>Service Pack <%= @service_pack.name %> already assigned to <%= @project.name %>.</h3>
     Activation Date: <%= @service_pack.started_date %>
     Expiration Date: <%= @service_pack.expired_date %>
-    Remained: <%= @service_pack.remained_units %>
+    Remained: <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
   </div>
   <br/>
   <%= link_to "Unassign", assigns_unassign_path(@project), method: :post, class: "button" %> <!-- unassign -->
@@ -14,7 +14,7 @@
       Choose a Service Pack to apply:
       <%= f.select :service_pack_id do %>
         <% @assignables.each do |assignable| %>
-          <%= content_tag(:option, assignable.name, value: assignable.id) %>
+          <%= content_tag(:option, assignable.name, value: assignable.id, data: {start: assignable.started_date.to_s, end: assignable.expired_date.to_s, cap: assignable.total_units, "rem": assignable.remained_units}) %>
         <% end %>
       <% end %>
       <br/>
