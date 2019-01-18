@@ -4,7 +4,7 @@ require 'open_project/plugins'
 
 module OpenProject::ServicePacks
   class Engine < ::Rails::Engine
-    engine_name :openproject_service_packs
+    engine_name 'openproject-service_packs'
 
     include OpenProject::Plugins::ActsAsOpEngine
 
@@ -38,8 +38,9 @@ module OpenProject::ServicePacks
            param: :project_id,
            caption: 'project SP assign main page',
            html: {id: 'assign-menu-item'}
-           if: ->(project) {true} # todo: must turn on SP module first
+           #if: ->(project) {true} # todo: must turn on SP module first
     end
     patches %i[Project TimeEntryActivity]
+    assets %w(assigns.js)
   end
 end
