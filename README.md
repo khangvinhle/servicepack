@@ -1,7 +1,4 @@
-# OpenProject Service Packs Plugin
-
-FIXME Add description and check issue tracker link below
-
-## Issue Tracker
-
-https://community.openproject.org/projects/service-packs/work_packages
+OpenProject Service Packs Plugin
+================================
+## A R&D project
+A plugin tracks its units through logging time work packages basing on definable rates of Time Entry Activities.

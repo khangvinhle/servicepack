@@ -27,7 +27,6 @@ module OpenProject::ServicePacks
            after: :overview,
            param: :project_id,
            caption: 'Service packs assignment',
-           icon: 'icon2 icon-bug',
            html: { id: 'assign-menu-item' },
            icon: 'icon2 icon-bug',
            if: ->(project) {true} # todo: must turn on SP module first
