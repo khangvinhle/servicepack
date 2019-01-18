@@ -50,6 +50,13 @@ class ServicePacksController < ApplicationController
     @activity = @sp.time_entry_activities.build
   end
 
+  def destroy
+    @sp = ServicePack.find(params[:id])
+    @sp.destroy
+
+    redirect_to service_packs_path
+  end
+
   private
 
   def service_pack_params

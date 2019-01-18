@@ -3,7 +3,7 @@ class ServicePack < ApplicationRecord
   has_many :assigns
   has_many :projects, through: :assigns
 
-  has_many :mapping_rates, inverse_of: :service_pack
+  has_many :mapping_rates, dependent: :destroy, inverse_of: :service_pack
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
