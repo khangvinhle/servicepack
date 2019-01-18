@@ -13,11 +13,11 @@ class ServicePack < ApplicationRecord
 
   scope :assigned, -> {Assign.active.where("id = service_pack_id").exists}
 
-  accepts_nested_attributes_for :mapping_rates, allow_destroy: true,  reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
+  accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
 
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
-  
+
   validates_uniqueness_of :name
 
   validates_numericality_of :total_units, only_integer: true, greater_than: 0
@@ -47,13 +47,17 @@ class ServicePack < ApplicationRecord
     !unavailable?
   end
 
+  def expired_email_notification
+    ExpiredSpMailer.expired_email(User.all, self).deliver_later if expired?
+  end
+
   private
 
-    def threshold2_is_greater_than_threshold1
-      @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
-    end
+  def threshold2_is_greater_than_threshold1
+    @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
+  end
 
-    def end_after_start
-      @errors.add(:expired_date, 'must be after start date') if expired_date < started_date
-    end
+  def end_after_start
+    @errors.add(:expired_date, 'must be after start date') if expired_date < started_date
+  end
 end
