@@ -1,14 +1,7 @@
 class AssignsController < ApplicationController
-  layout 'admin'
-  before_action :require_admin, :find_project_by_project_id
+  before_action :find_project_by_project_id
 
   def assign
-=begin
-		if !@project.module_enabled?(:openproject_service_packs)
-			render_400 and return
-		end
-=end
-    #require 'pry-nav'
     if !(@project.assigns.where(assigned: true).empty?)
       flash[:alert] = "You must unassign first!"
       render_400 and return
@@ -56,12 +49,6 @@ class AssignsController < ApplicationController
   end
 
   def show
-=begin
-		if !@project.module_enabled?(:openproject_service_packs)
-			render_400 and return
-		end
-=end
-
     # assigned now
     @assignment = @project.assigns.find_by(assigned: true)
     if @assignment && @assignment.service_pack.unavailable?
@@ -86,4 +73,5 @@ class AssignsController < ApplicationController
       @service_pack = @assignment.service_pack
     end
   end
+  
 end
