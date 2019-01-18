@@ -13,7 +13,7 @@ class ServicePackPresenter
 		@service_pack.to_json
 	end
 	def hash_lite_header
-		@service_pack.as_json(except: [:id, :threshold1, :threshold2, :updated_on])
+		@service_pack.as_json(except: [:id, :threshold1, :threshold2, :updated_at, :created_at])
 	end
 	def json_lite_header
 		hash_lite_header.to_json

@@ -72,7 +72,8 @@ class AssignsController < ApplicationController
           @assignables << assignable
         end
       end
-      binding.pry
+      @assignment.
+      #binding.pry
     else
       @service_pack = @assignment.service_pack
     end
