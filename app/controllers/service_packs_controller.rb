@@ -20,7 +20,7 @@ class ServicePacksController < ApplicationController
     # controller chooses not to get the thresholds.
     # assume the service pack exists.
     respond_to do |format|
-      format.json { render json: @service_pack.as_json(except: [:threshold1, :threshold2, :updated_on])}
+      format.json { render json: @service_pack.to_json(except: [:threshold1, :threshold2, :updated_on])}
     # and this
       format.html
         @rates = @service_pack.mapping_rates

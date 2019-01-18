@@ -3,15 +3,13 @@ class ServicePack < ApplicationRecord
   has_many :assigns
   has_many :projects, through: :assigns
 
-  has_many :mapping_rates, inverse_of: :service_pack
+  has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
   # example: User has many :pets, Dog is a :pets and has many :breeds. Breeds have ...
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
-
-  scope :assigned, -> {Assign.active.where("id = service_pack_id").exists}
 
   accepts_nested_attributes_for :mapping_rates, allow_destroy: true,  reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
 
@@ -24,6 +22,8 @@ class ServicePack < ApplicationRecord
 
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
+
+  scope :assignment, ->{assigns.where(assigned: true)}
 
 
   def default_remained_units
@@ -44,6 +44,10 @@ class ServicePack < ApplicationRecord
 
   def available?
     !unavailable?
+  end
+
+  def assigned?
+    assigns.where(assigned: true).exists?
   end
 
   private

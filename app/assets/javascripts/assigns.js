@@ -1,5 +1,4 @@
-// Place all the behaviors and hooks related to the matching controller here.
-// All this logic will automatically be available in application.js.
+//use <% javascript_include_tag %>
 function loadServicePack() {
 	var co = document.querySelector("#select-sp");
 	if (co.selectedIndex == 0) {
