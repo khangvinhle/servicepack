@@ -1,6 +1,6 @@
 <% if @service_pack %>
   <div id="sp-display">
-    <h3>Service Pack <%= @service_pack.name %> already assigned to <%= @project.name %>.</h3>
+    <h3>Service Pack: <strong><%= @service_pack.name %></strong> already assigned to <strong><%= @project.name %>.</strong></h3>
     Activation Date: <%= @service_pack.started_date %>
     Expiration Date: <%= @service_pack.expired_date %>
     Remained: <%= @service_pack.remained_units %>

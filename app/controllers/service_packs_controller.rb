@@ -34,11 +34,12 @@ class ServicePacksController < ApplicationController
     # else
     #   render 'new'
     # end
-
     mapping_rate_attribute = params['service_pack']['mapping_rates_attributes']
     activity_id = []
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value['activity_id'])}
     if activity_id.uniq.length == activity_id.length
+      @service_pack = ServicePack.new(service_pack_params)
+      @service_pack.save
       render plain: 'not duplicated'
     else
       render plain: 'duplicated'
