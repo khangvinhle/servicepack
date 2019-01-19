@@ -36,11 +36,15 @@ module OpenProject::ServicePacks
            {controller: '/assigns', action: 'show'},
            after: :overview,
            param: :project_id,
-           caption: 'project SP assign main page',
+           caption: 'Assign Service Pack',
+           icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
            #if: ->(project) {true} # todo: must turn on SP module first
     end
+    
     patches %i[Project TimeEntryActivity]
     assets %w(assigns.js)
   end
 end
+# preserve lost path: no, you can't add a new tab into project settings from the plugin extension.
+# add_tab_entry :project_settings, name: "service_packs", partial: "assigns/show", label: :caption_service_pack
