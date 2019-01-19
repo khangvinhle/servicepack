@@ -50,6 +50,10 @@ class ServicePack < ApplicationRecord
     assigns.where(assigned: true).exists?
   end
 
+  def assignments
+    assigns.where(assigned: true)
+  end
+
   private
 
     def threshold2_is_greater_than_threshold1

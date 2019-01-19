@@ -1,0 +1,15 @@
+<!-- partial with param -->
+<% if !(@assignments.empty?) %>
+	<p>
+		This Service Pack has been assigned for project(s) named:
+		<ul>
+			<% @assignments.each do |assignment| %>
+				<li><%= assignment.project.name %></li>
+			<% end %>
+		</ul>
+	</p>
+<% else %>
+	<p>
+		This Service Pack is not being assigned to any projects.
+	</p>
+<% end %> 

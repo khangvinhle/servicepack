@@ -20,11 +20,14 @@ class ServicePacksController < ApplicationController
     # controller chooses not to get the thresholds.
     # assume the service pack exists.
     respond_to do |format|
-      format.json
-      render plain: ServicePackPresenter.new(@service_pack).json_export(:rate)
+      format.json {
+        render plain: ServicePackPresenter.new(@service_pack).json_export(:rate)
+      }
     # and this
-      format.html
+      format.html {
         @rates = @service_pack.mapping_rates
+        @assignments = @service_pack.assigns.where(assigned: true).all
+      }
     end
   end
 
