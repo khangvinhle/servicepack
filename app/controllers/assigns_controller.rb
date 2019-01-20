@@ -4,12 +4,8 @@ class AssignsController < ApplicationController
   include SPAssignmentManager
 
   def assign
-=begin
-		if !@project.module_enabled?(:openproject_service_packs)
-			render_400 and return
-		end
-=end
-    #binding.pry
+    return head 403 unless User.current.allowed_to?(:assign_ServicePacks, @project)
+
     if assigned?(@project)
       flash[:alert] = "You must unassign first!"
       render_400 and return
@@ -30,32 +26,27 @@ class AssignsController < ApplicationController
         render_400 and return
       end
     end
-    flash[:alert] = "Service Pack not found"
+    flash[:alert] = 'Service Pack not found'
     render_404 and return
   end
 
   def unassign
-    #
-    # if !@project.module_enabled?(:openproject_service_packs)
-    #   render_400 and return
-    # end
-    #binding.pry
+    return head 403 unless User.current.allowed_to?(:unassign_ServicePacks, @project)
 
     if unassigned?(@project)
-      flash[:alert] = "No Service Pack is assigned to this project"
+      flash[:alert] = 'No Service Pack is assigned to this project'
       render_404 and return
     end
     _unassign(@project)
     flash[:notice] = "Unassigned a Service Pack from this project"
-    redirect_to action: "show" and return
+    redirect_to action: 'show' and return
   end
 
   def show
-=begin
-		if !@project.module_enabled?(:openproject_service_packs)
-			render_400 and return
-		end
-=end
+    return head 403 unless
+    User.current.allowed_to?(:see_assigned_ServicePacks, @project) ||
+    (tmp = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
+    (tmp2 = User.current.allowed_to?(:unassign_ServicePacks, @project)) # not allowed
 
     # assigned now
     if @assignment = @project.assigns.find_by(assigned: true)
@@ -67,15 +58,16 @@ class AssignsController < ApplicationController
     #binding.pry
     if @assignment.nil?
       # testing only
-      t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
-      @assignment = Assign.new
-      @assignables = []
-      t.each do |assignable|
-        if assignable.assigns.where(assigned: true).empty?
-          @assignables << assignable
+      if tmp ||= User.current.allowed_to?(:assign_ServicePacks, @project)
+        t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
+        @assignment = Assign.new
+        @assignables = []
+        t.each do |assignable|
+          if assignable.assigns.where(assigned: true).empty?
+            @assignables << assignable
+          end
         end
       end
-      #binding.pry
     else
       @service_pack = @assignment.service_pack
     end
