@@ -14,8 +14,11 @@ class AssignsController < ApplicationController
       flash[:alert] = "You must unassign first!"
       render_400 and return
     end
-    @service_pack = ServicePack.find(params[:assign][:service_pack_id])
-    #binding.pry
+    @service_pack = ServicePack.find_by(id: params[:assign][:service_pack_id])
+    if @service_pack.nil?
+      flash[:alert] = "Service Pack not found"
+      render 'show' and return
+    end
     if @service_pack.available?
       if assignable = @service_pack.assigns.where(assigned: true).empty?
         assign_to(@service_pack, @project)
