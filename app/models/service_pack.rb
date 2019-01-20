@@ -23,7 +23,7 @@ class ServicePack < ApplicationRecord
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
 
-  scope :assignment, ->{assigns.where(assigned: true)}
+  scope :assignments, ->{assigns.where(assigned: true)}
 
 
   def default_remained_units

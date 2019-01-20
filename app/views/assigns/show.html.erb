@@ -1,13 +1,13 @@
 <%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs %>
 <% if @service_pack %>
   <div id="sp-display">
-    <h3>Service Pack <%= @service_pack.name %> already assigned to <%= @project.name %>.</h3>
+    <h3>Service Pack <%= content_tag(:strong, @service_pack.name)%> already assigned to <%= content_tag(:strong, @project.name)%>.</h3>
       <strong>Activation Date</strong>: <%= @service_pack.started_date %>
       <strong>Expiration Date</strong>: <%= @service_pack.expired_date %>
       <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
   </div>
   <br/>
-  <%= link_to "Unassign", assigns_unassign_path(@project), method: :post, class: "button" %> <!-- unassign -->
+  <%= link_to 'Unassign', assigns_unassign_path(@project), method: :post, class: "button" %> <!-- unassign -->
 <% else %>
   <div id="sp-assign">
     <h3>No Service Pack is assigned to this project.</h3>
@@ -21,7 +21,7 @@
           <% end %>
         <% end %>
         <br/>
-        <%= f.submit "Assign a Service Pack", id: "sp-assign-button" %>
+        <%= f.submit 'Assign a Service Pack', id: "sp-assign-button" %>
       <% end %>
     <% else %>
       <h3>No Service Pack can be assigned.</h3>

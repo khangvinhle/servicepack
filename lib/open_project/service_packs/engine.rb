@@ -19,6 +19,7 @@ module OpenProject::ServicePacks
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
         permission :assign_ServicePacks, {assigns: [:assign, :show]}, require: :member
         permission :unassign_ServicePacks, {assigns: [:unassign, :show]}, require: :member
+        permission :see_assigned_ServicePacks, {assigns: [:show]}, require: :member
       end
 
       menu :admin_menu,

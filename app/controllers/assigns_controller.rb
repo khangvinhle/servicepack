@@ -67,7 +67,7 @@ class AssignsController < ApplicationController
     #binding.pry
     if @assignment.nil?
       # testing only
-      t = ServicePack.where("expired_date >= ?", Date.today) if Rails.env.development?
+      t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
       @assignment = Assign.new
       @assignables = []
       t.each do |assignable|

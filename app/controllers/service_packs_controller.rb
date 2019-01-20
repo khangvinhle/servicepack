@@ -23,7 +23,6 @@ class ServicePacksController < ApplicationController
       format.json {
         render plain: ServicePackPresenter.new(@service_pack).json_export(:rate)
       }
-    # and this
       format.html {
         @rates = @service_pack.mapping_rates
         @assignments = @service_pack.assigns.where(assigned: true).all
