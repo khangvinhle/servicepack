@@ -1,7 +1,7 @@
 <%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @tmp ||= User.current.allowed_to?(:assign_ServicePacks, @project) %>
 <% if @service_pack %>
   <div id="sp-display">
-    <h3>Service Pack <%= content_tag(:strong, @service_pack.name)%> already assigned to <%= content_tag(:strong, @project.name)%>.</h3>
+    <h3>Service Pack <%= content_tag(:strong, @service_pack.name)%> already assigned to <%= content_tag(:strong, @project.name)%></h3>
       <strong>Activation Date</strong>: <%= @service_pack.started_date %>
       <strong>Expiration Date</strong>: <%= @service_pack.expired_date %>
       <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>

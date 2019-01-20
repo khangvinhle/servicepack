@@ -2,6 +2,7 @@ class AssignsController < ApplicationController
   #layout 'admin'
   before_action :find_project_by_project_id
   include SPAssignmentManager
+  before_action :find_project_by_project_id
 
   def assign
     return head 403 unless User.current.allowed_to?(:assign_ServicePacks, @project)
@@ -47,8 +48,7 @@ class AssignsController < ApplicationController
     User.current.allowed_to?(:see_assigned_ServicePacks, @project) ||
     (@tmp = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
     (@tmp2 = User.current.allowed_to?(:unassign_ServicePacks, @project)) # not allowed
-
-    # assigned now
+    
     if @assignment = @project.assigns.find_by(assigned: true)
       if @assignment.service_pack.unavailable?
         assignment_terminate(@assignment)
@@ -72,4 +72,5 @@ class AssignsController < ApplicationController
       @service_pack = @assignment.service_pack
     end
   end
+  
 end

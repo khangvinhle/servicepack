@@ -1,5 +1,5 @@
 <%= form_for @service_pack, url: service_packs_path, local: true do |form| %>
-  
+
   <% if @service_pack.errors.any? %>
     <div id="error_explanation">
       <h2>
@@ -13,7 +13,7 @@
       </ul>
     </div>
   <% end %>
-  
+
   <p>
     <%= form.label :name %>
     <%= form.text_field :name %>
@@ -39,20 +39,17 @@
     <%= form.number_field :threshold2 %>
   </p>
 
-  Rates:
-  <ul>
-    <%= form.fields_for :mapping_rates do |rates_form| %>
-      <li>
-        <%= rates_form.collection_select(:activity_id, TimeEntryActivity.shared, :id, :name) %>       
-        <%= rates_form.label :units_per_hour %>
-        <%= rates_form.number_field :units_per_hour %>
-      </li>
-      <hr>
-    <% end %>
-  </ul>
- 
+  <h3>Mapping Rates:</h3>
+
+  <%= form.fields_for :mapping_rates do |rates_form| %>
+    <%= rates_form.collection_select(:activity_id, TimeEntryActivity.shared, :id, :name) %>
+    <%= rates_form.number_field :units_per_hour, placeholder: "Units per hours" %>
+    <br>
+  <% end %>
+
+
   <p>
     <%= form.submit %>
   </p>
-  
+
 <% end %>
