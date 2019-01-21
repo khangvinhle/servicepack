@@ -1,4 +1,4 @@
-<%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @tmp ||= User.current.allowed_to?(:assign_ServicePacks, @project) %>
+<%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project) %>
 <% if @service_pack %>
   <div id="sp-display">
     <h3>Service Pack <%= content_tag(:strong, @service_pack.name)%> already assigned to <%= content_tag(:strong, @project.name)%></h3>
@@ -7,13 +7,13 @@
       <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
   </div>
   <br/>
-  <% if @tmp2 ||= User.current.allowed_to?(:unassign_ServicePacks, @project) %>
+  <% if @can_unassign ||= User.current.allowed_to?(:unassign_ServicePacks, @project) %>
     <%= link_to 'Unassign', assigns_unassign_path(@project), method: :post, class: "button" %>
   <% end %>
 <% else %>
   <div id="sp-assign">
     <h3>No Service Pack is assigned to this project.</h3>
-    <% if @tmp && @assignables %>
+    <% if @can_assign && @assignables %>
       <%= form_with model: @assignment, url: assigns_assign_path(@project), local: true, method: :post do |f| %>
         Choose a Service Pack to apply:
         <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>

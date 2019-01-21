@@ -2,10 +2,9 @@ class AssignsController < ApplicationController
   #layout 'admin'
   before_action :find_project_by_project_id
   include SPAssignmentManager
-  before_action :find_project_by_project_id
 
   def assign
-    return head 403 unless User.current.allowed_to?(:assign_ServicePacks, @project)
+    return head 403 unless @can_assign = User.current.allowed_to?(:assign_ServicePacks, @project)
 
     if assigned?(@project)
       flash[:alert] = "You must unassign first!"
@@ -32,7 +31,7 @@ class AssignsController < ApplicationController
   end
 
   def unassign
-    return head 403 unless User.current.allowed_to?(:unassign_ServicePacks, @project)
+    return head 403 unless @can_unassign = User.current.allowed_to?(:unassign_ServicePacks, @project)
 
     if unassigned?(@project)
       flash[:alert] = 'No Service Pack is assigned to this project'
@@ -46,8 +45,8 @@ class AssignsController < ApplicationController
   def show
     return head 403 unless
     User.current.allowed_to?(:see_assigned_ServicePacks, @project) ||
-    (@tmp = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
-    (@tmp2 = User.current.allowed_to?(:unassign_ServicePacks, @project)) # not allowed
+    (@can_assign = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
+    (@can_unassign = User.current.allowed_to?(:unassign_ServicePacks, @project)) # not allowed
     
     if @assignment = @project.assigns.find_by(assigned: true)
       if @assignment.service_pack.unavailable?
@@ -58,7 +57,7 @@ class AssignsController < ApplicationController
     #binding.pry
     if @assignment.nil?
       # testing only
-      if @tmp ||= User.current.allowed_to?(:assign_ServicePacks, @project)
+      if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project)
         t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
         @assignment = Assign.new
         @assignables = []

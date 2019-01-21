@@ -22,16 +22,6 @@ module OpenProject::ServicePacks
         permission :see_assigned_ServicePacks, {assigns: [:show]}, require: :member
       end
 
-      menu :project_menu,
-           :assigns,
-           { controller: '/assigns', action: 'show' },
-           after: :overview,
-           param: :project_id,
-           caption: 'Service packs assignment',
-           html: { id: 'assign-menu-item' },
-           icon: 'icon2 icon-bug',
-           if: ->(project) {true} # todo: must turn on SP module first
-
       menu :admin_menu,
            :service_packs,
            { controller: '/service_packs', action: 'index' },
@@ -47,7 +37,7 @@ module OpenProject::ServicePacks
            {controller: '/assigns', action: 'show'},
            after: :overview,
            param: :project_id,
-           caption: 'Assign Service Pack',
+           caption: 'Service Pack Assignment',
            icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
            #if: ->(project) {true} # todo: must turn on SP module first
