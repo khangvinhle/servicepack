@@ -3,9 +3,4 @@ class MappingRate < ApplicationRecord
   belongs_to :service_pack
 
   # validates_uniqueness_of :activity, scope: :service_pack
-
-  def as_json
-  	# hash literal example
-  	{:name => activity.name, :rates => units_per_hour}
-  end
 end

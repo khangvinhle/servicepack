@@ -1,3 +1,4 @@
+=begin
 module OpenProject::ServicePacks
 	module Patches
   		module EnumerationPatch
@@ -7,9 +8,9 @@ module OpenProject::ServicePacks
 		
 			module InstanceMethods
 				def update_sp_rates
-		          if (type == "TimeEntryActivity" and self.project_id == nil and self.parent_id == nil)
+		          if (type == "TimeEntryActivity" && self.project_id.nil? && self.parent_id.nil?)
 		          	ServicePacks.find_each |service_pack| do
-		          		service_pack.mapping_rates << self
+		          		service_pack.mapping_rates << self 
 		          	end
 		        end
 				
@@ -30,3 +31,4 @@ module OpenProject::ServicePacks
 end
 
 Enumeration.send(:include, OpenProject::ServicePacks::Patches::EnumerationPatch)
+=end

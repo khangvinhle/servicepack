@@ -1,5 +1,6 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
+  after_save :revoke_all_assignments, if: :unavailable? 
   has_many :assigns
   has_many :projects, through: :assigns
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
@@ -31,6 +32,10 @@ class ServicePack < ApplicationRecord
     self.remained_units = self.total_units
   end
 
+  def revoke_all_assignments 
+    assignments.update_all(assigned: false, unassign_date: Date.today)
+  end
+
   def expired?
     true if Time.now > expired_date
   end
@@ -39,7 +44,7 @@ class ServicePack < ApplicationRecord
     true if remained_units <= 0
   end
 
-  def unavailable? # available SP might not be assignable - TODO: solved by another module
+  def unavailable? # available SP might not be assignable
     used_up? && expired?
   end
 

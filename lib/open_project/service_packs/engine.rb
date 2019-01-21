@@ -30,8 +30,7 @@ module OpenProject::ServicePacks
            caption: 'Service Packs',
            icon: 'icon2 icon-bug',
            html: {id: 'service_packs-menu-item'}
-      # if: ->(project) {true}
-
+           # if: ->(project) {true}
 
       menu :project_menu,
            :assigns,
@@ -41,9 +40,10 @@ module OpenProject::ServicePacks
            caption: 'Service Pack Assignment',
            icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
-           #if: ->(project) {true} # todo: must turn on SP module first
+
     end
-    patches %i[Project TimeEntryActivity TimeEntry Enumeration]
+    # patches %i[Project TimeEntryActivity TimeEntry Enumeration]
+    patches %i[Project TimeEntryActivity TimeEntry]
     assets %w(assigns.js)
     end
 end
