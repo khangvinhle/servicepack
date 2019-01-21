@@ -47,7 +47,7 @@ class AssignsController < ApplicationController
     User.current.allowed_to?(:see_assigned_ServicePacks, @project) ||
     (@can_assign = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
     (@can_unassign = User.current.allowed_to?(:unassign_ServicePacks, @project))
-    # binding.pry
+    binding.pry
     if @assignment = @project.assigns.find_by(assigned: true)
       if @assignment.service_pack.unavailable?
         @assignment.terminate

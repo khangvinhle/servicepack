@@ -19,8 +19,15 @@ class ServicePackPresenter
 		hash_lite_header.to_json
 	end
 	def hash_rate_only
-		# (working) proof of concept only.
-		@service_pack.mapping_rates.as_json
+		# ActiveRecord join returns an array!
+		q = <<-SQL
+			SELECT name, units_per_hour AS upt
+			FROM mapping_rates t1
+			INNER JOIN #{TimeEntryActivity.table_name} t2
+			ON t1.activity_id = t2.id
+			WHERE t1.service_pack_id = #{@service_pack.id}
+			SQL
+		ActiveRecord::Base.connection.exec_query(q).to_hash
 	end
 	def json_rate_only
 		hash_rate_only.to_json

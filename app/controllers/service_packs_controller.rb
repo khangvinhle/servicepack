@@ -16,7 +16,6 @@ class ServicePacksController < ApplicationController
 
   def show
     @service_pack = ServicePack.find(params[:id])
-    # add some json between this
     # controller chooses not to get the thresholds.
     # assume the service pack exists.
     # TODO: make a separate action JSON only.
