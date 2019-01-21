@@ -23,7 +23,7 @@ class ServicePack < ApplicationRecord
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
 
-  scope :assignments, ->{assigns.where(assigned: true)}
+  scope :assignments, ->{joins(:assigns).where(assigned: true)}
   scope :availables, ->{where("remained_units > 0 and expired_date >= ?", Date.today)}
 
 
@@ -54,6 +54,7 @@ class ServicePack < ApplicationRecord
   def assignments
     assigns.where(assigned: true)
   end
+
 
   private
 
