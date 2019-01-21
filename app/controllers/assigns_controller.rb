@@ -38,7 +38,7 @@ class AssignsController < ApplicationController
       render_404 and return
     end
     _unassign(@project)
-    flash[:notice] = "Unassigned a Service Pack from this project"
+    flash[:notice] = 'Unassigned a Service Pack from this project'
     redirect_to action: 'show' and return
   end
 
@@ -46,22 +46,23 @@ class AssignsController < ApplicationController
     return head 403 unless
     User.current.allowed_to?(:see_assigned_ServicePacks, @project) ||
     (@can_assign = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
-    (@can_unassign = User.current.allowed_to?(:unassign_ServicePacks, @project)) # not allowed
+    (@can_unassign = User.current.allowed_to?(:unassign_ServicePacks, @project))
     
     if @assignment = @project.assigns.find_by(assigned: true)
       if @assignment.service_pack.unavailable?
-        assignment_terminate(@assignment)
-        @assignment = nil # overdue
+        @assignment.terminate
+        @assignment = nil # signifying no assignments are in effect
+        # as the single one is terminated.
       end
     end
     #binding.pry
     if @assignment.nil?
       # testing only
       if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project)
-        t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
+        # t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
         @assignment = Assign.new
         @assignables = []
-        t.each do |assignable|
+        ServicePack.availables.each do |assignable|
           if assignable.assigns.where(assigned: true).empty?
             @assignables << assignable
           end

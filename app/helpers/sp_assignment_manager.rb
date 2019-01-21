@@ -6,16 +6,15 @@ module SPAssignmentManager
 			# one query only
 			# project.assigns.update_all(assigned: false)
 			@assignment = service_pack.assigns.find_by(project_id: project.id) || project.assigns.new
-			@assignment.assigned= true
+			@assignment.assigned = true
 			@assignment.assign_date = Date.today
+			@assignment.unassign_date = service_pack.expired_date
 			@assignment.service_pack_id = service_pack.id
 			@assignment.save!
 		end
 	end
 	def _unassign(project)
-		return nil unless @assignment = project.assigns.find_by(assigned: true)
-		#binding.pry
-		assignment_terminate(@assignment)
+		project.assigns.find_by(assigned: true)&.terminate # ruby >= 2.3.0 "safe navigation operator"
 	end
 	def unassigned?(project)
 		project.assigns.where(assigned: true).empty?
@@ -23,6 +22,7 @@ module SPAssignmentManager
 	def assigned?(project)
 		!unassigned?(project)
 	end
+=begin
 	def assignment_terminate(assignment)
 		assignment.assigned = false
 		assignment.save!
@@ -30,5 +30,5 @@ module SPAssignmentManager
 	def assignment_overdue?(assignment)
 		assignment.service_pack.unavailable?
 	end
-
+=end
 end

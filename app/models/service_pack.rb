@@ -24,6 +24,7 @@ class ServicePack < ApplicationRecord
   validate :end_after_start
 
   scope :assignments, ->{assigns.where(assigned: true)}
+  scope :availables, ->{where("remained_units > 0 and expired_date >= ?", Date.today)}
 
 
   def default_remained_units
