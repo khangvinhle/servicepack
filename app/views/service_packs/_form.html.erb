@@ -41,11 +41,16 @@
 
   <h3>Mapping Rates:</h3>
 
-  <%= form.fields_for :mapping_rates do |rates_form| %>
-    <%= rates_form.collection_select(:activity_id, TimeEntryActivity.shared, :id, :name) %>
-    <%= rates_form.number_field :units_per_hour, placeholder: "Units per hours" %>
-    <br>
+  <% (1..@c).each do |i| %>
+    <p>
+      <%= content_tag(:h4, @sh[i-1].name) %><br/>
+      <label for="service_pack[mapping_rates_attributes][<%= i %>][units_per_hour]">Units per hour:</label>
+      <input type="number" name="service_pack[mapping_rates_attributes][<%= i %>][units_per_hour]" min="0"/>
+      <input type="hidden" name="service_pack[mapping_rates_attributes][<%= i %>][activity_id]" value="<%=@sh[i-1].id %>"/>
+    </p>
   <% end %>
+
+  <% render partial: 'remake' %>
 
 
   <p>

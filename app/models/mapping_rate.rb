@@ -5,10 +5,10 @@ class MappingRate < ApplicationRecord
   # validates_uniqueness_of :activity, scope: :service_pack
 
   validates_numericality_of :units_per_hour, only_integer: true, greater_than_or_equal_to: 0
-  validate :only_define_rates_on_shared
+  validate :only_define_rates_on_shared_activity
 
   private
-  	def only_define_rates_on_shared
+  	def only_define_rates_on_shared_activity
   		errors.add(:activity, 'invalid') if !activity.parent_id.nil?
   	end
 end
