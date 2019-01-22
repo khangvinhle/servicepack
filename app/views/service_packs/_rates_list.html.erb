@@ -1,9 +1,0 @@
-<h2>
-  Rates:
-</h2>
-
-<ul>
-  <% @rates.each do |rate| %>  
-    <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} (Units/hour)" %> </li>
-  <% end %>
-</ul>
