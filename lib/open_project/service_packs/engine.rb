@@ -44,7 +44,7 @@ module OpenProject::ServicePacks
     end
     
 
-    patches %i[Project TimeEntryActivity TimeEntry]
+    patches %i[Project TimeEntryActivity TimeEntry Enumeration]
   
   end
 end
