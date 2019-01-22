@@ -32,6 +32,7 @@ module OpenProject::ServicePacks
            html: {id: 'service_packs-menu-item'}
       # if: ->(project) {true}
 
+
       menu :project_menu,
            :assigns,
            {controller: '/assigns', action: 'show'},
@@ -42,7 +43,7 @@ module OpenProject::ServicePacks
            html: {id: 'assign-menu-item'}
            #if: ->(project) {true} # todo: must turn on SP module first
     end
-    patches %i[Project TimeEntryActivity TimeEntry]
+    patches %i[Project TimeEntryActivity TimeEntry Enumeration]
     assets %w(assigns.js)
     end
 end
