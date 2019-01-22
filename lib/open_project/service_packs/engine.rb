@@ -42,8 +42,7 @@ module OpenProject::ServicePacks
            html: {id: 'assign-menu-item'}
 
     end
-    # patches %i[Project TimeEntryActivity TimeEntry Enumeration]
-    patches %i[Project TimeEntryActivity TimeEntry]
+    patches %i[Project TimeEntryActivity TimeEntry Enumeration]
     assets %w(assigns.js)
     end
 end

@@ -5,11 +5,12 @@ module OpenProject::ServicePacks
 				
 			end
 			
-			# algorithm:
+			# pseudocode:
 			# Find an assignment in effect, if not leave in peace.
 			# Then find a rate associated with activity_id and sp in effect.
 			# Find the diff
 			# then update Service Pack rem with the diff.
+
 			module InstanceMethods			
 				def log_consumed_units
 					# Haven't test yet
@@ -50,7 +51,7 @@ module OpenProject::ServicePacks
 						sp_entry.update(units: units_cost) if extra_consumption != 0
 						service_pack = ServicePack.find_by(id: service_pack_id)
 						sp_remained_units = service_pack.remained_units - extra_consumption
-						binding.pry
+						# binding.pry
 						service_pack.update(remained_units: sp_remained_units)
 					else
 						return
