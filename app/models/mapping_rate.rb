@@ -3,4 +3,12 @@ class MappingRate < ApplicationRecord
   belongs_to :service_pack
 
   # validates_uniqueness_of :activity, scope: :service_pack
+
+  validates_numericality_of :units_per_hour, only_integer: true, greater_than_or_equal_to: 0
+  validate :only_define_rates_on_shared
+
+  private
+  	def only_define_rates_on_shared
+  		errors.add(:activity, 'invalid') if !activity.parent_id.nil?
+  	end
 end
