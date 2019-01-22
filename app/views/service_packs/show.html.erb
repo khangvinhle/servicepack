@@ -42,9 +42,9 @@
   <% end %>
 </ul>
 
+<%= render partial: "active_assignments" %>
+
 <%= link_to "Edit Service Pack", edit_service_pack_path(@service_pack), :class => "button -alt-highlight" %> 
 <%= link_to "Back to Service Pack home page", service_packs_path, :class => "button -alt-highlight" %>
 
 <%= link_to 'Destroy', service_pack_path(@service_pack), :class => "button", method: :delete, data: { confirm: 'Are you sure?' } %>
-
-
