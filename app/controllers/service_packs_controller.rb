@@ -40,16 +40,26 @@ class ServicePacksController < ApplicationController
     #   render 'new'
     # end
     mapping_rate_attribute = params['service_pack']['mapping_rates_attributes']
-    binding.pry
+    # binding.pry
     activity_id = []
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value['activity_id'])}
 
     if activity_id.uniq.length == activity_id.length
       @service_pack = ServicePack.new(service_pack_params)
-      @service_pack.save
-      render plain: 'not duplicated'
+      # render plain: 'not duplicated'
+      if @service_pack.save
+        flash[:notice] = 'Service Pack creation successful.'
+        redirect_to action: :show, id: @service_pack.id and return
+      else
+        flash[:error] = 'Service Pack creation failed.'
+        @service_pack = ServicePack.new
+        render 'new'
+      end
     else
-      render plain: 'duplicated'
+      # render plain: 'duplicated'
+      flash[:error] = 'Only one rate can be defined to one activity.'
+      @service_pack = ServicePack.new
+      render 'new'
     end
   end
 
