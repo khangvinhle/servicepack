@@ -1,5 +1,5 @@
 class MappingRate < ApplicationRecord
-  belongs_to :activity, class_name: 'TimeEntryActivity', foreign_key: 'activity_id'
+  belongs_to :activity, class_name: 'TimeEntryActivity', foreign_key: :activity_id
   belongs_to :service_pack
 
   # validates_uniqueness_of :activity, scope: :service_pack
@@ -9,6 +9,6 @@ class MappingRate < ApplicationRecord
 
   private
   	def only_define_rates_on_shared_activity
-  		errors.add(:activity, 'invalid') if !activity.parent_id.nil?
+  		errors.add(:activity, 'invalid') if !activity.shared?
   	end
 end

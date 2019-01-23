@@ -1,6 +1,6 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
-  after_save :revoke_all_assignments, if: :unavailable? 
+  after_save :revoke_all_assignments, if: :unavailable? # should be time-based only.
   has_many :assigns
   has_many :projects, through: :assigns
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy

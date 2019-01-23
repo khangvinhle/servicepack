@@ -58,11 +58,19 @@ module OpenProject::ServicePacks
 					end
 				end
 
+				# pseudocode for destroy callback:
+				# Get assignment and entry, both must be present or we retreat.
+				# Get SP through assignment found
+				# Add back units from the entry to the SP
+
+				# The rem count must be allowed to go into the negative.
+				# That's why saving used counting is better.
+
 				def get_consumed_units_back				
 					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
 					
-					if (assignment.any?)
-						sp_entry = self.service_pack_entry
+					if (assignment.any? && sp_entry = self.service_pack_entry) # old logs
+						# sp_entry = self.service_pack_entry
 						service_pack_id = assignment[0].service_pack_id
 						service_pack = ServicePack.find_by(id: service_pack_id)
 						u_remained_units = service_pack.remained_units + sp_entry.units
