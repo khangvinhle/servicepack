@@ -7,10 +7,7 @@ module OpenProject::ServicePacks
 		
 			module InstanceMethods
 				def update_sp_rates
-		          if (type == "TimeEntryActivity" and self.project_id == nil and self.parent_id == nil)
-		          	ServicePacks.find_each |service_pack| do
-		          		service_pack.mapping_rates << self
-		          	end
+		        	# binding.pry
 		        end
 				
 			end

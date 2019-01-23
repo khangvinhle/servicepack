@@ -5,7 +5,7 @@ module OpenProject::ServicePacks
       def self.included(receiver)
         
         receiver.class_eval do
-          has_many :mapping_rates, dependent: :destroy
+          has_many :mapping_rates, foreign_key: :activity_id, inverse_of: 'activity', dependent: :destroy 
           has_many :service_packs, through: :mapping_rates
         end
       

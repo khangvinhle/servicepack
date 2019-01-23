@@ -9,78 +9,34 @@ module OpenProject::ServicePacks
 				
 				def log_units
 					# Haven't test yet
-					puts "Create Units"
-					sp_entry = ServicePackEntry.new
-					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
-					if (assignment.any?) 
-						activity_id = self.activity_id
-						service_pack_id = assignment[0].service_pack_id
-						rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, activity_id).units_per_hour
+					assignment = project.assigns.where(assigned: true).first
+					if (assignment.nil?)
+						return
+					else
+						binding.pry
+						activity_of_time_entry = (self.activity.parent_id.nil?) ? self.activity : self.activity.parent
+						sp_of_project = assignment.service_pack
+						
+						rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", sp_of_project.id, activity_of_time_entry.id).units_per_hour
 						units_cost = rate * self.hours
+
+						sp_entry = ServicePackEntry.new 
 						sp_entry.time_entry = self
 						sp_entry.units = units_cost
-						sp_entry.save
+						sp_of_project.service_pack_entries << sp_entry
 
-						service_pack = ServicePack.find_by(id: "#{service_pack_id}")
-						sp_remained_units = service_pack.remained_units - units_cost
-						service_pack.update(:remained_units => "#{sp_remained_units}")
-					else
-						return
+						sp_entry.update(:description => "#{activity_of_time_entry.name}")
+						sp_of_project.update(:remained_units => "#{sp_of_project.remained_units - units_cost}")
 					end
 
 				end
 
 				def update_units
-					puts self
-					puts self.id
-					puts self.hours
-					puts self.comments
-					
-					sp_entry = self.service_pack_entry
-					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
-					
-					if (assignment.any?) 
-						activity_id = self.activity_id
-						service_pack_id = assignment[0].service_pack_id
-						rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, activity_id).units_per_hour
-						units_cost = rate * self.hours
-						
-						sp_entry.update(:units => "#{units_cost}")
-
-						diff = units_cost - sp_entry.units 
-
-						service_pack = ServicePack.find_by(id: "#{service_pack_id}")
-						if diff < 0
-							sp_remained_units = service_pack.remained_units + diff
-						else
-							sp_remained_units = service_pack.remained_units - diff
-						end
-						service_pack.update(:remained_units => "#{sp_remained_units}")
-
-					else
-						return
-					end
+		
 				end
 
 				def delete_units
-					puts self.id
-					puts self.comments
-					puts self.activity_id
-					puts self.hours
-
-					
-					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
-					
-					if (assignment.any?)
-						sp_entry = self.service_pack_entry
-						service_pack_id = assignment[0].service_pack_id
-						service_pack = ServicePack.find_by(id: "#{service_pack_id}")
-						update_remained_units = sp_entry.units + service_pack.remained_units
-						service_pack.update(:remained_units => "#{update_remained_units}")
-						
-					else
-						return
-					end 	
+					 	
 
 				end
 
