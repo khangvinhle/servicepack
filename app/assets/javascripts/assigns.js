@@ -7,7 +7,7 @@ function loadServicePack() {
 		return;
 	}
 	var comp = co.options[co.selectedIndex];
-	var str = "<hr/> Activation Date: " + comp.dataset.start + "<br/>";
+	var str = "Activation Date: " + comp.dataset.start + "<br/>";
 	str += "Expiration Date: " + comp.dataset.end + "<br/>";
 	str += "Capacity: " + comp.dataset.cap + "<br/>";
 	str += "Remained: " + comp.dataset.rem + "<br/>";

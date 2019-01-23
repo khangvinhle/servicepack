@@ -43,10 +43,12 @@ class AssignsController < ApplicationController
   end
 
   def show
+    # This will lock even admins out if the module is not activated.
     return head 403 unless
     User.current.allowed_to?(:see_assigned_ServicePacks, @project) ||
     (@can_assign = User.current.allowed_to?(:assign_ServicePacks, @project)) ||
     (@can_unassign = User.current.allowed_to?(:unassign_ServicePacks, @project))
+
     # binding.pry
     if @assignment = @project.assigns.find_by(assigned: true)
       if @assignment.service_pack.unavailable?
@@ -57,9 +59,7 @@ class AssignsController < ApplicationController
     end
     # binding.pry
     if @assignment.nil?
-      # testing only
       if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project)
-        # t = ServicePack.where('expired_date >= ?', Date.today) if Rails.env.development?
         @assignment = Assign.new
         @assignables = []
         ServicePack.availables.each do |assignable|
@@ -68,8 +68,10 @@ class AssignsController < ApplicationController
           end
         end
       end
+      render 'not_assigned_yet'
     else
       @service_pack = @assignment.service_pack
+      render 'already_assigned'
     end
   end
   
