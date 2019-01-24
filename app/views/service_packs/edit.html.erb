@@ -1,13 +1,13 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
-  
+<style>
+  label, input {
+    margin-bottom: 0 !important;
+    max-width: 500px !important;
+  }
+  input.rates {
+    max-width: 465px !important;
+  }
+</style>
+
 <h2> <%= @sp.name %> </h2>
 
 <%= form_for @sp, local: true do |form| %>
@@ -42,7 +42,7 @@
     <%= form.fields_for :mapping_rates do |rates_form| %>
       <li>
         <%= rates_form.label "#{rates_form.object.activity.name}" %>
-        <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour' %>
+        <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour', class: 'rates' %>
         <%= rates_form.hidden_field :activity_id %>
       </li>
     <% end %>

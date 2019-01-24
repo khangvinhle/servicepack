@@ -2,7 +2,3 @@
   Place all the styles related to the matching controller here.
   They will automatically be included in application.css.
 */
-label, input {
-	margin-bottom: 0 !important;
-	max-width: 500px !important;
-}
