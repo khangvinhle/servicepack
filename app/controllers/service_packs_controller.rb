@@ -78,7 +78,7 @@ class ServicePacksController < ApplicationController
   def statistics
     get_parent_id = <<-SQL
       SELECT id, name,
-      CASE parent_id WHEN NULL THEN id ELSE parent_id AS parent_id
+      CASE parent_id WHEN NULL THEN id ELSE parent_id AS pid
       FROM #{TimeEntryActivity.table_name}
       SQL
     body_query = <<-SQL
@@ -93,8 +93,16 @@ class ServicePacksController < ApplicationController
       GROUP BY t3.pid, t3.name
       ORDER BY consumed
       SQL
-    where_clause = ""
-    render plain: body_query + group_clause
+    # render plain: body_query + group_clause
+
+    start_day = params[:start_period]&.to_date # ruby >= 2.3.0
+    end_day = params[:end_period]&.to_date
+    if start_day.nil? ^ end_day.nil?
+      render json: { error: 'GET OUT!'}, status: 400 and return
+    end
+    where_clause = "WHERE t1.service_pack_id = ?"
+    where_clause << (start_day.nil? ? '' : ' AND t2.created_at BETWEEN ? AND ?')
+    render plain: body_query + where_clause + group_clause
   end
 
   private
