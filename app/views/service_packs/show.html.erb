@@ -20,11 +20,9 @@
 </style>
 
 
-<h2>
-  <strong><%= @service_pack.name %></strong>
-</h2>
+<h2><%= @service_pack.name %></h2>
  
-<div class="grid-container">
+<div class='grid-container'>
   <div> Total Units: </div>
   <div> <%= @service_pack.total_units %> </div>
   <div> Remained Units: </div>
@@ -36,16 +34,17 @@
 </div>
 
 <br>
+<div class='combine'>
+  <div class='rates'>
+    <h2>Rates:</h2>
 
-<h2>
-  Rates:
-</h2>
-
-<ul>
-  <% @rates.each do |rate| %>  
-    <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} units/hour" %> </li>
-  <% end %>
-</ul>
+    <ul>
+      <% @rates.each do |rate| %>  
+        <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} units/hour" %> </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
 
 <%= render partial: "active_assignments" %>
 
