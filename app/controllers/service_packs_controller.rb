@@ -93,16 +93,17 @@ class ServicePacksController < ApplicationController
       GROUP BY t3.pid, t3.name
       ORDER BY consumed
       SQL
-    # render plain: body_query + group_clause
-
     start_day = params[:start_period]&.to_date # ruby >= 2.3.0
     end_day = params[:end_period]&.to_date
     if start_day.nil? ^ end_day.nil?
       render json: { error: 'GET OUT!'}, status: 400 and return
     end
+    binding.pry
     where_clause = "WHERE t1.service_pack_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t2.created_at BETWEEN ? AND ?')
-    render plain: body_query + where_clause + group_clause
+    query = body_query + where_clause + group_clause
+    par = start_day.nil? ? [query, params[:service_pack_id]] : [query, params[:id], start_day, end_day]
+    ActiveRecord::Base.send(:sanitize_sql_array, par)
   end
 
   private
