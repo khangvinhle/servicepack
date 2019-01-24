@@ -7,7 +7,7 @@
   <title>Document</title>
 </head>
 <body>
-
+  
 <h2> <%= @sp.name %> </h2>
 
 <%= form_for @sp, local: true do |form| %>
@@ -28,11 +28,11 @@
 
   <!--  edit form-->
   <p>
-    <%= form.label :threshold1 %><br>
+    <%= form.label :threshold1 %>
     <%= form.number_field :threshold1, placeholder: 'threshold1' %>
   </p>
   <p>
-    <%= form.label :threshold2 %><br>
+    <%= form.label :threshold2 %>
     <%= form.number_field :threshold2, placeholder: 'threshold2' %>
   </p>
 
@@ -45,7 +45,6 @@
         <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour' %>
         <%= rates_form.hidden_field :activity_id %>
       </li>
-      <hr>
     <% end %>
   </ul>
 

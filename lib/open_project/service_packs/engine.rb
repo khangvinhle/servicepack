@@ -43,7 +43,7 @@ module OpenProject::ServicePacks
 
     end
     patches %i[Project TimeEntryActivity TimeEntry Enumeration]
-    assets %w(assigns.js)
+    assets %w(assigns.js service_packs.css)
     end
 end
 # preserve lost path: no, you can't add a new tab into project settings from the plugin extension.
