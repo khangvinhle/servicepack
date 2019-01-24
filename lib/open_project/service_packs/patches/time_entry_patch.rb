@@ -16,70 +16,45 @@ module OpenProject::ServicePacks
 					# Haven't test yet
 					# puts "Create Units"
 					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
-					if assignment.any?
-						sp_entry = ServicePackEntry.new
-						service_pack_id = assignment[0].service_pack_id
-						rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, activity_id).units_per_hour
-						sp_entry.time_entry = self
-						sp_entry.units = rate * self.hours
-						# transaction?
-						sp_entry.save!
-						service_pack = ServicePack.find_by(id: service_pack_id)
-						service_pack.update!(remained_units: service_pack.remained_units - sp_entry.units)
-					else
-						return
-					end
-
+					return unless assignment.any?
+					sp_entry = ServicePackEntry.new
+					sp_entry.service_pack_id = assignment[0].service_pack_id
+					t = self.activity
+					act_id = t.parent_id || t.id
+					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, act_id).units_per_hour
+					sp_entry.time_entry = self
+					sp_entry.units = rate * self.hours
+					# transaction?
+					sp_entry.save!
+					service_pack = ServicePack.find_by(id: sp_entry.service_pack_id)
+					service_pack.update!(remained_units: service_pack.remained_units - sp_entry.units)
 				end
 
 				def update_consumed_units
-					# Tested and only works with non-overridden activities. Concerns raised:
-					# No analytics capability => inextensible (maybe_check)
-					# (which Service Pack is this entry binded to?) (not yet)
-					# Also entries can be amended. (check)
-					
-					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
-					
-					if (assignment.any?)
-						sp_entry = self.service_pack_entry
-						service_pack_id = assignment[0].service_pack_id
-						rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, activity_id).units_per_hour
-						units_cost = rate * self.hours
-						extra_consumption = units_cost - sp_entry.units
-						# binding.pry
-						# keep callbacks for SP
-						sp_entry.update(units: units_cost) if extra_consumption != 0
-						service_pack = ServicePack.find_by(id: service_pack_id)
-						sp_remained_units = service_pack.remained_units - extra_consumption
-						# binding.pry
-						service_pack.update(remained_units: sp_remained_units)
-					else
-						return
-					end
+					return unless sp_entry = self.service_pack_entry
+					spid = sp_entry.service_pack_id
+					t = self.activity
+					act_id = t.parent_id || t.id
+					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour
+					units_cost = rate * self.hours
+					extra_consumption = units_cost - sp_entry.units
+					# binding.pry
+					# keep callbacks for SP
+					sp_entry.update(units: units_cost) if extra_consumption != 0
+					service_pack = ServicePack.find_by(id: service_pack_id)
+					sp_remained_units = service_pack.remained_units - extra_consumption
+					# binding.pry
+					service_pack.update(remained_units: sp_remained_units)
 				end
-
-				# pseudocode for destroy callback:
-				# Get assignment and entry, both must be present or we retreat.
-				# Get SP through assignment found
-				# Add back units from the entry to the SP
-
-				# The rem count must be allowed to go into the negative.
-				# That's why saving used counting is better.
 
 				def get_consumed_units_back				
-					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
-					
-					if (assignment.any? && sp_entry = self.service_pack_entry) # old logs
-						# sp_entry = self.service_pack_entry
-						service_pack_id = assignment[0].service_pack_id
-						service_pack = ServicePack.find_by(id: service_pack_id)
-						u_remained_units = service_pack.remained_units + sp_entry.units
-						service_pack.update(remained_units: u_remained_units)					
-					else
-						return
-					end 	
+					return unless sp_entry = self.service_pack_entry
+					spid = sp_entry.service_pack_id
+					service_pack = ServicePack.find_by(id: spid)
+					u_remained_units = service_pack.remained_units + sp_entry.units
+					service_pack.update(remained_units: u_remained_units)
+				end			
 
-				end
 			end
 			
 			def self.included(receiver)
