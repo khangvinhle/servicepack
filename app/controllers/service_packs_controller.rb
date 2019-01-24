@@ -51,13 +51,13 @@ class ServicePacksController < ApplicationController
         flash[:notice] = 'Service Pack creation successful.'
         redirect_to action: :show, id: @service_pack.id and return
       else
-        flash[:error] = 'Service Pack creation failed.'
+        flash.now[:error] = 'Service Pack creation failed.'
         @service_pack = ServicePack.new
         render 'new'
       end
     else
       # render plain: 'duplicated'
-      flash[:error] = 'Only one rate can be defined to one activity.'
+      flash.now[:error] = 'Only one rate can be defined to one activity.'
       @service_pack = ServicePack.new
       render 'new'
     end

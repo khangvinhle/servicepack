@@ -29,7 +29,8 @@
 	<th>Started Date</th>
 	<th>End Date</th>
 	<th>Threshold 1</th>
-	<th>Threshold 2</th>	    
+	<th>Threshold 2</th>
+	<th>Assigned</th>	    
   </tr>
  
   <% @service_packs.each do |sp| %>
@@ -41,6 +42,7 @@
       <td><%= sp.expired_date %></td>
       <td><%= sp.threshold1 %></td>
       <td><%= sp.threshold2 %></td>
+      <td><%= (sp.assigns.any? ? '&#x2714' : '<strong>X</strong>').html_safe %></td>
     </tr>
   <% end %>
 
