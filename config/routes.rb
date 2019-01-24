@@ -1,6 +1,6 @@
 OpenProject::Application.routes.draw do
   resources :service_packs do
-  	get '/statistics', to: 'service_packs#statistics'
+  	get '/statistics', to: 'service_packs#statistics', constraints: lambda { |req| req.format == :json }
   end
   scope "/projects/:project_id" do
   	get '/assigns', to: 'assigns#show'

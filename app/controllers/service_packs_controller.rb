@@ -76,10 +76,17 @@ class ServicePacksController < ApplicationController
   end
 
   def statistics
+    start_day = params[:start_period]&.to_date # ruby >= 2.3.0
+    end_day = params[:end_period]&.to_date
+    if start_day.nil? ^ end_day.nil?
+      render json: { error: 'GET OUT!'}, status: 400 and return
+    end
+    # binding.pry
     get_parent_id = <<-SQL
       SELECT id, name,
-      CASE parent_id WHEN NULL THEN id ELSE parent_id AS pid
+      CASE parent_id WHEN NULL THEN id ELSE parent_id END AS pid
       FROM #{TimeEntryActivity.table_name}
+      WHERE type = 'TimeEntryActivity'
       SQL
     body_query = <<-SQL
       SELECT t3.pid AS pid, t3.name AS name, sum(t1.units) AS consumed
@@ -87,23 +94,18 @@ class ServicePacksController < ApplicationController
       INNER JOIN #{TimeEntry.table_name} t2
       ON t1.time_entry_id = t2.id
       INNER JOIN (#{get_parent_id}) t3
-      ON t2.activity_id = t3.pid AND t3.type = 'TimeEntryActivity'
+      ON t2.activity_id = t3.pid
       SQL
     group_clause = <<-SQL
       GROUP BY t3.pid, t3.name
       ORDER BY consumed
       SQL
-    start_day = params[:start_period]&.to_date # ruby >= 2.3.0
-    end_day = params[:end_period]&.to_date
-    if start_day.nil? ^ end_day.nil?
-      render json: { error: 'GET OUT!'}, status: 400 and return
-    end
-    binding.pry
     where_clause = "WHERE t1.service_pack_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t2.created_at BETWEEN ? AND ?')
     query = body_query + where_clause + group_clause
-    par = start_day.nil? ? [query, params[:service_pack_id]] : [query, params[:id], start_day, end_day]
-    ActiveRecord::Base.send(:sanitize_sql_array, par)
+    par = start_day.nil? ? [query, params[:service_pack_id]] : [query, params[:service_pack_id], start_day, end_day]
+    sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
+    render json: ActiveRecord::Base.connection.execute(sql).to_json, status: 200
   end
 
   private
