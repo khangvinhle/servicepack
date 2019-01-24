@@ -1,10 +1,10 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
-  has_many :assigns
+  has_many :assigns, dependent: :destroy
   has_many :projects, through: :assigns
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
-  has_many :service_pack_entries
+  has_many :service_pack_entries, dependent: :destroy
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
   # example: User has many :pets, Dog is a :pets and has many :breeds. Breeds have ...
