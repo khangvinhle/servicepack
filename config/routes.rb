@@ -1,8 +1,10 @@
 OpenProject::Application.routes.draw do
-  resources :service_packs
+  resources :service_packs do
+  	get '/statistics', to: 'service_packs#statistics'
+  end
   scope "/projects/:project_id" do
-  	get '/assigns', to: "assigns#show"
-  	post '/assigns/assign', to: "assigns#assign"
-  	post '/assigns/unassign', to: "assigns#unassign"
+  	get '/assigns', to: 'assigns#show'
+  	post '/assigns/assign', to: 'assigns#assign'
+  	post '/assigns/unassign', to: 'assigns#unassign'
   end
 end

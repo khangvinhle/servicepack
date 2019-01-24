@@ -3,7 +3,9 @@ class ServicePackStatistics
 	# acceptance day: 80h left
 	def analyze_by_activity(service_pack=nil)
 		q = <<-SQL
-
+			select sum(units)
+			from #{ServicePackEntry.table_name}
+			
 			SQL
 	end
 

@@ -75,6 +75,28 @@ class ServicePacksController < ApplicationController
     redirect_to service_packs_path
   end
 
+  def statistics
+    get_parent_id = <<-SQL
+      SELECT id, name,
+      CASE parent_id WHEN NULL THEN id ELSE parent_id AS parent_id
+      FROM #{TimeEntryActivity.table_name}
+      SQL
+    body_query = <<-SQL
+      SELECT t3.pid AS pid, t3.name AS name, sum(t1.units) AS consumed
+      FROM #{ServicePackEntry.table_name} t1
+      INNER JOIN #{TimeEntry.table_name} t2
+      ON t1.time_entry_id = t2.id
+      INNER JOIN (#{get_parent_id}) t3
+      ON t2.activity_id = t3.pid AND t3.type = 'TimeEntryActivity'
+      SQL
+    group_clause = <<-SQL
+      GROUP BY t3.pid, t3.name
+      ORDER BY consumed
+      SQL
+    where_clause = ""
+    render plain: body_query + group_clause
+  end
+
   private
 
   def service_pack_params
