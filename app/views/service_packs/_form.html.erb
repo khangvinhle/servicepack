@@ -16,27 +16,27 @@
 
   <p>
     <%= form.label :name %>
-    <%= form.text_field :name %>
+    <%= form.text_field :name, required: 'required' %>
   </p>
   <p>
     <%= form.label :total_units %>
-    <%= form.number_field :total_units %>
+    <%= form.number_field :total_units, required: 'required' %>
   </p>
   <p>
     <%= form.label :started_date %>
-    <%= form.date_field :started_date %>
+    <%= form.date_field :started_date, required: 'required' %>
   </p>
   <p>
     <%= form.label :expired_date %>
-    <%= form.date_field :expired_date %>
+    <%= form.date_field :expired_date, required: 'required' %>
   </p>
   <p>
     <%= form.label :threshold_1 %>
-    <%= form.number_field :threshold1 %>
+    <%= form.number_field :threshold1, required: 'required' %>
   </p>
   <p>
     <%= form.label :threshold_2 %>
-    <%= form.number_field :threshold2 %>
+    <%= form.number_field :threshold2, required: 'required' %>
   </p>
 
   <h3>Mapping Rates:</h3>

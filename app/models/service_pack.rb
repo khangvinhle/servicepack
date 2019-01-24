@@ -1,6 +1,6 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
-  after_save :revoke_all_assignments, if: :unavailable? # should be time-based only.
+  after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   has_many :assigns
   has_many :projects, through: :assigns
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
@@ -11,7 +11,7 @@ class ServicePack < ApplicationRecord
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
 
-  accepts_nested_attributes_for :mapping_rates, allow_destroy: true,  reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
+  accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
 
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units

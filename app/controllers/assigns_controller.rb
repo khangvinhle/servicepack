@@ -12,8 +12,8 @@ class AssignsController < ApplicationController
     end
     @service_pack = ServicePack.find_by(id: params[:assign][:service_pack_id])
     if @service_pack.nil?
-      flash[:alert] = "Service Pack not found"
-      render 'show' and return
+      flash.now[:alert] = "Service Pack not found"
+      render_404 and return
     end
     if @service_pack.available?
       if assignable = @service_pack.assigns.where(assigned: true).empty?
@@ -22,12 +22,13 @@ class AssignsController < ApplicationController
         redirect_to action: "show" and return
       else
         # already assigned for another project
+        # constraint need
         flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
         render_400 and return
       end
     end
-    flash[:alert] = 'Service Pack not found'
-    render_404 and return
+    flash.now[:alert] = 'Service Pack cannot be assigned'
+    redirect_to action: "show"
   end
 
   def unassign

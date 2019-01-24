@@ -29,11 +29,11 @@
   <!--  edit form-->
   <p>
     <%= form.label :threshold1 %><br>
-    <%= form.number_field :threshold1, placeholder: "threshold1" %>
+    <%= form.number_field :threshold1, placeholder: 'threshold1' %>
   </p>
   <p>
     <%= form.label :threshold2 %><br>
-    <%= form.number_field :threshold2 %>
+    <%= form.number_field :threshold2, placeholder: 'threshold2' %>
   </p>
 
   <h2>Mapping rates:</h2>
@@ -41,9 +41,8 @@
   <ul>
     <%= form.fields_for :mapping_rates do |rates_form| %>
       <li>
-        <%= rates_form.label "#{rates_form.object.activity.name}" %>  
-        <%= rates_form.label :units_per_hour %>
-        <%= rates_form.number_field :units_per_hour %>
+        <%= rates_form.label "#{rates_form.object.activity.name}" %>
+        <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour' %>
         <%= rates_form.hidden_field :activity_id %>
       </li>
       <hr>
