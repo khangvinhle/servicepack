@@ -33,12 +33,6 @@ class ServicePacksController < ApplicationController
   end
 
   def create
-    # @service_pack = ServicePack.new(service_pack_params)
-    # if @service_pack.save
-    #   redirect_to @service_pack
-    # else
-    #   render 'new'
-    # end
     mapping_rate_attribute = params['service_pack']['mapping_rates_attributes']
     # binding.pry
     activity_id = []
@@ -75,11 +69,38 @@ class ServicePacksController < ApplicationController
     redirect_to service_packs_path
   end
 
+
+  # =======================================================
+  # :Docs
+  # * Limit: Serving JSON only. Must be Admin to access.
+  # * Purpose:
+  # Return a table with consumed units for a Service Pack grouped by activities and sorted
+  # from large to small.
+  # * Expected Inputs:
+  # [service_pack_id]: Sharing the same route with the resourceful default.
+  # Put in the link. Mandatory.
+  # [start_period]: Beginning of the counting period. As a date. Optional.
+  # [end_period]: Ending of the counting period. As a date. Optional.
+  # start_period MUST NOT be later than end_period.
+  # Both or none of [start_period, end_period] can be present.
+  # * Expected Outputs
+  # Top class: None
+  # Content: Array of object having [name, consumed]
+  # Status: 200
+  # * When raising error
+  # HTTP 404: SP not founds
+  # HTTP 400: Malformed request.
+  # =======================================================
+
   def statistics
     start_day = params[:start_period]&.to_date # ruby >= 2.3.0
     end_day = params[:end_period]&.to_date
     if start_day.nil? ^ end_day.nil?
       render json: { error: 'GET OUT!'}, status: 400 and return
+    end
+
+    if !ServicePack.find_by(id: params[:service_pack_id])
+      render json: { error: 'NOT FOUND'}, status: 404 and return
     end
     # binding.pry
     # never say something = NULL in SQL.
