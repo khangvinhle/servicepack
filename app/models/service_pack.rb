@@ -11,7 +11,8 @@ class ServicePack < ApplicationRecord
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
 
-  scope :assigned, -> {Assign.active.where("id = service_pack_id").exists}
+  scope :assigned, -> {Assign.active.where('id = service_pack_id').exists}
+  scope :expired, -> {where('? > expired_date', Time.zone.now)}
 
   accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
 
@@ -28,7 +29,7 @@ class ServicePack < ApplicationRecord
 
 
   def default_remained_units
-    self.remained_units = self.total_units
+    self.remained_units = total_units
   end
 
   def expired?
@@ -47,11 +48,19 @@ class ServicePack < ApplicationRecord
     !unavailable?
   end
 
-  def expired_notification # send to the first user in the first record in the DB
-    if expired?
-      user = User.first
-      ExpiredSpMailer.expired_email(user, self).deliver_later
-    end
+  def self.expired_notification # thuc hien vao 0h moi ngay
+    ServicePack.expired.each {|sp|
+      User.find_each {|u|
+        mail = Mail.new do
+          from 'default@example.com'
+          to u.mail
+          subject 'Service pack expired'
+          body "Hi #{u.firstname} #{u.lastname}, the service pack #{sp.name} has expired on #{sp.expired_date}!"
+        end
+        mail.deliver_later
+      }
+    }
+    ServicePackMailer.expired
   end
 
   private
