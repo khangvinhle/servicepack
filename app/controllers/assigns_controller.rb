@@ -76,4 +76,37 @@ class AssignsController < ApplicationController
     end
   end
   
+  def statistics
+    start_day = params[:start_period]&.to_date # ruby >= 2.3.0
+    end_day = params[:end_period]&.to_date
+    if start_day.nil? ^ end_day.nil?
+      render json: { error: 'GET OUT!'}, status: 400 and return
+    end
+    get_parent_id = <<-SQL
+      SELECT id, name,
+      CASE parent_id WHEN NULL THEN id ELSE parent_id END AS pid
+      FROM #{TimeEntryActivity.table_name}
+      WHERE type = 'TimeEntryActivity'
+      SQL
+    body_query = <<-SQL
+      SELECT t1.service_pack_id AS spid, t4.name, t3.pid AS pid, t3.name AS act_name, sum(t1.units) AS consumed
+      FROM #{ServicePackEntry.table_name} t1
+      INNER JOIN #{TimeEntry.table_name} t2
+      ON t1.time_entry_id = t2.id
+      INNER JOIN (#{get_parent_id}) t3
+      ON t2.activity_id = t3.pid
+      INNER JOIN #{ServicePack.table_name} t4
+      ON t1.service_pack_id = t4.id
+      SQL
+    group_clause = <<-SQL
+      GROUP BY t1.service_pack_id, t3.pid, t3.name, t4.name
+      ORDER BY consumed
+      SQL
+    where_clause = "WHERE t2.project_id = ?"
+    where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
+    query = body_query + where_clause + group_clause
+    par = start_day.nil? ? [query, params[@project.id]] : [query, params[@project.id], start_day, end_day]
+    sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
+    render json: ActiveRecord::Base.connection.execute(sql), status: 200
+  end
 end

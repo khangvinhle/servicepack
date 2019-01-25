@@ -89,7 +89,7 @@ class ServicePacksController < ApplicationController
       WHERE type = 'TimeEntryActivity'
       SQL
     body_query = <<-SQL
-      SELECT t3.pid AS pid, t3.name AS name, sum(t1.units) AS consumed
+      SELECT t3.pid AS act_id, t3.name AS name, sum(t1.units) AS consumed
       FROM #{ServicePackEntry.table_name} t1
       INNER JOIN #{TimeEntry.table_name} t2
       ON t1.time_entry_id = t2.id
@@ -101,11 +101,11 @@ class ServicePacksController < ApplicationController
       ORDER BY consumed
       SQL
     where_clause = "WHERE t1.service_pack_id = ?"
-    where_clause << (start_day.nil? ? '' : ' AND t2.created_at BETWEEN ? AND ?')
+    where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
     query = body_query + where_clause + group_clause
     par = start_day.nil? ? [query, params[:service_pack_id]] : [query, params[:service_pack_id], start_day, end_day]
     sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
-    render json: ActiveRecord::Base.connection.execute(sql).to_json, status: 200
+    render json: ActiveRecord::Base.connection.execute(sql), status: 200
   end
 
   private
