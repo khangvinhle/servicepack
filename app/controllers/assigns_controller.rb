@@ -84,7 +84,7 @@ class AssignsController < ApplicationController
     end
     get_parent_id = <<-SQL
       SELECT id, name,
-      CASE parent_id WHEN NULL THEN id ELSE parent_id END AS pid
+      CASE WHEN parent_id IS NULL THEN id ELSE parent_id END AS pid
       FROM #{TimeEntryActivity.table_name}
       WHERE type = 'TimeEntryActivity'
       SQL
@@ -107,6 +107,6 @@ class AssignsController < ApplicationController
     query = body_query + where_clause + group_clause
     par = start_day.nil? ? [query, params[@project.id]] : [query, params[@project.id], start_day, end_day]
     sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
-    render json: ActiveRecord::Base.connection.execute(sql), status: 200
+    render json: ActiveRecord::Base.connection.exec_query(sql).to_hash, status: 200
   end
 end

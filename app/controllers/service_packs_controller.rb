@@ -82,9 +82,10 @@ class ServicePacksController < ApplicationController
       render json: { error: 'GET OUT!'}, status: 400 and return
     end
     # binding.pry
+    # never say something = NULL in SQL.
     get_parent_id = <<-SQL
       SELECT id, name,
-      CASE parent_id WHEN NULL THEN id ELSE parent_id END AS pid
+      CASE WHEN parent_id IS NULL THEN id ELSE parent_id END AS pid
       FROM #{TimeEntryActivity.table_name}
       WHERE type = 'TimeEntryActivity'
       SQL
@@ -103,9 +104,10 @@ class ServicePacksController < ApplicationController
     where_clause = "WHERE t1.service_pack_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
     query = body_query + where_clause + group_clause
+    binding.pry
     par = start_day.nil? ? [query, params[:service_pack_id]] : [query, params[:service_pack_id], start_day, end_day]
     sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
-    render json: ActiveRecord::Base.connection.execute(sql), status: 200
+    render json: ActiveRecord::Base.connection.exec_query(sql).to_hash, status: 200
   end
 
   private
