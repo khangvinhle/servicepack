@@ -17,20 +17,21 @@ module OpenProject::ServicePacks
 					# puts "Create Units"
 					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
 					return unless assignment.any?
-					sp_entry = ServicePackEntry.new
-					sp_entry.service_pack_id = assignment[0].service_pack_id
+					spid = assignment.first.service_pack_id
+					sp_entry = ServicePackEntry.new(service_pack_id: spid)
 					t = self.activity
 					act_id = t.parent_id || t.id
-					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, act_id).units_per_hour
+					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour
 					sp_entry.time_entry = self
 					sp_entry.units = rate * self.hours
 					# transaction?
 					sp_entry.save!
-					service_pack = ServicePack.find_by(id: sp_entry.service_pack_id)
+					service_pack = ServicePack.find_by(id: spid)
 					service_pack.update!(remained_units: service_pack.remained_units - sp_entry.units)
 				end
 
 				def update_consumed_units
+					binding.pry
 					return unless sp_entry = self.service_pack_entry
 					spid = sp_entry.service_pack_id
 					t = self.activity
@@ -38,10 +39,9 @@ module OpenProject::ServicePacks
 					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour
 					units_cost = rate * self.hours
 					extra_consumption = units_cost - sp_entry.units
-					# binding.pry
 					# keep callbacks for SP
 					sp_entry.update(units: units_cost) if extra_consumption != 0
-					service_pack = ServicePack.find_by(id: service_pack_id)
+					service_pack = ServicePack.find_by(id: spid)
 					sp_remained_units = service_pack.remained_units - extra_consumption
 					# binding.pry
 					service_pack.update(remained_units: sp_remained_units)
