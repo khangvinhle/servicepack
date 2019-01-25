@@ -88,7 +88,7 @@ class ServicePacksController < ApplicationController
   # Content: Array of object having [name, consumed]
   # Status: 200
   # * When raising error
-  # HTTP 404: SP not founds
+  # HTTP 404: SP not found
   # HTTP 400: Malformed request.
   # =======================================================
 

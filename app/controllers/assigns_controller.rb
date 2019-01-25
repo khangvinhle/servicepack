@@ -76,6 +76,30 @@ class AssignsController < ApplicationController
     end
   end
   
+  # =======================================================
+  # :Docs
+  # * Limit: Serving JSON only. Intended to restrict to :show.
+  # * Purpose:
+  # Return a table with consumed units by a Project grouped by service 
+  # pack, then activities and sorted from large to small.
+  # * Expected Inputs:
+  # [project_id]: Sharing the same route with the resourceful default.
+  # Put in the link. Mandatory.
+  # [start_period]: Beginning of the counting period. As a date. Optional.
+  # [end_period]: Ending of the counting period. As a date. Optional.
+  # start_period MUST NOT be later than end_period.
+  # Both or none of [start_period, end_period] can be present.
+  # * Expected Outputs
+  # Top class: None
+  # Content: Array of object having [name, act_name, consumed]
+  # - Name: Name of Service Pack
+  # - act_name: Name of activity
+  # Status: 200
+  # * When raising error
+  # HTTP 404: Project not found
+  # HTTP 400: Malformed request.
+  # =======================================================
+
   def statistics
     start_day = params[:start_period]&.to_date # ruby >= 2.3.0
     end_day = params[:end_period]&.to_date
