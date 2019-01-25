@@ -16,16 +16,14 @@ class AssignsController < ApplicationController
       render_404 and return
     end
     if @service_pack.available?
-      if assignable = @service_pack.assigns.where(assigned: true).empty?
         assign_to(@service_pack, @project)
         flash[:notice] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
         redirect_to action: "show" and return
-      else
-        # already assigned for another project
-        # constraint need
-        flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
-        render_400 and return
-      end
+    else
+      # already assigned for another project
+      # constraint need
+      flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
+      render_400 and return
     end
     flash.now[:alert] = 'Service Pack cannot be assigned'
     redirect_to action: "show"
@@ -62,12 +60,7 @@ class AssignsController < ApplicationController
     if @assignment.nil?
       if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project)
         @assignment = Assign.new
-        @assignables = []
-        ServicePack.availables.each do |assignable|
-          if assignable.assigns.where(assigned: true).empty?
-            @assignables << assignable
-          end
-        end
+        @assignables = ServicePack.availables
       end
       render 'not_assigned_yet'
     else
