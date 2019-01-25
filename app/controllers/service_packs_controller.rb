@@ -58,12 +58,49 @@ class ServicePacksController < ApplicationController
   end
 
   def edit
-    @sp = ServicePack.find(params[:id])
+    @sp = ServicePack.find_by(params[:id])
+    if @sp.nil?
+      flash[:error] = "Service Pack not found"
+      redirect_to action: :index and return
+    end
     @activity = @sp.time_entry_activities.build
   end
 
+  def update
+    @sp = ServicePack.find_by(params[:id])
+    if @sp.nil?
+      flash[:error] = "Service Pack not found"
+      redirect_to action: :index and return
+    end
+    mapping_rate_attribute = params['service_pack']['mapping_rates_attributes']
+    activity_id = []
+    mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value['activity_id'])}
+
+    if activity_id.uniq.length == activity_id.length
+      @sp.update(service_pack_params)
+      # render plain: 'not duplicated'
+      if @sp.save
+        flash[:notice] = 'Service Pack update successful.'
+        redirect_to action: :show, id: @sp.id and return
+      else
+        flash[:error] = 'Service Pack update failed.'
+        @activity = @sp.time_entry_activities.build
+        render 'edit'
+      end
+    else
+      # render plain: 'duplicated'
+      flash[:error] = 'Only one rate can be defined to one activity.'
+      @activity = @sp.time_entry_activities.build
+      renders 'edit'
+    end
+  end
+
   def destroy
-    @sp = ServicePack.find(params[:id])
+    @sp = ServicePack.find_by(params[:id])
+    if @sp.nil?
+      flash[:error] = "Service Pack not found"
+      redirect_to action: :index and return
+    end
     @sp.destroy
 
     redirect_to service_packs_path
