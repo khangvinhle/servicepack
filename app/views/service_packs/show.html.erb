@@ -1,3 +1,5 @@
+<%= javascript_include_tag 'service_packs.js' %>
+
 <style>
 .grid-container {
   display: grid;
@@ -44,6 +46,11 @@
       <% end %>
     </ul>
   </div>
+
+  <div class='stat'>
+    <button id='view_stat'>View Stat</button>
+  </div>
+
 </div>
 
 <%= render partial: "active_assignments" %>

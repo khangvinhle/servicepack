@@ -21,9 +21,10 @@ class ServicePacksController < ApplicationController
     # controller chooses not to get the thresholds.
     # assume the service pack exists.
     # TODO: make a separate action JSON only.
+    binding.pry
     respond_to do |format|
       format.json {
-        render plain: ServicePackPresenter.new(@service_pack).json_export(:rate)
+        render json: ServicePackPresenter.new(@service_pack).json_export(:rate), status: 200
       }
       format.html {
         @rates = @service_pack.mapping_rates
