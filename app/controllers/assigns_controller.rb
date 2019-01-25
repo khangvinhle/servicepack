@@ -87,9 +87,9 @@ class AssignsController < ApplicationController
   # Content: Array of object having [name, act_name, consumed]
   # - Name: Name of Service Pack
   # - act_name: Name of activity
+  # - consumed: How many units are consumed (in given period)
   # Status: 200
   # * When raising error
-  # HTTP 404: Project not found
   # HTTP 400: Malformed request.
   # =======================================================
 

@@ -45,15 +45,15 @@ class ServicePacksController < ApplicationController
         flash[:notice] = 'Service Pack creation successful.'
         redirect_to action: :show, id: @service_pack.id and return
       else
-        flash.now[:error] = 'Service Pack creation failed.'
+        flash[:error] = 'Service Pack creation failed.'
         @service_pack = ServicePack.new
-        render 'new'
+        redirect_to action: :new
       end
     else
       # render plain: 'duplicated'
-      flash.now[:error] = 'Only one rate can be defined to one activity.'
+      flash[:error] = 'Only one rate can be defined to one activity.'
       @service_pack = ServicePack.new
-      render 'new'
+      redirect_to action: :new
     end
   end
 
@@ -86,6 +86,8 @@ class ServicePacksController < ApplicationController
   # * Expected Outputs
   # Top class: None
   # Content: Array of object having [name, consumed]
+  # - consumed: How many units are consumed (in given period)
+  # - act_name: Name of activity 
   # Status: 200
   # * When raising error
   # HTTP 404: SP not found
@@ -111,7 +113,7 @@ class ServicePacksController < ApplicationController
       WHERE type = 'TimeEntryActivity'
       SQL
     body_query = <<-SQL
-      SELECT t3.pid AS act_id, t3.name AS name, sum(t1.units) AS consumed
+      SELECT t3.pid AS act_id, t3.name AS act_name, sum(t1.units) AS consumed
       FROM #{ServicePackEntry.table_name} t1
       INNER JOIN #{TimeEntry.table_name} t2
       ON t1.time_entry_id = t2.id
@@ -125,7 +127,7 @@ class ServicePacksController < ApplicationController
     where_clause = "WHERE t1.service_pack_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
     query = body_query + where_clause + group_clause
-    binding.pry
+    # binding.pry
     par = start_day.nil? ? [query, params[:service_pack_id]] : [query, params[:service_pack_id], start_day, end_day]
     sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
     render json: ActiveRecord::Base.connection.exec_query(sql).to_hash, status: 200
