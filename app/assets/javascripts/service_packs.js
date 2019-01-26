@@ -1,9 +1,7 @@
-// Place all the behaviors and hooks related to the matching controller here.
-// All this logic will automatically be available in application.js.
-
 document.addEventListener("DOMContentLoaded", function(event) { 
-	document.getElementById("view_stat").addEventListener("click", function(){
+	document.getElementById("view-stat").addEventListener("click", function(){
   		var xhr = new XMLHttpRequest();
+  		// replace the link with statistics link
   		xhr.open('GET', 'http://localhost:3000/service_packs/1.json');
   		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.onload = function() {
@@ -14,5 +12,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		        alert('Request failed.  Returned status of ' + xhr.status);
 		    }
 		};
+		xhr.send();
 	});
 })

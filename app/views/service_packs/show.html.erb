@@ -1,4 +1,4 @@
-<%= javascript_include_tag 'service_packs.js' %>
+<%= javascript_include_tag 'service_packs.js', plugin: :openproject_service_packs %>
 
 <style>
 .grid-container {
@@ -48,12 +48,12 @@
   </div>
 
   <div class='stat'>
-    <button id='view_stat'>View Stat</button>
+    <button id='view-stat'>View Stat</button>
   </div>
 
 </div>
 
-<%= render partial: "active_assignments" %>
+<%= render partial: 'active_assignments' %>
 
 <%= link_to 'Edit Service Pack', edit_service_pack_path(@service_pack), :class => 'button -alt-highlight' %> 
 <%= link_to 'Back to Service Pack home page', service_packs_path, :class => 'button' %>
