@@ -143,8 +143,11 @@ class ServicePacksController < ApplicationController
     if !ServicePack.find_by(id: params[:service_pack_id])
       render json: { error: 'NOT FOUND'}, status: 404 and return
     end
-    # binding.pry
-    # never say something = NULL in SQL.
+
+    # Notice: Change max(t3.name) to ANY_VALUE(t3.name) on production builds.
+    # MySQL specific >= 5.7.5
+    # https://dev.mysql.com/doc/refman/5.7/en/group-by-handling.html
+
     get_parent_id = <<-SQL
       SELECT id, name,
       CASE WHEN parent_id IS NULL THEN id ELSE parent_id END AS pid
@@ -152,16 +155,16 @@ class ServicePacksController < ApplicationController
       WHERE type = 'TimeEntryActivity'
       SQL
     body_query = <<-SQL
-      SELECT t3.pid AS act_id, t3.name AS act_name, sum(t1.units) AS consumed
+      SELECT t3.pid AS act_id, max(t3.name) AS act_name, sum(t1.units) AS consumed
       FROM #{ServicePackEntry.table_name} t1
       INNER JOIN #{TimeEntry.table_name} t2
       ON t1.time_entry_id = t2.id
       INNER JOIN (#{get_parent_id}) t3
-      ON t2.activity_id = t3.pid
+      ON t2.activity_id = t3.id
       SQL
     group_clause = <<-SQL
-      GROUP BY t3.pid, t3.name
-      ORDER BY consumed
+      GROUP BY t3.pid
+      ORDER BY consumed DESC
       SQL
     where_clause = "WHERE t1.service_pack_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')

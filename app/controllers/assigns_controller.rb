@@ -99,6 +99,11 @@ class AssignsController < ApplicationController
     if start_day.nil? ^ end_day.nil?
       render json: { error: 'GET OUT!'}, status: 400 and return
     end
+
+    # Notice: Change max(t4.name) to ANY_VALUE(t4.name) on production builds.
+    # MySQL specific >= 5.7.5
+    # https://dev.mysql.com/doc/refman/5.7/en/group-by-handling.html
+
     get_parent_id = <<-SQL
       SELECT id, name,
       CASE WHEN parent_id IS NULL THEN id ELSE parent_id END AS pid
@@ -106,18 +111,19 @@ class AssignsController < ApplicationController
       WHERE type = 'TimeEntryActivity'
       SQL
     body_query = <<-SQL
-      SELECT t1.service_pack_id AS spid, t4.name, t3.pid AS pid, t3.name AS act_name, sum(t1.units) AS consumed
+      SELECT t1.service_pack_id AS spid, max(t4.name) AS name, t3.pid AS pid,
+      max(t3.name) AS act_name, sum(t1.units) AS consumed
       FROM #{ServicePackEntry.table_name} t1
       INNER JOIN #{TimeEntry.table_name} t2
       ON t1.time_entry_id = t2.id
       INNER JOIN (#{get_parent_id}) t3
-      ON t2.activity_id = t3.pid
+      ON t2.activity_id = t3.id
       INNER JOIN #{ServicePack.table_name} t4
       ON t1.service_pack_id = t4.id
       SQL
     group_clause = <<-SQL
-      GROUP BY t1.service_pack_id, t3.pid, t3.name, t4.name
-      ORDER BY consumed
+      GROUP BY t1.service_pack_id, t3.pid
+      ORDER BY consumed DESC
       SQL
     where_clause = "WHERE t2.project_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
