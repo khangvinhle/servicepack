@@ -18,39 +18,38 @@ module OpenProject::ServicePacks
 					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
 					return unless assignment.any?
 					spid = assignment.first.service_pack_id
-					sp_entry = ServicePackEntry.new(service_pack_id: spid)
+					sp_entry = ServicePackEntry.new(service_pack_id: spid, time_entry_id: self.id)
 					t = self.activity
 					act_id = t.parent_id || t.id
-					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour
-					sp_entry.time_entry = self
-					sp_entry.units = rate * self.hours
-					# transaction?
-					sp_entry.save!
-					service_pack = ServicePack.find_by(id: spid)
-					service_pack.update!(remained_units: service_pack.remained_units - sp_entry.units)
+					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour	
+					return if rate.nil?
+					units_cost = rate * self.hours
+					sp_entry.units = units_cost
+					sp_of_project = ServicePack.find_by(id: spid)
+					sp_of_project.service_pack_entries << sp_entry
+					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost) 
 				end
 
 				def update_consumed_units
-					binding.pry
-					return unless sp_entry = self.service_pack_entry
-					spid = sp_entry.service_pack_id
+					sp_entry = self.service_pack_entry
+					return if sp_entry.nil?
+					service_pack_id = sp_entry.service_pack_id
 					t = self.activity
-					act_id = t.parent_id || t.id
-					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour
+					activity_id = t.parent_id || t.id
+					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", service_pack_id, activity_id).units_per_hour
 					units_cost = rate * self.hours
 					extra_consumption = units_cost - sp_entry.units
-					# keep callbacks for SP
+					# Keep callbacks for SP. Entries have no callback.
 					sp_entry.update(units: units_cost) if extra_consumption != 0
-					service_pack = ServicePack.find_by(id: spid)
+					service_pack = ServicePack.find_by(id: service_pack_id)
 					sp_remained_units = service_pack.remained_units - extra_consumption
-					# binding.pry
 					service_pack.update(remained_units: sp_remained_units)
 				end
 
 				def get_consumed_units_back				
-					return unless sp_entry = self.service_pack_entry
-					spid = sp_entry.service_pack_id
-					service_pack = ServicePack.find_by(id: spid)
+					sp_entry = self.service_pack_entry
+					return if sp_entry.nil?
+					service_pack = sp_entry.service_pack
 					u_remained_units = service_pack.remained_units + sp_entry.units
 					service_pack.update(remained_units: u_remained_units)
 				end			
