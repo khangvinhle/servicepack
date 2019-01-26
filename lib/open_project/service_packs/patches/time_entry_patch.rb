@@ -8,8 +8,8 @@ module OpenProject::ServicePacks
 			# pseudocode:
 			# Find an assignment in effect, if not leave in peace.
 			# Then find a rate associated with activity_id and sp in effect.
-			# Find the diff
-			# then update Service Pack rem with the diff.
+			# Create an SP_entry with the log entry cost.
+			# Subtract the remaining counter of SP to the cost.
 
 			module InstanceMethods			
 				def log_consumed_units
@@ -18,17 +18,24 @@ module OpenProject::ServicePacks
 					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
 					return unless assignment.any?
 					spid = assignment.first.service_pack_id
-					sp_entry = ServicePackEntry.new(service_pack_id: spid, time_entry_id: self.id)
 					t = self.activity
 					act_id = t.parent_id || t.id
 					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour	
 					return if rate.nil?
 					units_cost = rate * self.hours
+					sp_entry = ServicePackEntry.new
 					sp_entry.units = units_cost
+					sp_entry.time_entry = self
 					sp_of_project = ServicePack.find_by(id: spid)
 					sp_of_project.service_pack_entries << sp_entry
 					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost) 
 				end
+
+			# First examine the entry
+			# then read the service pack related
+			# then recalculate the cost in the entry
+			# Update the entry
+			# Take the delta and subtract to the remained count of SP.
 
 				def update_consumed_units
 					sp_entry = self.service_pack_entry
