@@ -103,7 +103,11 @@ class ServicePacksController < ApplicationController
       flash[:error] = "Service Pack not found"
       redirect_to action: :index and return
     end
-    @sp.destroy
+    if @sp.assigned?
+      flash[:error] = "Please unassign this SP from all projects before proceeding!"
+      redirect_to action: :show, id: @sp.id and return
+    end
+    @sp.destroy!
 
     redirect_to service_packs_path
   end
