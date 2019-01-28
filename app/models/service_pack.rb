@@ -24,6 +24,7 @@ class ServicePack < ApplicationRecord
 
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
+  validate :must_not_expire_in_the_past
 
   scope :assignments, ->{joins(:assigns).where(assigned: true)}
   scope :availables, ->{where("remained_units > 0 and expired_date >= ?", Date.today)}
@@ -70,5 +71,9 @@ class ServicePack < ApplicationRecord
 
     def end_after_start
       @errors.add(:expired_date, 'must be after start date') if expired_date < started_date
+    end
+
+    def must_not_expire_in_the_past
+      @errors.add(:expired_date, 'must not be in the past') if expired_date < Date.today
     end
 end
