@@ -17,9 +17,9 @@ module OpenProject::ServicePacks
         # permission :create_ServicePacks, {ServicePacks: [:new, :create]}
         # permission :update_ServicePacks, {ServicePacks: [:edit]}
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
-        permission :assign_ServicePacks, {assigns: [:assign, :show]}, require: :member
-        permission :unassign_ServicePacks, {assigns: [:unassign, :show]}, require: :member
-        permission :see_assigned_ServicePacks, {assigns: [:show]}, require: :member
+        permission :assign_service_packs, {assigns: [:assign, :show]}, require: :member
+        permission :unassign_service_packs, {assigns: [:unassign, :show]}, require: :member
+        permission :see_assigned_service_packs, {assigns: [:show]}, require: :member
       end
 
       menu :admin_menu,

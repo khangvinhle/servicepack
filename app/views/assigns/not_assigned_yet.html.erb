@@ -1,4 +1,4 @@
-<%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project) %>
+<%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @can_assign ||= User.current.allowed_to?(:assign_service_packs, @project) %>
 
 <div id="sp-assign">
     <h2>No Service Pack is assigned to this project.</h2>
