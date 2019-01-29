@@ -11,8 +11,8 @@
 
 <div id="sp-display">
   <h2>Service Pack <%= @service_pack.name %> already assigned to <%= @project.name %></h2><hr/>
-  <strong>Activation Date</strong>: <%= @service_pack.started_date %>
-  <strong>Expiration Date</strong>: <%= @service_pack.expired_date %>
+  <strong>Assignment Date</strong>: <%= @assignment.assign_date %>
+  <strong>Valid Until</strong>: <%= @assignment.unassign_date %>
   <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
 </div>
 <br/>
