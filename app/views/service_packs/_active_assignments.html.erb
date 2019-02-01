@@ -3,7 +3,7 @@
 	<p>
 		This Service Pack has been assigned for project(s) named:
 		<ul>
-			<% @assignments.each do |assignment| %>
+			<% @assignments.find_each do |assignment| %>
 				<li><%= assignment.project.name %></li>
 			<% end %>
 		</ul>
