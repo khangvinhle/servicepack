@@ -1,4 +1,7 @@
 class ServicePacksController < ApplicationController
+
+  include CsvExtractionHelper
+
   # only allow admin
   before_action :require_admin
 
@@ -21,7 +24,7 @@ class ServicePacksController < ApplicationController
     # controller chooses not to get the thresholds.
     # assume the service pack exists.
     # TODO: make a separate action JSON only.
-    # binding.pry
+
     respond_to do |format|
       format.json {
         # the function already converted this to json
@@ -30,6 +33,34 @@ class ServicePacksController < ApplicationController
       format.html {
         @rates = @service_pack.mapping_rates
         @assignments = @service_pack.assigns.where(assigned: true).all
+      }
+      format.csv {
+        # projection order is significant
+        # concat is MySQL specific!
+        # Work packages can be deleted.
+        sql = <<-SQL
+            SELECT t2.spent_on, concat(t4.firstname, ' ', t4.lastname) AS user_name, t3.name AS activity_name,
+            t6.name AS project_name, t5.id AS work_package_id, t7.name AS type_name, t5.subject AS subject,
+            t2.comments AS comment, t1.units
+            FROM service_pack_entries t1
+            INNER JOIN #{TimeEntry.table_name} t2
+            ON t1.time_entry_id = t2.id
+            INNER JOIN #{TimeEntryActivity.table_name} t3
+            ON t2.activity_id = t3.id
+            INNER JOIN users t4
+            ON t2.user_id = t4.id
+            INNER JOIN projects t6
+            ON t2.project_id = t6.id
+            LEFT JOIN #{WorkPackage.table_name} t5
+            ON t2.work_package_id = t5.id
+            INNER JOIN types t7
+            ON t5.type_id = t7.id
+            WHERE service_pack_id = #{@service_pack.id}
+            ORDER BY spent_on DESC
+            SQL
+        entries = ActiveRecord::Base.connection.exec_query(sql).to_hash
+        # binding.pry
+        render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.id}.csv"
       }
     end
   end
@@ -142,7 +173,7 @@ class ServicePacksController < ApplicationController
       render json: { error: 'GET OUT!'}, status: 400 and return
     end
 
-    if !ServicePack.find_by(id: params[:service_pack_id])
+    if !(ServicePack.find_by(id: params[:service_pack_id]))
       render json: { error: 'NOT FOUND'}, status: 404 and return
     end
 

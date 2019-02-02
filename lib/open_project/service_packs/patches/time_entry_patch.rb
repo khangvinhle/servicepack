@@ -17,7 +17,7 @@ module OpenProject::ServicePacks
 					# puts "Create Units"
 					assignment = Assign.where("project_id = ? and assigned = ?", project.id, true)
 					return unless assignment.any?
-					spid = assignment.first.service_pack_id
+					spid = assignment[0].service_pack_id
 					t = self.activity
 					act_id = t.parent_id || t.id
 					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", spid, act_id).units_per_hour	

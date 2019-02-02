@@ -53,3 +53,7 @@ a.blocked {
   position: relative;
   bottom: 8px;
 }
+
+hr {
+  margin-top: 12px;
+}
