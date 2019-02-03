@@ -1,4 +1,54 @@
-/*
-  Place all the styles related to the matching controller here.
-  They will automatically be included in application.css.
-*/
+label, input {
+	margin-bottom: 0 !important;
+	max-width: 500px !important;
+}
+input.rates {
+	max-width: 465px !important;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+/*  background-color: #2196F3;*/
+  padding: 10px;
+}
+
+.grid-container > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid black;
+  text-align: left;
+  font-size: 20px;
+}
+
+.destroy {
+  background-color: #fc0000 !important;
+  color: #ffffff !important;
+}
+
+a.blocked {
+  opacity: 0.3;
+  margin-right: 10px;
+  cursor: default !important;
+  margin-left: -5px;
+}
+
+#pan {
+  font-size: 0.75em;
+  text-align: center;
+  position: relative;
+}
