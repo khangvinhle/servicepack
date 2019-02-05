@@ -48,13 +48,11 @@ class ServicePacksController < ApplicationController
         redirect_to action: :show, id: @service_pack.id and return
       else
         flash[:error] = 'Service Pack creation failed.'
-        @service_pack = ServicePack.new
         redirect_to action: :new
       end
     else
       # render plain: 'duplicated'
       flash[:error] = 'Only one rate can be defined to one activity.'
-      @service_pack = ServicePack.new
       redirect_to action: :new
     end
   end
@@ -85,13 +83,13 @@ class ServicePacksController < ApplicationController
         flash[:notice] = 'Service Pack update successful.'
         redirect_to action: :show, id: @sp.id and return
       else
-        flash[:error] = 'Service Pack update failed.'
+        flash.now[:error] = 'Service Pack update failed.'
         @activity = @sp.time_entry_activities.build
         render 'edit'
       end
     else
       # render plain: 'duplicated'
-      flash[:error] = 'Only one rate can be defined to one activity.'
+      flash.now[:error] = 'Only one rate can be defined to one activity.'
       @activity = @sp.time_entry_activities.build
       renders 'edit'
     end
