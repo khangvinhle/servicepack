@@ -3,7 +3,7 @@
 <div id="sp-assign">
     <h2>No Service Pack is assigned to this project.</h2>
     <br/>
-    <% if @can_assign && @assignables %>
+    <% if @can_assign && @assignables.any? %>
       <%= form_with model: @assignment, url: assigns_assign_path(@project), local: true, method: :post do |f| %>
         Choose a Service Pack to apply:
         <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>
