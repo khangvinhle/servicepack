@@ -1,16 +1,8 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
+<%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
 
 <h2> <%= @sp.name %> </h2>
 
-<%= form_for @sp, url: service_packs_path, local: true do |form| %>
+<%= form_for @sp, local: true do |form| %>
 
   <!--  print errors if any-->
   <% if @sp.errors.any? %>
@@ -28,12 +20,12 @@
 
   <!--  edit form-->
   <p>
-    <%= form.label :threshold1 %><br>
-    <%= form.number_field :threshold1, placeholder: "threshold1" %>
+    <%= form.label :threshold1 %>
+    <%= form.number_field :threshold1, placeholder: 'threshold1' %>
   </p>
   <p>
-    <%= form.label :threshold2 %><br>
-    <%= form.number_field :threshold2 %>
+    <%= form.label :threshold2 %>
+    <%= form.number_field :threshold2, placeholder: 'threshold2' %>
   </p>
 
   <h2>Mapping rates:</h2>
@@ -41,12 +33,10 @@
   <ul>
     <%= form.fields_for :mapping_rates do |rates_form| %>
       <li>
-        <%= rates_form.label "#{rates_form.object.activity.name}" %>  
-        <%= rates_form.label :units_per_hour %>
-        <%= rates_form.number_field :units_per_hour %>
+        <%= rates_form.label "#{rates_form.object.activity.name}" %>
+        <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour', class: 'rates' %>
         <%= rates_form.hidden_field :activity_id %>
       </li>
-      <hr>
     <% end %>
   </ul>
 

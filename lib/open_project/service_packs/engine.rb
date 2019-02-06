@@ -4,7 +4,7 @@ require 'open_project/plugins'
 
 module OpenProject::ServicePacks
   class Engine < ::Rails::Engine
-    engine_name :openproject_service_packs
+    engine_name 'openproject-service_packs'
 
     include OpenProject::Plugins::ActsAsOpEngine
 
@@ -17,19 +17,10 @@ module OpenProject::ServicePacks
         # permission :create_ServicePacks, {ServicePacks: [:new, :create]}
         # permission :update_ServicePacks, {ServicePacks: [:edit]}
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
-        permission :assign_Service_Packs, { assigns: [:assign, :show] }
-        permission :unassign_Service_Packs, { assigns: [:unassign, :show] }
+        permission :assign_service_packs, {assigns: [:assign, :show]}, require: :member
+        permission :unassign_service_packs, {assigns: [:unassign, :show]}, require: :member
+        permission :see_assigned_service_packs, {assigns: [:show]}, require: :member
       end
-
-      menu :project_menu,
-           :assigns,
-           { controller: '/assigns', action: 'show' },
-           after: :overview,
-           param: :project_id,
-           caption: 'Service packs assignment',
-           html: { id: 'assign-menu-item' },
-           icon: 'icon2 icon-bug',
-           if: ->(project) {true} # todo: must turn on SP module first
 
       menu :admin_menu,
            :service_packs,
@@ -39,12 +30,21 @@ module OpenProject::ServicePacks
            caption: 'Service Packs',
            icon: 'icon2 icon-bug',
            html: {id: 'service_packs-menu-item'}
-      # if: ->(project) {true}
-    
-    end
-    
+           # if: ->(project) {true}
 
-    patches %i[Project TimeEntryActivity TimeEntry]
-  
-  end
+      menu :project_menu,
+           :assigns,
+           {controller: '/assigns', action: 'show'},
+           after: :overview,
+           param: :project_id,
+           caption: 'Service Pack Assignment',
+           icon: 'icon2 icon-bug',
+           html: {id: 'assign-menu-item'}
+
+    end
+    patches %i[Project TimeEntryActivity TimeEntry Enumeration]
+    assets %w(assigns.js service_packs.js assigns.css service_packs.css)
+    end
 end
+# preserve lost path: no, you can't add a new tab into project settings from the plugin extension.
+# add_tab_entry :project_settings, name: "service_packs", partial: "assigns/show", label: :caption_service_pack

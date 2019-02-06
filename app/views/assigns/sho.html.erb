@@ -1,0 +1,33 @@
+<%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @can_assign ||= User.current.allowed_to?(:assign_ServicePacks, @project) %>
+<% if @service_pack %>
+  <div id="sp-display">
+    <h3>Service Pack <%= content_tag(:strong, @service_pack.name)%> already assigned to <%= content_tag(:strong, @project.name)%></h3>
+      <strong>Activation Date</strong>: <%= @service_pack.started_date %>
+      <strong>Expiration Date</strong>: <%= @service_pack.expired_date %>
+      <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
+  </div>
+  <br/>
+  <% if @can_unassign ||= User.current.allowed_to?(:unassign_ServicePacks, @project) %>
+    <%= link_to 'Unassign', assigns_unassign_path(@project), method: :post, class: "button" %>
+  <% end %>
+<% else %>
+  <div id="sp-assign">
+    <h3>No Service Pack is assigned to this project.</h3>
+    <% if @can_assign && @assignables %>
+      <%= form_with model: @assignment, url: assigns_assign_path(@project), local: true, method: :post do |f| %>
+        Choose a Service Pack to apply:
+        <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>
+          <option selected>--Pick one Service Pack--</option> 
+          <% @assignables.each do |assignable| %>
+            <%= content_tag(:option, assignable.name, value: assignable.id, data: {start: assignable.started_date.to_s, end: assignable.expired_date.to_s, cap: assignable.total_units, rem: assignable.remained_units}) %>
+          <% end %>
+        <% end %>
+        <br/>
+        <%= f.submit 'Assign a Service Pack', id: "sp-assign-button" %>
+      <% end %>
+    <% else %>
+      <h3>No Service Pack can be assigned.</h3>
+    <% end %>
+  </div>
+  <div id="sp-content"><!-- todo: ajax --></div>
+<% end %>

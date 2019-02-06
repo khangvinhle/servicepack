@@ -1,17 +1,16 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
-  has_many :assigns
+  after_save :revoke_all_assignments, if: :expired? # should be time-based only.
+  has_many :assigns, dependent: :destroy
   has_many :projects, through: :assigns
-
-  has_many :mapping_rates, dependent: :destroy, inverse_of: :service_pack
+  has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
+  has_many :service_pack_entries, inverse_of: :service_pack, dependent: :destroy
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
   # example: User has many :pets, Dog is a :pets and has many :breeds. Breeds have ...
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
-
-  scope :assigned, -> {Assign.active.where("id = service_pack_id").exists}
 
   accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
 
@@ -25,10 +24,18 @@ class ServicePack < ApplicationRecord
 
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
+  validate :must_not_expire_in_the_past
+
+  scope :assignments, ->{joins(:assigns).where(assigned: true)}
+  scope :availables, ->{where("remained_units > 0 and expired_date >= ?", Date.today)}
 
 
   def default_remained_units
     self.remained_units = self.total_units
+  end
+
+  def revoke_all_assignments 
+    assignments.update_all(assigned: false, unassign_date: Date.today)
   end
 
   def expired?
@@ -39,7 +46,7 @@ class ServicePack < ApplicationRecord
     true if remained_units <= 0
   end
 
-  def unavailable? # available SP might not be assignable - TODO: solved by another module
+  def unavailable? # available SP might not be assignable
     used_up? && expired?
   end
 
@@ -54,13 +61,26 @@ class ServicePack < ApplicationRecord
     end
   end
 
+  def assigned?
+    assigns.where(assigned: true).exists?
+  end
+
+  def assignments
+    assigns.where(assigned: true)
+  end
+
+
   private
 
-  def threshold2_is_greater_than_threshold1
-    @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
-  end
+	def threshold2_is_greater_than_threshold1
+		@errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
+	end
 
-  def end_after_start
-    @errors.add(:expired_date, 'must be after start date') if expired_date < started_date
-  end
+	def end_after_start
+		@errors.add(:expired_date, 'must be after start date') if expired_date < started_date
+	end
+
+	def must_not_expire_in_the_past
+		@errors.add(:expired_date, 'must not be in the past') if expired_date < Date.today
+	end
 end
