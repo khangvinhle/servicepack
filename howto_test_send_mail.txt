@@ -6,8 +6,7 @@ mail and smtp port 1025 to send.
 Settings: (OP/config/environment/#{environment}.rb)
 
 config.action_mailer.delivery_method = :smtp
-config.action_mailer.smtp_settings = { address: ‘localhost‘, port: 1025
-}
+config.action_mailer.smtp_settings = { address: ‘localhost‘, port: 1025 }
 
 DO NOT INCLUDE mailcatcher IN Gemfile. This is a standalone app.
 
@@ -27,7 +26,7 @@ config.action_mailer.smtp_settings = {
   domain:               'smtp.gmail.com',
   user_name:            '<gmail_address>’,
   password:             '<password>',
-  authentication:       'plain',
+  authentication:       'login',
   enable_starttls_auto: true,
   ssl:                  true
 }
