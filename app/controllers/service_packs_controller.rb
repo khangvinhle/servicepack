@@ -30,6 +30,9 @@ class ServicePacksController < ApplicationController
       format.html {
         @rates = @service_pack.mapping_rates
         @assignments = @service_pack.assigns.where(assigned: true).all
+        # exs = ExpiredSpMailer.new # never instantiate
+        # binding.pry
+        ExpiredSpMailer.expired_email(User.last, @service_pack).deliver_now
       }
     end
   end

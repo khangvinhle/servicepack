@@ -1,14 +1,2 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Service pack expired</title>
-</head>
-<body>
-<h1>Hi
-  <%= @user.firstname @user.lastname %> </h1>
+<h1>Hi <%= @user.firstname %> <%= @user.lastname %> </h1>
 <p>The service pack <%= @sp.name %> has expired on <%= @sp.expired_date %> </p>
-</body>
-</html>
