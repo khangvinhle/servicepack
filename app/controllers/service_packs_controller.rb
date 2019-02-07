@@ -21,7 +21,6 @@ class ServicePacksController < ApplicationController
     # controller chooses not to get the thresholds.
     # assume the service pack exists.
     # TODO: make a separate action JSON only.
-    # binding.pry
     respond_to do |format|
       format.json {
         # the function already converted this to json
@@ -32,7 +31,7 @@ class ServicePacksController < ApplicationController
         @assignments = @service_pack.assigns.where(assigned: true).all
         # exs = ExpiredSpMailer.new # never instantiate
         # binding.pry
-        ExpiredSpMailer.expired_email(User.last, @service_pack).deliver_now
+        # ExpiredSpMailer.expired_email(User.last, @service_pack).deliver_now
       }
     end
   end

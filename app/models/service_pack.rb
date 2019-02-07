@@ -54,12 +54,26 @@ class ServicePack < ApplicationRecord
     !unavailable?
   end
 
+  # FOR TESTING ONLY
   def expired_notification # send to the first user in the first record in the DB
     if expired?
       user = User.first
       ExpiredSpMailer.expired_email(user, self).deliver_later
     end
   end
+
+  def cron_send_specific
+    # modify the User param
+    ExpiredSpMailer.expired_email(User.last, self).deliver_later
+  end
+
+  def self.cron_send_default
+    # modify the User param
+    ServicePack.find_each do |sp|
+      ExpiredSpMailer.expired_email(User.last, sp).deliver_later
+    end
+  end
+  # END TESTING ONLY
 
   def assigned?
     assigns.where(assigned: true).exists?

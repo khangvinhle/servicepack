@@ -18,6 +18,10 @@
 # end
 
 # Learn more: http://github.com/javan/whenever
-every 1.minute do
-  runner 'ServicePack.expired_notification'
+
+
+job_type :runner,  "cd :openproject_path && export OPENPROJECT_ROOT=:openproject_path && bundle exec rails runner -e :environment ':task'"
+
+every 5.minutes do
+  runner 'ServicePack.cron_send_default', environment: 'development', openproject_path: '~/openproject'
 end
