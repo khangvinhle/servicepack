@@ -28,6 +28,7 @@ class ServicePack < ApplicationRecord
 
   scope :assignments, ->{joins(:assigns).where(assigned: true)}
   scope :availables, ->{where("remained_units > 0 and expired_date >= ?", Date.today)}
+  # scope :gone_low, ->{where('remained_units <= total_units / 100.0 * threshold1')}
 
 
   def default_remained_units
@@ -74,6 +75,13 @@ class ServicePack < ApplicationRecord
     end
   end
   # END TESTING ONLY
+
+  def self.gone_too_low_notification
+    ServicePack.gone_low.includes(:assigns).where(assigns: {active: true}) do |assignment|
+
+    end
+    all_active_assignment = ServicePack.includes(:assigns).references(:assigns).where(assigns: {active: true})
+  end
 
   def assigned?
     assigns.where(assigned: true).exists?
