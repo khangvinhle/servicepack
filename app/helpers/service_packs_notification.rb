@@ -7,8 +7,9 @@ module ServicePacksNotification
 		assignments = assignments.eager_load(:project)
 		# puts assignments.to_sql
 		return if assignments.empty?
-		assignments.find_each do |assignment|
-			
+		triplet = []
+		assignments.each do |assignment|
+			# Users.allowed
 		end
 	end
 end

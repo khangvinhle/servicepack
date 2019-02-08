@@ -43,10 +43,12 @@ class AssignsController < ApplicationController
 
   def show
     # This will lock even admins out if the module is not activated.
-    return head 403 unless
+    return head 403 unless User.current.allowed_to?({controller: :assigns, action: :show}, @project)
+=begin
     User.current.allowed_to?(:see_assigned_service_packs, @project) ||
     (@can_assign = User.current.allowed_to?(:assign_service_packs, @project)) ||
     (@can_unassign = User.current.allowed_to?(:unassign_service_packs, @project))
+=end
 
     # binding.pry
     if @assignment = @project.assigns.find_by(assigned: true)
@@ -95,10 +97,7 @@ class AssignsController < ApplicationController
   # =======================================================
 
   def statistics
-    return head 403 unless
-    User.current.allowed_to?(:see_assigned_service_packs, @project) ||
-    (@can_assign = User.current.allowed_to?(:assign_service_packs, @project)) ||
-    (@can_unassign = User.current.allowed_to?(:unassign_service_packs, @project))
+    return head 403 unless User.current.allowed_to?({controller: :assigns, action: :show}, @project)
     start_day = params[:start_period]&.to_date # ruby >= 2.3.0
     end_day = params[:end_period]&.to_date
     if start_day.nil? ^ end_day.nil?
