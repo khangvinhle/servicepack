@@ -1,5 +1,5 @@
 class ServicePacksMailer < ApplicationMailer
-
+  default from: 'op@example.com'
   def expired_email(user, service_pack)
     @user = user
     @sp = service_pack

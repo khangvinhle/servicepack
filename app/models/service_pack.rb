@@ -2,7 +2,7 @@ class ServicePack < ApplicationRecord
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   has_many :assigns, dependent: :destroy
-  has_many :active_assignments, ->{where("assigned = ? and unassign_date > ?", true, Date.today)}, class_name: 'Assign'
+  has_many :active_assignments, ->{where("assigned = ? and unassign_date >= ?", true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
