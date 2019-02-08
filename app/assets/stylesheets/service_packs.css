@@ -47,8 +47,9 @@ a.blocked {
   margin-left: -5px;
 }
 
-#pan {
+#warnbox {
   font-size: 0.75em;
   text-align: center;
   position: relative;
+  bottom: 8px;
 }
