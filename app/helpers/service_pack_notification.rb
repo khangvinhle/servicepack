@@ -5,7 +5,7 @@ module ServicePacksNotification
 		assignments = Assign.active.eager_load(:service_pack)
 		assignments = assignments.where("service_packs.remained_units <= service_packs.total_units/100.0*threshold1")
 		assignments = assignments.eager_load(:project)
-		# puts assignments.to_sql
+		puts assignments.to_sql
 		return if assignments.empty?
 		assignments.find_each do |assignment|
 			
