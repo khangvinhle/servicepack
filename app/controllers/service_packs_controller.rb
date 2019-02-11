@@ -151,8 +151,7 @@ class ServicePacksController < ApplicationController
     # https://dev.mysql.com/doc/refman/5.7/en/group-by-handling.html
 
     get_parent_id = <<-SQL
-      SELECT id, name,
-      CASE WHEN parent_id IS NULL THEN id ELSE parent_id END AS pid
+      SELECT id, name, COALESCE(parent_id, id) AS pid
       FROM #{TimeEntryActivity.table_name}
       WHERE type = 'TimeEntryActivity'
       SQL
