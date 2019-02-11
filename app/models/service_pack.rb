@@ -8,6 +8,7 @@ class ServicePack < ApplicationRecord
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
   has_many :service_pack_entries, inverse_of: :service_pack, dependent: :destroy
+  
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
   # example: User has many :pets, Dog is a :pets and has many :breeds. Breeds have ...
@@ -77,13 +78,6 @@ class ServicePack < ApplicationRecord
     end
   end
   # END TESTING ONLY
-
-  def self.gone_too_low_notification
-    ServicePack.gone_low.includes(:assigns).where(assigns: {active: true}) do |assignment|
-
-    end
-    all_active_assignment = ServicePack.includes(:assigns).references(:assigns).where(assigns: {active: true})
-  end
 
   def assigned?
     assigns.where(assigned: true).exists?
