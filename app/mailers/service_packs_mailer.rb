@@ -13,6 +13,7 @@ class ServicePacksMailer < ApplicationMailer
   def notify_under_threshold1(user, service_pack)
   	@user = user
   	@sp = service_pack
+    # binding.pry
     mail to: @user.mail, subject: "The service pack #{@sp.name} is running out" do |format|
     	format.text
     	format.html
