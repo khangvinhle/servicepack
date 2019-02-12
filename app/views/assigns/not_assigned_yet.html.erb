@@ -1,0 +1,22 @@
+<%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs if @can_assign ||= User.current.allowed_to?(:assign_service_packs, @project) %>
+
+<div id="sp-assign">
+    <h2>No Service Pack is assigned to this project.</h2>
+    <br/>
+    <% if @can_assign && @assignables.any? %>
+      <%= form_with model: @assignment, url: assigns_assign_path(@project), local: true, method: :post do |f| %>
+        Choose a Service Pack to apply:
+        <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>
+          <option selected>--Pick one Service Pack--</option> 
+          <% @assignables.find_each do |assignable| %>
+            <%= content_tag(:option, assignable.name, value: assignable.id, data: {start: assignable.started_date.to_s, end: assignable.expired_date.to_s, cap: assignable.total_units, rem: assignable.remained_units}) %>
+          <% end %>
+        <% end %>
+        <br/>
+        <%= f.submit 'Assign a Service Pack', class: "button -alt-highlight" %>
+      <% end %>
+    <% else %>
+      <h3>No Service Pack can be assigned.</h3>
+    <% end %>
+  </div>
+  <div id="sp-content"><!-- todo: ajax --></div>

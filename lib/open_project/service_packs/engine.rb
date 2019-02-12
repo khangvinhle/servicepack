@@ -17,9 +17,9 @@ module OpenProject::ServicePacks
         # permission :create_ServicePacks, {ServicePacks: [:new, :create]}
         # permission :update_ServicePacks, {ServicePacks: [:edit]}
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
-        permission :assign_ServicePacks, {assigns: [:assign, :show]}, require: :member
-        permission :unassign_ServicePacks, {assigns: [:unassign, :show]}, require: :member
-        permission :see_assigned_ServicePacks, {assigns: [:show]}, require: :member
+        permission :assign_service_packs, {assigns: [:assign, :show]}, require: :member
+        permission :unassign_service_packs, {assigns: [:unassign, :show]}, require: :member
+        permission :see_assigned_service_packs, {assigns: [:show]}, require: :member
       end
 
       menu :admin_menu,
@@ -30,8 +30,7 @@ module OpenProject::ServicePacks
            caption: 'Service Packs',
            icon: 'icon2 icon-bug',
            html: {id: 'service_packs-menu-item'}
-      # if: ->(project) {true}
-
+           # if: ->(project) {true}
 
       menu :project_menu,
            :assigns,
@@ -41,10 +40,10 @@ module OpenProject::ServicePacks
            caption: 'Service Pack Assignment',
            icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
-           #if: ->(project) {true} # todo: must turn on SP module first
+
     end
     patches %i[Project TimeEntryActivity TimeEntry Enumeration]
-    assets %w(assigns.js)
+    assets %w(assigns.js service_packs.js assigns.css service_packs.css)
     end
 end
 # preserve lost path: no, you can't add a new tab into project settings from the plugin extension.

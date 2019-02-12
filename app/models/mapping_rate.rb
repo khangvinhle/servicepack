@@ -1,11 +1,13 @@
 class MappingRate < ApplicationRecord
   belongs_to :activity, class_name: 'TimeEntryActivity', foreign_key: 'activity_id', inverse_of: :mapping_rates   
   belongs_to :service_pack
-
   # validates_uniqueness_of :activity, scope: :service_pack
 
-  def as_json
-  	# hash literal example
-  	{:name => activity.name, :rates => units_per_hour}
-  end
+  validates_numericality_of :units_per_hour, only_integer: true, greater_than_or_equal_to: 0
+  validate :only_define_rates_on_shared_activity
+
+  private
+  	def only_define_rates_on_shared_activity
+  		errors.add(:activity, 'invalid') if !activity.shared?
+  	end
 end
