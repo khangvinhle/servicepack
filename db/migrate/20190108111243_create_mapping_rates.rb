@@ -6,5 +6,6 @@ class CreateMappingRates < ActiveRecord::Migration[5.1]
       	t.integer :units_per_hour
       	t.timestamps
     end
+    change_column_null :mapping_rates, :units_per_hour, false
   end
 end

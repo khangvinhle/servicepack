@@ -3,7 +3,7 @@ module OpenProject::ServicePacks
     module ProjectPatch
       def self.included(receiver)
         receiver.class_eval do
-          has_many :assigns
+          has_many :assigns, dependent: :destroy
           has_many :service_packs, through: :assigns
         end
       end
