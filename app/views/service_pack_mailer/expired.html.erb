@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Service
+    <% pluralize(@sps.count, 'pack') %> expired</title>
+</head>
+<body>
+<% if @sps.count > 1 %>
+  <p>The following service packs have expired:</p>
+  <ul>
+    <% @sps.each do |s| %>
+      <li><%= s.name %></li>
+    <% end %> %>
+  </ul>
+<% else %>
+  <p>The service pack <%= @sps.name %> has expired</p>
+<% end %>
+</body>
+</html>
