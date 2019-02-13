@@ -182,7 +182,8 @@ class ServicePacksController < ApplicationController
   private
 
   def service_pack_params
-    params.require(:service_pack).permit(:name, :total_units, :started_date, :expired_date, :threshold1, :threshold2, mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+    params.require(:service_pack).permit(:name, :total_units, :started_date, :expired_date, :threshold1, :threshold2, 
+      mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
   end
 
 end

@@ -26,7 +26,6 @@ module OpenProject::ServicePacks
 					sp_entry.units = units_cost
 					sp_of_project.service_pack_entries << sp_entry
 
-					sp_entry.update(:description => "#{activity_of_time_entry.name}")
 					sp_of_project.update(:remained_units => "#{sp_of_project.remained_units - units_cost}")	
 				end
 

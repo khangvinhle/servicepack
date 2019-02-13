@@ -74,7 +74,7 @@ class ServicePack < ApplicationRecord
   def self.cron_send_default
     # modify the User param
     ServicePack.find_each do |sp|
-      ExpiredSpMailer.expired_email(User.last, sp).deliver_later
+      ExpiredSpMailer.expired_email(User.last, sp).deliver_now
     end
   end
   # END TESTING ONLY
