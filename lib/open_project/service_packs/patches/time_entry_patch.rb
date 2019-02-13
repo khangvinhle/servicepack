@@ -16,18 +16,14 @@ module OpenProject::ServicePacks
 				def log_consumed_units
 					assignment = project.assigns.where(assigned: true).first
 					return if assignment.nil?
-					activity_of_time_entry = (self.activity.parent_id.nil?) ? self.activity : self.activity.parent
+					activity_of_time_entry_id = self.activity.parent_id || self.activity.id
 					sp_of_project = assignment.service_pack
-					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", sp_of_project.id, activity_of_time_entry.id).units_per_hour
+					rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
 					units_cost = rate * self.hours
-
-					sp_entry = ServicePackEntry.new 
-					sp_entry.time_entry = self
-					sp_entry.units = units_cost
+					# binding.pry
+					sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
 					sp_of_project.service_pack_entries << sp_entry
-
-					sp_entry.update(:description => "#{activity_of_time_entry.name}")
-					sp_of_project.update(:remained_units => "#{sp_of_project.remained_units - units_cost}")	
+					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)	
 				end
 
 
@@ -40,10 +36,9 @@ module OpenProject::ServicePacks
 
 					sp_entry = self.service_pack_entry
 					return if sp_entry.nil?
-					sp_of_project = assignment.service_pack
-
-					activity_of_time_entry = (self.activity.parent_id.nil?) ? self.activity : self.activity.parent
-					rate = MappingRate.find_by("service_pack_id = ? and activity_id = ?", sp_of_project.id, activity_of_time_entry.id).units_per_hour					units_cost = rate * self.hours
+					sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
+					activity_of_time_entry_id = self.activity.parent_id || self.activity.id
+					rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
 					units_cost = rate * self.hours
 					
 					extra_consumption = units_cost - sp_entry.units
