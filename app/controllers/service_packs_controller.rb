@@ -81,7 +81,7 @@ class ServicePacksController < ApplicationController
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
     if activity_id.uniq.length == activity_id.length
-      @sp.update(service_pack_params)
+      @sp.update(service_pack_edit_params)
       # render plain: 'not duplicated'
       if @sp.save
         flash[:notice] = 'Service Pack update successful.'
@@ -186,6 +186,11 @@ class ServicePacksController < ApplicationController
   def service_pack_params
     params.require(:service_pack).permit(:name, :total_units, :started_date, :expired_date, :threshold1, :threshold2,
                                          mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+  end
+
+  def service_pack_edit_params
+    params.require(:service_pack).permit(:threshold1, :threshold2,
+                                        mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
   end
 
 end
