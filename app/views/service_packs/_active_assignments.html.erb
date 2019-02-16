@@ -1,6 +1,5 @@
-<!-- partial with param -->
 <% if !(@assignments.empty?) %>
-	<p>
+	<p id='assignments-box'>
 		This Service Pack has been assigned for project(s) named:
 		<ul>
 			<% @assignments.find_each do |assignment| %>

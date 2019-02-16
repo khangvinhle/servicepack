@@ -32,11 +32,10 @@ class ServicePacksController < ApplicationController
       }
       format.html {
         @rates = @service_pack.mapping_rates
-        @assignments = @service_pack.assigns.where(assigned: true).all
+        @assignments = @service_pack.assignments
       }
       format.csv {
-        # projection order is significant
-        # concat is MySQL specific!
+        # projection order is not significant
         # Work packages can be deleted.
         sql = <<-SQL
             SELECT t2.spent_on, concat(t4.firstname, ' ', t4.lastname) AS user_name, t3.name AS activity_name,
@@ -59,7 +58,6 @@ class ServicePacksController < ApplicationController
             ORDER BY spent_on DESC
             SQL
         entries = ActiveRecord::Base.connection.exec_query(sql).to_hash
-        # binding.pry
         render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.id}.csv"
       }
     end
