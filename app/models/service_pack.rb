@@ -89,6 +89,7 @@ class ServicePack < ApplicationRecord
   end
 
   def is_notify?
+    # so what is with the two thresholds!?
     dates_to_notify = (sp.expired_date - Date.today).to_i
     dates_to_notify.between?(1,2)
   end
