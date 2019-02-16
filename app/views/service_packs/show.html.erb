@@ -8,17 +8,21 @@
 
 
 <h2><%= @service_pack.name %></h2>
- 
-<div class='grid-container'>
-  <div> Total Units: </div>
-  <div> <%= @service_pack.total_units %> </div>
-  <div> Remained Units: </div>
-  <div> <%= @service_pack.remained_units %> </div>
-  <div> Started Date: </div>  
-  <div> <%= @service_pack.started_date %> </div>
-  <div> Expired Date: </div>
-  <div> <%= @service_pack.expired_date %> </div>
-</div>
+
+<!--<div class='grid-container'>-->
+<!--  <div> Total Units: </div>-->
+<!--  <div> <%#= @service_pack.total_units %> </div>-->
+<!--  <div> Remained Units: </div>-->
+<!--  <div> <%#= @service_pack.remained_units %> </div>-->
+<!--  <div> Started Date: </div>  -->
+<!--  <div> <%#= @service_pack.started_date %> </div>-->
+<!--  <div> Expired Date: </div>-->
+<!--  <div> <%#= @service_pack.expired_date %> </div>-->
+<p>Total units: <%= @service_pack.total_units %></p>
+<p>Remain units: <%= @service_pack.remained_units %></p>
+<p>Started date: <%= @service_pack.started_date %></p>
+<p>Expired date: <%= @service_pack.expired_date %></p>
+<!--</div>-->
 
 <br>
 <div class='combine'>
@@ -26,8 +30,9 @@
     <h2>Rates:</h2>
 
     <ul>
-      <% @rates.each do |rate| %>  
-        <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} units/hour" %> </li>
+      <% @rates.each do |rate| %>
+        <li> <%= "#{rate.activity.name}: " %> <%= pluralize(rate.units_per_hour, 'unit') %>/hour
+        </li>
       <% end %>
     </ul>
   </div>
@@ -40,10 +45,11 @@
 
 <%= render partial: 'active_assignments' %>
 
-<%= link_to 'Edit Service Pack', edit_service_pack_path(@service_pack), :class => 'button -alt-highlight' %> 
+<%= link_to 'Edit Service Pack', edit_service_pack_path(@service_pack), :class => 'button -alt-highlight' %>
 <%= link_to 'Back to Service Pack home page', service_packs_path, :class => 'button' %>
 <% if @service_pack.assigned? %>
-  <%= link_to 'Delete', '#', class: 'button destroy blocked', disabled: true %><span id='pan'>Please unassign all project(s) first.</span>
+  <%= link_to 'Delete', '#', class: 'button destroy blocked', disabled: true %>
+  <span id='pan'>Please unassign all the projects that are assigned to this service pack first!</span>
 <% else %>
-  <%= link_to 'Delete', service_pack_path(@service_pack), class: 'button destroy', method: :delete, data: { confirm: 'Are you sure?', disable_with: 'Deleting...'} %>
+  <%= link_to 'Delete', service_pack_path(@service_pack), class: 'button destroy', method: :delete, data: {confirm: 'Are you sure?', disable_with: 'Deleting...'} %>
 <% end %>
