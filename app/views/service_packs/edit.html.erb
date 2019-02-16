@@ -4,45 +4,45 @@
 
 <%= form_for @sp, local: true do |form| %>
 
-  <!--  print errors if any-->
-  <% if @sp.errors.any? %>
-    <div id="error_explanation">
-      <h2>
-        <%= pluralize(@sp.errors.count, "error") %> prohibited this service pack from being saved:
-      </h2>
-      <ul>
-        <% @sp.errors.full_messages.each do |e| %>
-          <li><%= e %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <!--  edit form-->
-  <p>
-    <%= form.label :threshold1 %>
-    <%= form.number_field :threshold1, placeholder: 'threshold1' %>
-  </p>
-  <p>
-    <%= form.label :threshold2 %>
-    <%= form.number_field :threshold2, placeholder: 'threshold2' %>
-  </p>
-
-  <h2>Mapping rates:</h2>
-
-  <ul>
-    <%= form.fields_for :mapping_rates do |rates_form| %>
-      <li>
-        <%= rates_form.label "#{rates_form.object.activity.name}" %>
-        <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour', class: 'rates' %>
-        <%= rates_form.hidden_field :activity_id %>
-      </li>
+    <!--  print errors if any-->
+    <% if @sp.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@sp.errors.count, "error") %> prohibited this service pack from being saved:
+        </h2>
+        <ul>
+          <% @sp.errors.full_messages.each do |e| %>
+            <li><%= e %></li>
+          <% end %>
+        </ul>
+      </div>
     <% end %>
-  </ul>
+    
+    <p>
+      <%= form.label :threshold1 %>
+      <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
+    </p>
+    <p>
+      <%= form.label :threshold2 %>
+      <%= form.number_field :threshold2, placeholder: 'Threshold 2' %>
+    </p>
 
-  <p>
-    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
-  </p>
+    <h2>Mapping rates:</h2>
+
+    <ul>
+        <%= form.fields_for :mapping_rates do |rates_form| %>
+          <li>
+            <%= rates_form.label rates_form.object.activity.name %>
+            <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour', class: 'rates', required: true %>
+            <%= rates_form.hidden_field :activity_id %>
+          </li>
+        <% end %>
+    </ul>
+
+    <p>
+      <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
+    </p>
+
 <% end %>
 
 </body>

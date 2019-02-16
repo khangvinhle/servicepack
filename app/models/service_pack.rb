@@ -1,8 +1,11 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
+
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   has_many :assigns, dependent: :destroy
+  has_many :active_assignments, ->{where("assigned = ? and unassign_date >= ?", true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
+  has_many :consuming_projects, through: :active_assignments, source: :project
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
   has_many :service_pack_entries, inverse_of: :service_pack, dependent: :destroy
@@ -16,7 +19,7 @@ class ServicePack < ApplicationRecord
 
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
-  
+
   validates_uniqueness_of :name
 
   validates_numericality_of :total_units, only_integer: true, greater_than: 0
@@ -28,6 +31,7 @@ class ServicePack < ApplicationRecord
 
   scope :assignments, ->{joins(:assigns).where(assigned: true)}
   scope :availables, ->{where("remained_units > 0 and expired_date >= ?", Date.today)}
+  # scope :gone_low, ->{where('remained_units <= total_units / 100.0 * threshold1')}
 
 
   def default_remained_units
@@ -54,6 +58,42 @@ class ServicePack < ApplicationRecord
     !unavailable?
   end
 
+  # FOR TESTING ONLY
+  def expired_notification # send to the first user in the first record in the DB
+    if expired?
+      user = User.first
+      ExpiredSpMailer.expired_email(user, self).deliver_later
+    end
+  end
+
+  def cron_send_specific
+    # modify the User param
+    ExpiredSpMailer.expired_email(User.last, self).deliver_later
+  end
+
+  # def self.cron_send_default
+  #   # modify the User param
+  #   ServicePack.find_each do |sp|
+  #     ExpiredSpMailer.expired_email(User.last, sp).deliver_now
+  #   end
+  # end
+  # END TESTING ONLY
+
+  def self.cron_send_default
+    # modify the User param
+    ServicePack.find_each do |sp|
+      if (sp.is_notify)
+        ExpiredSpMailer.expired_email(User.last, sp).deliver_now
+      end
+    end
+  end
+
+  def is_notify?
+    # so what is with the two thresholds!?
+    dates_to_notify = (sp.expired_date - Date.today).to_i
+    dates_to_notify.between?(1,2)
+  end
+
   def assigned?
     assigns.where(assigned: true).exists?
   end
@@ -65,15 +105,15 @@ class ServicePack < ApplicationRecord
 
   private
 
-    def threshold2_is_greater_than_threshold1
-      @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
-    end
+	def threshold2_is_greater_than_threshold1
+		@errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
+	end
 
-    def end_after_start
-      @errors.add(:expired_date, 'must be after start date') if expired_date < started_date
-    end
+	def end_after_start
+		@errors.add(:expired_date, 'must be after start date') if expired_date < started_date
+	end
 
-    def must_not_expire_in_the_past
-      @errors.add(:expired_date, 'must not be in the past') if expired_date < Date.today
-    end
+	def must_not_expire_in_the_past
+		@errors.add(:expired_date, 'must not be in the past') if expired_date < Date.today
+	end
 end

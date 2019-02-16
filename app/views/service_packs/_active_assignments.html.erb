@@ -1,14 +1,14 @@
 <% if !(@assignments.empty?) %>
-	<p id='assignments-box'>
-		This Service Pack has been assigned for project(s) named:
-		<ul>
-			<% @assignments.find_each do |assignment| %>
-				<li><%= assignment.project.name %></li>
-			<% end %>
-		</ul>
-	</p>
+  <p id='assignments-box'>
+    This Service Pack has been assigned for <%= @assignments.count>1? 'these projects:' : 'this project:' %>
+  </p>
+  <ul>
+    <% @assignments.find_each do |assignment| %>
+      <li><%= assignment.project.name %></li>
+    <% end %>
+  </ul>
 <% else %>
-	<p>
-		This Service Pack is not being assigned to any projects.
-	</p>
-<% end %> 
+  <p>
+    This Service Pack is not being assigned to any projects.
+  </p>
+<% end %>

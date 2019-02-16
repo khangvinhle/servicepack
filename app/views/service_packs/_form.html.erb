@@ -1,10 +1,10 @@
 <%= form_for @service_pack, url: service_packs_path, local: true do |form| %>
 
   <% if @service_pack.errors.any? %>
-    <div id="error_explanation">
-      <h2>
+    <div id="error_explanation" style="background: rgba(255,255,0,0.41)">
+      <h2 style="color: #fc0000">
         <%= pluralize(@service_pack.errors.count, "error") %> prohibited
-        this service_pack from being saved:
+        this service pack from being saved:
       </h2>
       <ul>
         <% @service_pack.errors.full_messages.each do |msg| %>
@@ -16,27 +16,27 @@
 
   <p>
     <%= form.label :name %>
-    <%= form.text_field :name, required: 'required' %>
+    <%= form.text_field :name, required: true %>
   </p>
   <p>
     <%= form.label :total_units %>
-    <%= form.number_field :total_units, required: 'required' %>
+    <%= form.number_field :total_units, required: true%>
   </p>
   <p>
     <%= form.label :started_date %>
-    <%= form.date_field :started_date, required: 'required' %>
+    <%= form.date_field :started_date, required: true %>
   </p>
   <p>
     <%= form.label :expired_date %>
-    <%= form.date_field :expired_date, required: 'required' %>
+    <%= form.date_field :expired_date, required: true %>
   </p>
   <p>
     <%= form.label :threshold_1 %>
-    <%= form.number_field :threshold1, required: 'required' %>
+    <%= form.number_field :threshold1, required: true %>
   </p>
   <p>
     <%= form.label :threshold_2 %>
-    <%= form.number_field :threshold2, required: 'required' %>
+    <%= form.number_field :threshold2, required: true %>
   </p>
 
   <h3>Mapping Rates:</h3>
