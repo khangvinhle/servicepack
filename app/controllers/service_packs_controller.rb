@@ -50,7 +50,9 @@ class ServicePacksController < ApplicationController
         redirect_to action: :show, id: @service_pack.id and return
       else
         flash[:error] = 'Service Pack creation failed.'
-        redirect_to action: :new
+        @sh = TimeEntryActivity.shared
+        @c = TimeEntryActivity.shared.count
+        render 'new'
       end
     else
       # render plain: 'duplicated'
@@ -141,11 +143,11 @@ class ServicePacksController < ApplicationController
     start_day = params[:start_period]&.to_date # ruby >= 2.3.0
     end_day = params[:end_period]&.to_date
     if start_day.nil? ^ end_day.nil?
-      render json: { error: 'GET OUT!'}, status: 400 and return
+      render json: {error: 'GET OUT!'}, status: 400 and return
     end
 
     if !ServicePack.find_by(id: params[:service_pack_id])
-      render json: { error: 'NOT FOUND'}, status: 404 and return
+      render json: {error: 'NOT FOUND'}, status: 404 and return
     end
 
     # Notice: Change max(t3.name) to ANY_VALUE(t3.name) on production builds.
@@ -157,7 +159,7 @@ class ServicePacksController < ApplicationController
       CASE WHEN parent_id IS NULL THEN id ELSE parent_id END AS pid
       FROM #{TimeEntryActivity.table_name}
       WHERE type = 'TimeEntryActivity'
-      SQL
+    SQL
     body_query = <<-SQL
       SELECT t3.pid AS act_id, max(t3.name) AS act_name, sum(t1.units) AS consumed
       FROM #{ServicePackEntry.table_name} t1
@@ -165,11 +167,11 @@ class ServicePacksController < ApplicationController
       ON t1.time_entry_id = t2.id
       INNER JOIN (#{get_parent_id}) t3
       ON t2.activity_id = t3.id
-      SQL
+    SQL
     group_clause = <<-SQL
       GROUP BY t3.pid
       ORDER BY consumed DESC
-      SQL
+    SQL
     where_clause = "WHERE t1.service_pack_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
     query = body_query + where_clause + group_clause
@@ -182,8 +184,8 @@ class ServicePacksController < ApplicationController
   private
 
   def service_pack_params
-    params.require(:service_pack).permit(:name, :total_units, :started_date, :expired_date, :threshold1, :threshold2, 
-      mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+    params.require(:service_pack).permit(:name, :total_units, :started_date, :expired_date, :threshold1, :threshold2,
+                                         mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
   end
 
 end
