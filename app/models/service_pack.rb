@@ -71,13 +71,27 @@ class ServicePack < ApplicationRecord
     ExpiredSpMailer.expired_email(User.last, self).deliver_later
   end
 
+  # def self.cron_send_default
+  #   # modify the User param
+  #   ServicePack.find_each do |sp|
+  #     ExpiredSpMailer.expired_email(User.last, sp).deliver_now
+  #   end
+  # end
+  # END TESTING ONLY
+
   def self.cron_send_default
     # modify the User param
     ServicePack.find_each do |sp|
-      ExpiredSpMailer.expired_email(User.last, sp).deliver_now
+      if (sp.is_notify)
+        ExpiredSpMailer.expired_email(User.last, sp).deliver_now
+      end
     end
   end
-  # END TESTING ONLY
+
+  def is_notify?
+    dates_to_notify = (sp.expired_date - Date.today).to_i
+    dates_to_notify.between?(1,2)
+  end
 
   def assigned?
     assigns.where(assigned: true).exists?

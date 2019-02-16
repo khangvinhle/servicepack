@@ -60,7 +60,7 @@ class ServicePacksController < ApplicationController
   end
 
   def edit
-    @sp = ServicePack.find_by(params[:id])
+    @sp = ServicePack.find_by(id: params[:id])
     if @sp.nil?
       flash[:error] = "Service Pack not found"
       redirect_to action: :index and return
@@ -69,7 +69,7 @@ class ServicePacksController < ApplicationController
   end
 
   def update
-    @sp = ServicePack.find_by(params[:id])
+    @sp = ServicePack.find_by(id: params[:id])
     if @sp.nil?
       flash[:error] = "Service Pack not found"
       redirect_to action: :index and return
