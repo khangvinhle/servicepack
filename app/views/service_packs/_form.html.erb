@@ -1,10 +1,10 @@
 <%= form_for @service_pack, url: service_packs_path, local: true do |form| %>
 
   <% if @service_pack.errors.any? %>
-    <div id="error_explanation">
-      <h2>
+    <div id="error_explanation" style="background: rgba(255,255,0,0.41)">
+      <h2 style="color: #fc0000">
         <%= pluralize(@service_pack.errors.count, "error") %> prohibited
-        this service_pack from being saved:
+        this service pack from being saved:
       </h2>
       <ul>
         <% @service_pack.errors.full_messages.each do |msg| %>
