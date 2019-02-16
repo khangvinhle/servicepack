@@ -18,7 +18,7 @@ class AssignsController < ApplicationController
     if @service_pack.available?
         assign_to(@service_pack, @project)
         flash[:notice] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
-        redirect_to action: "show" and return
+        redirect_to action: :show and return
     else
       # already assigned for another project
       # constraint need
@@ -26,7 +26,7 @@ class AssignsController < ApplicationController
       render_400 and return
     end
     flash.now[:alert] = 'Service Pack cannot be assigned'
-    redirect_to action: "show"
+    redirect_to action: :show
   end
 
   def unassign
@@ -38,7 +38,7 @@ class AssignsController < ApplicationController
     end
     _unassign(@project)
     flash[:notice] = 'Unassigned a Service Pack from this project'
-    redirect_to action: 'show' and return
+    redirect_to action: :show and return
   end
 
   def show
@@ -97,8 +97,8 @@ class AssignsController < ApplicationController
   def statistics
     return head 403 unless 
     User.current.allowed_to?(:see_assigned_service_packs, @project) ||
-    (@can_assign = User.current.allowed_to?(:assign_service_packs, @project)) ||
-    (@can_unassign = User.current.allowed_to?(:unassign_service_packs, @project))
+    User.current.allowed_to?(:assign_service_packs, @project) ||
+    User.current.allowed_to?(:unassign_service_packs, @project)
     
     start_day = params[:start_period]&.to_date # ruby >= 2.3.0
     end_day = params[:end_period]&.to_date

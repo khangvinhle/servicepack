@@ -37,10 +37,10 @@ class ServicePacksController < ApplicationController
   end
 
   def create
-    mapping_rate_attribute = params['service_pack']['mapping_rates_attributes']
-    # binding.pry
+    mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
+    binding.pry
     activity_id = []
-    mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value['activity_id'])}
+    mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
     if activity_id.uniq.length == activity_id.length
       @service_pack = ServicePack.new(service_pack_params)
@@ -50,15 +50,15 @@ class ServicePacksController < ApplicationController
         redirect_to action: :show, id: @service_pack.id and return
       else
         flash[:error] = 'Service Pack creation failed.'
-        @sh = TimeEntryActivity.shared
-        @c = TimeEntryActivity.shared.count
-        render 'new'
       end
     else
       # render plain: 'duplicated'
       flash[:error] = 'Only one rate can be defined to one activity.'
-      redirect_to action: :new
     end
+    # the only successful path has returned 10 lines ago.
+    @sh = TimeEntryActivity.shared
+    @c = TimeEntryActivity.shared.count
+    render 'new'
   end
 
   def edit
@@ -76,9 +76,9 @@ class ServicePacksController < ApplicationController
       flash[:error] = "Service Pack not found"
       redirect_to action: :index and return
     end
-    mapping_rate_attribute = params['service_pack']['mapping_rates_attributes']
+    mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
     activity_id = []
-    mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value['activity_id'])}
+    mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
     if activity_id.uniq.length == activity_id.length
       @sp.update(service_pack_params)
@@ -95,12 +95,12 @@ class ServicePacksController < ApplicationController
       # render plain: 'duplicated'
       flash.now[:error] = 'Only one rate can be defined to one activity.'
       @activity = @sp.time_entry_activities.build
-      renders 'edit'
+      render 'edit'
     end
   end
 
   def destroy
-    @sp = ServicePack.find_by(params[:id])
+    @sp = ServicePack.find_by(id: params[:id])
     if @sp.nil?
       flash[:error] = "Service Pack not found"
       redirect_to action: :index and return
