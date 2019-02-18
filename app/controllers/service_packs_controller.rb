@@ -57,14 +57,14 @@ class ServicePacksController < ApplicationController
             ORDER BY spent_on DESC
             SQL
         entries = ActiveRecord::Base.connection.exec_query(sql).to_hash
-        render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.id}.csv"
+        render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.name}.csv"
       }
     end
   end
 
   def create
     mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
-    binding.pry
+    # binding.pry
     activity_id = []
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
@@ -140,6 +140,14 @@ class ServicePacksController < ApplicationController
     redirect_to service_packs_path
   end
 
+  # for breadcrumb code
+  def show_local_breadcrumb
+    true
+  end
+
+  def default_breadcrumb
+    action_name == 'index'? 'Service Packs' : ActionController::Base.helpers.link_to('Service Packs', service_packs_path)
+  end
 
   # =======================================================
   # :Docs

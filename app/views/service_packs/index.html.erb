@@ -1,6 +1,6 @@
 <%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
 
-<% html_title l(:label_administration), t(:service_packs) %>
+<% html_title l(:label_administration), 'Service Packs'.freeze %>
 
 <%= link_to 'New', new_service_pack_path, class: "button -alt-highlight" %>
 
@@ -10,11 +10,11 @@
     <th>Name</th>
     <th>Total Units</th>
     <th>Remained Units</th>
-	<th>Started Date</th>
-	<th>End Date</th>
-	<th>Threshold 1</th>
-	<th>Threshold 2</th>
-	<th>Assigned</th>	    
+    <th>Started Date</th>
+    <th>End Date</th>
+    <th>Threshold 1</th>
+    <th>Threshold 2</th>
+    <th>Assigned</th>	    
   </tr>
  
   <% @service_packs.find_each do |sp| %>

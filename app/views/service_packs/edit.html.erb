@@ -1,5 +1,8 @@
 <%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
 
+<% local_assigns[:additional_breadcrumb] = @sp.name %>
+<% html_title l(:label_administration), 'Edit Service Pack' %>
+
 <h2> <%= @sp.name %> </h2>
 
 <%= form_for @sp, local: true do |form| %>

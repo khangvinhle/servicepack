@@ -1,6 +1,9 @@
 <%= javascript_include_tag 'service_packs.js', plugin: :openproject_service_packs %>
 <%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
 
+<% local_assigns[:additional_breadcrumb] = @service_pack.name %>
+<% html_title l(:label_administration), @service_pack.name %>
+
 <h2><%= @service_pack.name %></h2>
 
 <!-- this can be improved, less thick border, a bit more line-height and stuff -->
