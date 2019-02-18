@@ -3,7 +3,7 @@
     <% (1..@c).each do |i| %>
       <li>
         <label><%= @sh[i - 1].name %></label>
-        <input type='number' name="service_pack[mapping_rates_attributes][<%= i %>][units_per_hour]" min='0' class='rates' placeholder='Unit per hour' required='required'>
+        <input type='number' name="service_pack[mapping_rates_attributes][<%= i %>][units_per_hour]" min='0' class='rates' placeholder='Unit per hour' required>
         <input type='hidden' name="service_pack[mapping_rates_attributes][<%= i %>][activity_id]" value="<%= @sh[i - 1].id %>"/>
       </li>
     <% end %>
