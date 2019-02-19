@@ -51,7 +51,7 @@ class ServicePacksController < ApplicationController
             ON t2.project_id = t6.id
             LEFT JOIN #{WorkPackage.table_name} t5
             ON t2.work_package_id = t5.id
-            INNER JOIN types t7
+            LEFT JOIN types t7
             ON t5.type_id = t7.id
             WHERE service_pack_id = #{@service_pack.id}
             ORDER BY spent_on DESC
