@@ -3,7 +3,7 @@
   <% if @service_pack.errors.any? %>
     <div id="error_explanation" style="background: rgba(255,255,0,0.41)">
       <h2 style="color: #fc0000">
-        <%= pluralize(@service_pack.errors.count, "error") %> prohibited
+        <%= pluralize(@service_pack.errors.count, -"error") %> prohibited
         this service pack from being saved:
       </h2>
       <ul>

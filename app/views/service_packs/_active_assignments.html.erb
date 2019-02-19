@@ -1,6 +1,6 @@
 <% if !(@assignments.empty?) %>
   <p id='assignments-box'>
-    This Service Pack has been assigned for <%= @assignments.count>1? 'these projects:' : 'this project:' %>
+    This Service Pack has been assigned for <%= @assignments.count>1? -'these projects:' : -'this project:' %>
   </p>
   <ul>
     <% @assignments.find_each do |assignment| %>
