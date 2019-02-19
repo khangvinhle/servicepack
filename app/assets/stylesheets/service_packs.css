@@ -37,18 +37,29 @@ tr:nth-child(even) {
 
 .destroy {
   background-color: #fc0000 !important;
-  color: #ffffff !important;
+  color: #ffeeee !important;
 }
 
 a.blocked {
   opacity: 0.3;
-  margin-right: 10px;
+  margin-right: 8px;
   cursor: default !important;
   margin-left: -5px;
 }
 
-#pan {
+#warnbox {
   font-size: 0.75em;
   text-align: center;
   position: relative;
+  bottom: 7px;
+  right: 2px;
+}
+
+hr {
+  margin-top: 12px;
+}
+
+#assignments-box {
+  line-height: 1.25;
+  margin-bottom: 0.9rem;
 }

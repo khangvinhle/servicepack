@@ -5,6 +5,7 @@ module OpenProject::ServicePacks
 				
 			end
 
+
 			# pseudocode:
 			# Find an assignment in effect, if not leave in peace.
 			# Then find a rate associated with activity_id and sp in effect.
@@ -44,16 +45,16 @@ module OpenProject::ServicePacks
 					extra_consumption = units_cost - sp_entry.units
 					# Keep callbacks for SP. Entries have no callback.
 					sp_entry.update(units: units_cost) if extra_consumption != 0
-					sp_remained_units = sp_of_project.remained_units - extra_consumption
-					sp_of_project.update(remained_units: sp_remained_units)
+					sp_of_project.remained_units -= extra_consumption
+					sp_of_project.save
 				end
 
 				def get_consumed_units_back				
 					sp_entry = self.service_pack_entry
 					return if sp_entry.nil?
 					service_pack = sp_entry.service_pack
-					u_remained_units = service_pack.remained_units + sp_entry.units
-					service_pack.update(remained_units: u_remained_units)
+					service_pack.remained_units += sp_entry.units
+					service_pack.save
 				end			
 
 			end
