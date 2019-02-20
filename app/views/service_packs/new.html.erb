@@ -1,8 +1,8 @@
-<%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
+<%= stylesheet_link_tag -'service_packs', plugin: :openproject_service_packs %>
 
-<% html_title l(:label_administration), 'Create Service Pack'.freeze %>
-<% local_assigns[:additional_breadcrumb] = 'Create Service Pack' %>
+<% html_title l(:label_administration), -'Create Service Pack' %>
+<% local_assigns[:additional_breadcrumb] = -'Create Service Pack' %>
 
 <%= render 'form' %>
 
-<%= link_to "Back", service_packs_path, class: "button -alt-highlight" %>
+<%= link_to "Back", service_packs_path, class: -"button -alt-highlight" %>
