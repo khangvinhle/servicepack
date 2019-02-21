@@ -71,3 +71,7 @@ hr {
 .button.-alt-highlight.-new {
   margin-bottom: 0;
 }
+
+.button-container {
+  margin-bottom: 10px;
+}

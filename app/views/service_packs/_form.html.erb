@@ -43,6 +43,9 @@
 
   <%= render partial: 'rates_input' %>
 
-  <%= form.submit class: "button -alt-highlight" %>
+  <div class="button-container">
+    <%= form.submit class: "button -alt-highlight" %>
+    <%= link_to "Back", service_packs_path, class: -"button -alt-highlight -new" %>  
+  </div>
 
 <% end %>
