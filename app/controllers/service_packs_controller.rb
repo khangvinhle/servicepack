@@ -57,16 +57,16 @@ class ServicePacksController < ApplicationController
             ORDER BY spent_on DESC
             SQL
         entries = ActiveRecord::Base.connection.exec_query(sql).to_hash
-        render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.id}.csv"
+        render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.name}.csv"
       }
     end
   end
-
 
   # The string with the minus sign in front is a shorthand for <string>.freeze
   # reducing server processing time (and testing time) by 30%!
   # Freezing a string literal will stop it from being created anew over and over.
   # All literal strings will be frozen in Ruby 3 by default, which is a good idea.
+
   def create
     mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
     # binding.pry
@@ -145,6 +145,14 @@ class ServicePacksController < ApplicationController
     redirect_to service_packs_path
   end
 
+  # for breadcrumb code
+  def show_local_breadcrumb
+    true
+  end
+
+  def default_breadcrumb
+    action_name == 'index'? -'Service Packs' : ActionController::Base.helpers.link_to(-'Service Packs', service_packs_path)
+  end
 
   # =======================================================
   # :Docs
