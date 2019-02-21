@@ -1,4 +1,4 @@
-<%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
+<%= stylesheet_link_tag -'service_packs', plugin: :openproject_service_packs %>
 
 <h2> <%= @sp.name %> </h2>
 
@@ -8,7 +8,7 @@
     <% if @sp.errors.any? %>
       <div id="error_explanation">
         <h2 style="color: #fc0000">
-          <%= pluralize(@sp.errors.count, "error") %> prohibited this service pack from being saved:
+          <%= pluralize(@sp.errors.count, -"error") %> prohibited this service pack from being saved:
         </h2>
         <ul>
           <% @sp.errors.full_messages.each do |e| %>
@@ -33,14 +33,14 @@
         <%= form.fields_for :mapping_rates do |rates_form| %>
           <li>
             <%= rates_form.label rates_form.object.activity.name %>
-            <%= rates_form.number_field :units_per_hour, placeholder: 'Units per hour', class: 'rates', required: true %>
+            <%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', required: true %>
             <%= rates_form.hidden_field :activity_id %>
           </li>
         <% end %>
     </ul>
-
    
     <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %> 
+
 <% end %>
 <%= link_to "Back", service_packs_path, class: 'button -highlight' %>
 

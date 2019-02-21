@@ -1,4 +1,5 @@
-<%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
+<%= stylesheet_link_tag -'service_packs', plugin: :openproject_service_packs %>
+<% html_title l(:label_administration), -'Create Service Pack' %>
 
 <h1>
   Create New Service Pack
@@ -6,4 +7,4 @@
 
 <%= render 'form' %>
 
-<%= link_to "Back", service_packs_path, :class => "button -alt-highlight" %>
+<%= link_to "Back", service_packs_path, class: -"button -alt-highlight" %>
