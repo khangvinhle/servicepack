@@ -7,7 +7,7 @@
     <!--  print errors if any-->
     <% if @sp.errors.any? %>
       <div id="error_explanation">
-        <h2>
+        <h2 style="color: #fc0000">
           <%= pluralize(@sp.errors.count, "error") %> prohibited this service pack from being saved:
         </h2>
         <ul>
@@ -39,11 +39,10 @@
         <% end %>
     </ul>
 
-    <p>
-      <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
-    </p>
-
+   
+    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %> 
 <% end %>
+<%= link_to "Back", service_packs_path, class: 'button -highlight' %>
 
 </body>
 </html>

@@ -64,7 +64,7 @@ class ServicePacksController < ApplicationController
 
   def create
     mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
-    binding.pry
+    # binding.pry
     activity_id = []
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
