@@ -63,3 +63,11 @@ hr {
   line-height: 1.25;
   margin-bottom: 0.9rem;
 }
+
+.button.-highlight.-edit {
+  margin-bottom: 0;
+}
+
+.button.-alt-highlight.-new {
+  margin-bottom: 0;
+}

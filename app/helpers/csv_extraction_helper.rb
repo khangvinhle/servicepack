@@ -4,7 +4,7 @@ module CsvExtractionHelper
 		# decimal_separator = l(:general_csv_decimal_separator) # not needed
 		# custom_fields = TimeEntryCustomField.all # not supported
 		export = CSV.generate(col_sep: l(:general_csv_separator)) { |csv|
-			headers = ['Date', 'User', 'Activity', 'Project', 'Work Package', 'Type', 'Subject', 'Units', 'Comments']
+			headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Type', -'Subject', -'Units', -'Comments']
 			# headers += custom_fields.map(&:name) # not supported
 			csv << headers
       		entries.each do |entry|

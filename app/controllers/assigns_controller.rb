@@ -62,11 +62,11 @@ class AssignsController < ApplicationController
         @assignment = Assign.new
         @assignables = ServicePack.availables
       end
-      render 'not_assigned_yet'
+      render -'not_assigned_yet'
       # binding.pry
     else
       @service_pack = @assignment.service_pack
-      render 'already_assigned'
+      render -'already_assigned'
     end
   end
   
