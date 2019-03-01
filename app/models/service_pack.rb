@@ -22,7 +22,7 @@ class ServicePack < ApplicationRecord
 
   validates_uniqueness_of :name
 
-  validates_numericality_of :total_units, only_integer: true, greater_than: 0
+  validates_numericality_of :total_units, greater_than: 0
   validates_numericality_of :threshold1, :threshold2, greater_than_or_equal_to: 0, less_than_or_equal_to: 100, only_integer: true
 
   validate :threshold2_is_greater_than_threshold1

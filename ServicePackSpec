@@ -1,0 +1,76 @@
+	
+	service_pack_entry(1,1)-----(0,1)time_entry	  	
+	      (1,1)		
+			|
+			|
+			|
+	      (1,n)
+	service_pack(1,n)-----(1,1)mapping_rate(1,1)-----(1,n)time_entry_activity		
+	      (1,n)		
+			|
+			|
+			|
+	      (1,1)
+	     assign
+	      (1,1)
+			|
+			|
+			|
+	      (1,n)
+	     project
+
+
+
+Delete a Service Pack
+	- Condition: currently, this SP must not be assigned to any project
+	- Effect: 
+		"assign" records associated with this SP will be deleted
+		"mapping rate" records associated with this SP will be deleted
+		"service pack entry" records associated with this SP will be deleted
+
+
+Delete an Enumeration with Time Entry Activity type
+	- If the Time Entry Activity has been logged for the time entry, reassigning this activity to another activity
+	- Effect: 
+		"mapping rate" records associated with this Enum will be deleted
+
+
+Create a new Enumeration with TimeEntryActivity type
+	- Automatically create this activity type with the default rates (0 units/hour) for each SP
+
+
+When user log time on a WP of a project
+	- If this project was assigned a SP, calculate the consumed units for that log time based on the mapping rates of the SP
+	- Update the remained units
+
+When user edit a time entry on a WP of a project
+	- Remained units of a SP will be updated if at the time user logged time on a project, there was a SP (currently exist) was assigned to that project.      
+
+	
+When user delete a time entry on a WP of a project
+	- Remained units of a SP will be backed if at the time user logged time on a project, there was a SP (currently exist) was assigned to that project.
+
+
+When assigning a SP to the Project, only time entries of that project (the hierachy of WP doesn't matter) will trigger the "Update remained units" function, not the time entries of the parent project or children projects.
+
+Every day (at 0h:00 am) cronjobs run to check whether a Service Pack is expired. 
+	
+
+Report	
+	date
+	user
+	activity
+	project
+	WP
+	type
+	subject
+	units
+	comments
+
+
+
+
+
+
+
+
