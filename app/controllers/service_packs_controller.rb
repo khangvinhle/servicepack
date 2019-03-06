@@ -98,7 +98,7 @@ class ServicePacksController < ApplicationController
       flash[:error] = -"Service Pack not found"
       redirect_to action: :index and return
     end
-    @activity = @sp.time_entry_activities.build
+    # @activity = @sp.time_entry_activities.build
   end
 
   def update
@@ -119,13 +119,11 @@ class ServicePacksController < ApplicationController
         redirect_to action: :show, id: @sp.id and return
       else
         flash.now[:error] = -'Service Pack update failed.'
-        @activity = @sp.time_entry_activities.build
         render 'edit'
       end
     else
       # render plain: 'duplicated'
       flash.now[:error] = -'Only one rate can be defined to one activity.'
-      @activity = @sp.time_entry_activities.build
       render 'edit'
     end
   end
