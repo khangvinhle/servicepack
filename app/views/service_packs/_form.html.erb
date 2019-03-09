@@ -20,7 +20,7 @@
   </p>
   <p>
     <%= form.label :total_units %>
-    <%= form.text_field :total_units, required: true%>
+    <%= form.text_field :total_units, required: true, min: -'0', step: -'any' %>
   </p>
   <p>
     <%= form.label :started_date %>
@@ -32,11 +32,11 @@
   </p>
   <p>
     <%= form.label :threshold_1 %>
-    <%= form.number_field :threshold1, required: true %>
+    <%= form.number_field :threshold1, required: true, min: -'0', max: -'100', step: -'5' %>
   </p>
   <p>
     <%= form.label :threshold_2 %>
-    <%= form.number_field :threshold2, required: true %>
+    <%= form.number_field :threshold2, required: true, min: -'0', max: -'100', step: -'5' %>
   </p>
 
   <h3>Mapping Rates:</h3>

@@ -23,11 +23,11 @@
     
     <p>
       <%= form.label :threshold1 %>
-      <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
+      <%= form.number_field :threshold1, placeholder: -'Threshold 1' %>
     </p>
     <p>
       <%= form.label :threshold2 %>
-      <%= form.number_field :threshold2, placeholder: 'Threshold 2' %>
+      <%= form.number_field :threshold2, placeholder: -'Threshold 2' %>
     </p>
 
     <h2>Mapping rates:</h2>
@@ -36,15 +36,15 @@
         <%= form.fields_for :mapping_rates do |rates_form| %>
           <li>
             <%= rates_form.label rates_form.object.activity.name %>
-            <%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', required: true %>
+            <%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', min: -'0', required: true %>
             <%= rates_form.hidden_field :activity_id %>
           </li>
         <% end %>
     </ul>
    
    <div class="button-container">
-    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %> 
-    <%= link_to "Back", service_packs_path, class: 'button -highlight -edit' %> 
+    <%= form.submit '&#x2714  Update'.html_safe, class: -'button -highlight' %> 
+    <%= link_to "Back", service_packs_path, class: -'button -highlight -edit' %> 
    </div>
     
 <% end %>
