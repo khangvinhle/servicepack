@@ -18,7 +18,7 @@ class AssignsController < ApplicationController
     if @service_pack.available?
         assign_to(@service_pack, @project)
         flash[:notice] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
-        redirect_to action: :show and return
+        render 'show' and return
     else
       # already assigned for another project
       # constraint need
@@ -47,7 +47,6 @@ class AssignsController < ApplicationController
     User.current.allowed_to?(:see_assigned_service_packs, @project) ||
     (@can_assign = User.current.allowed_to?(:assign_service_packs, @project)) ||
     (@can_unassign = User.current.allowed_to?(:unassign_service_packs, @project))
-
     # binding.pry
     if @assignment = @project.assigns.find_by(assigned: true)
       if @assignment.service_pack.unavailable?
@@ -59,10 +58,13 @@ class AssignsController < ApplicationController
     # binding.pry
     if @assignment.nil?
       if @can_assign ||= User.current.allowed_to?(:assign_service_packs, @project)
-        @assignment = Assign.new
         @assignables = ServicePack.availables
+        if @assignables.exists?
+          @assignment = Assign.new
+          render -'not_assigned_yet' and return
+        end
       end
-      render -'not_assigned_yet'
+      render -'unassignable'
       # binding.pry
     else
       @service_pack = @assignment.service_pack
