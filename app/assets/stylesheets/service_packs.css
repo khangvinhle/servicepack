@@ -75,3 +75,11 @@ hr {
 .button-container {
   margin-bottom: 10px;
 }
+
+#error-explanation {
+  background-color: rgba(255,255,0,0.41);
+}
+
+#error-explanation:first-child {
+  color: #fc0000;
+}

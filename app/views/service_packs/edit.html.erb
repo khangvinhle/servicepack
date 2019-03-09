@@ -9,8 +9,8 @@
 
     <!--  print errors if any-->
     <% if @sp.errors.any? %>
-      <div id="error_explanation">
-        <h2 style="color: #fc0000">
+      <div id="error-explanation">
+        <h2>
           <%= pluralize(@sp.errors.count, -"error") %> prohibited this service pack from being saved:
         </h2>
         <ul>
@@ -48,8 +48,3 @@
    </div>
     
 <% end %>
-
-
-
-</body>
-</html>

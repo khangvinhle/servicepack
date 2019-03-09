@@ -80,11 +80,11 @@ class ServicePacksController < ApplicationController
         flash[:notice] = -'Service Pack creation successful.'
         redirect_to action: :show, id: @service_pack.id and return
       else
-        flash[:error] = -'Service Pack creation failed.'
+        flash.now[:error] = -'Service Pack creation failed.'
       end
     else
       # render plain: 'duplicated'
-      flash[:error] = -'Only one rate can be defined to one activity.'
+      flash.now[:error] = -'Only one rate can be defined to one activity.'
     end
     # the only successful path has returned 10 lines ago.
     @sh = TimeEntryActivity.shared
@@ -135,7 +135,7 @@ class ServicePacksController < ApplicationController
       redirect_to action: :index and return
     end
     if @sp.assigned?
-      flash[:error] = "Please unassign this SP from all projects before proceeding!"
+      flash.now[:error] = "Please unassign this SP from all projects before proceeding!"
       render 'show' and return
     end
     @sp.destroy!
