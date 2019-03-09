@@ -4,10 +4,11 @@ class AssignsController < ApplicationController
   include SPAssignmentManager
 
   def assign
+    # binding.pry
     return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
 
     if assigned?(@project)
-      flash[:alert] = "You must unassign first!"
+      flash.now[:alert] = "You must unassign first!"
       render_400 and return
     end
     @service_pack = ServicePack.find_by(id: params[:assign][:service_pack_id])
@@ -16,13 +17,14 @@ class AssignsController < ApplicationController
       render_404 and return
     end
     if @service_pack.available?
+        # binding.pry
         assign_to(@service_pack, @project)
-        flash[:notice] = "Service Pack #{@service_pack.name} successfully assigned to project #{@project.name}"
-        render 'show' and return
+        flash.now[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
+        render 'already_assigned' and return
     else
       # already assigned for another project
       # constraint need
-      flash[:alert] = "Service Pack #{@service_pack.name} has been already assigned"
+      flash.now[:alert] = "Service Pack '#{@service_pack.name}' has been already assigned"
       render_400 and return
     end
     flash.now[:alert] = 'Service Pack cannot be assigned'
