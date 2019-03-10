@@ -17,7 +17,7 @@
 	  <th>Assigned</th>
   </tr>
  
-  <% @service_packs.find_each do |sp| %>
+  <% @service_packs.each do |sp| %>
     <tr>
       <td><%= link_to sp.name, service_pack_path(sp) %></td>
       <td><%= sp.total_units %></td>

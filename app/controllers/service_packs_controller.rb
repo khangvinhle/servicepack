@@ -10,7 +10,6 @@ class ServicePacksController < ApplicationController
 
   def index
     @service_packs = ServicePack.all
-    binding.pry
   end
 
   def new
@@ -31,8 +30,9 @@ class ServicePacksController < ApplicationController
         render plain: ServicePackPresenter.new(@service_pack).json_export(:rate), status: 200
       }
       format.html {
-        @rates = @service_pack.mapping_rates
-        @assignments = @service_pack.assignments
+        # http://www.chrisrolle.com/en/blog/benchmark-preload-vs-eager_load
+        @rates = @service_pack.mapping_rates.preload(:activity)
+        @assignments = @service_pack.assignments.preload(:project)
       }
       format.csv {
         # projection order is not significant
@@ -119,7 +119,7 @@ class ServicePacksController < ApplicationController
       # binding.pry
       if @sp.save
         flash[:notice] = -'Service Pack update successful.'
-        redirect_to 'show'
+        redirect_to @sp
       else
         flash.now[:error] = -'Service Pack update failed.'
         render 'edit'
@@ -139,7 +139,7 @@ class ServicePacksController < ApplicationController
     end
     if @sp.assigned?
       flash.now[:error] = "Please unassign this SP from all projects before proceeding!"
-      render 'show' and return
+      redirect_to @sp
     end
     @sp.destroy!
 

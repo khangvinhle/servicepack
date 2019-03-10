@@ -8,7 +8,7 @@
     Choose a Service Pack to apply:
     <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>
       <option selected>--Pick one Service Pack--</option> 
-      <% @assignables.find_each do |assignable| %>
+      <% @assignables.each do |assignable| %>
         <%= content_tag(:option, assignable.name, value: assignable.id, data: {start: assignable.started_date.to_s, end: assignable.expired_date.to_s, cap: assignable.total_units, rem: assignable.remained_units}) %>
       <% end %>
     <% end %>
