@@ -10,6 +10,7 @@ class ServicePacksController < ApplicationController
 
   def index
     @service_packs = ServicePack.all
+    binding.pry
   end
 
   def new
@@ -112,17 +113,19 @@ class ServicePacksController < ApplicationController
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
     if activity_id.uniq.length == activity_id.length
-      @sp.update(service_pack_edit_params)
-      # render plain: 'not duplicated'
+      # No duplication
+      add_units
+      @sp.assign_attributes(service_pack_edit_params)
+      # binding.pry
       if @sp.save
         flash[:notice] = -'Service Pack update successful.'
-        redirect_to action: :show, id: @sp.id and return
+        redirect_to 'show'
       else
         flash.now[:error] = -'Service Pack update failed.'
         render 'edit'
       end
     else
-      # render plain: 'duplicated'
+      # Duplication
       flash.now[:error] = -'Only one rate can be defined to one activity.'
       render 'edit'
     end
@@ -226,6 +229,14 @@ class ServicePacksController < ApplicationController
   def service_pack_edit_params
     params.require(:service_pack).permit(:threshold1, :threshold2,
                                         mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+  end
+
+  def add_units
+    return unless params[:service_pack][:total_units]
+    if (t = params[:service_pack][:total_units].to_f) <= 0.0
+      @sp.errors.add(:total_units, 'is invalid') and return
+    end
+    @sp.grant(t - @sp.total_units) unless t == @sp.total_units
   end
 
 end

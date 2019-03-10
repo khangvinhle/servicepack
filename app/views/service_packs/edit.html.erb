@@ -7,7 +7,6 @@
 
 <%= form_for @sp, local: true do |form| %>
 
-    <!--  print errors if any-->
     <% if @sp.errors.any? %>
       <div id="error-explanation">
         <h2>
@@ -20,7 +19,11 @@
         </ul>
       </div>
     <% end %>
-    
+    <p>
+      <%= form.label :total_units %>
+      <%= form.number_field :total_units %>
+      <span>Add or remove units</span>
+    </p>
     <p>
       <%= form.label :threshold1 %>
       <%= form.number_field :threshold1, placeholder: -'Threshold 1' %>
