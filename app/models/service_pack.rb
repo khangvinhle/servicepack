@@ -51,7 +51,7 @@ class ServicePack < ApplicationRecord
   end
 
   def unavailable? # available SP might not be assignable
-    used_up? && expired?
+    used_up? || expired?
   end
 
   def available?

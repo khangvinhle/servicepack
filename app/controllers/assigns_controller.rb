@@ -8,19 +8,19 @@ class AssignsController < ApplicationController
     return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
 
     if assigned?(@project)
-      flash.now[:alert] = "You must unassign first!"
+      flash.now[:alert] = -'You must unassign first!'
       render_400 and return
     end
     @service_pack = ServicePack.find_by(id: params[:assign][:service_pack_id])
     if @service_pack.nil?
-      flash.now[:alert] = "Service Pack not found"
+      flash.now[:alert] = -'Service Pack not found'
       render_404 and return
     end
     if @service_pack.available?
-        # binding.pry
-        assign_to(@service_pack, @project)
-        flash.now[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
-        render 'already_assigned' and return
+      # binding.pry
+      assign_to(@service_pack, @project)
+      flash.now[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
+      render -'already_assigned' and return
     else
       # already assigned for another project
       # constraint need
@@ -73,9 +73,99 @@ class AssignsController < ApplicationController
       render -'already_assigned'
     end
   end
+  
+  def transfer
+    return head 403 unless
+    User.current.allowed_to?(:assign_service_packs, @project) &&
+    User.current.allowed_to?(:unassign_service_packs, @project)
 
-  def select_to_transfer
-      return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
+    unless @assignment = assigned?(@project)
+      flash.now[:alert] = -'Project has not been assigned'
+      render_400 and return
+    end
+    if params[:sp_to].to_i == @assignment.service_pack_id
+      flash[:alert] = -'Transfering to the same SP'
+      redirect_to action: :show and return
+    end
+    unless sp_to = ServicePack.find_by(id: params[:sp_to])
+      flash.now[:alert] = -'Service Pack not found'
+      render_400 and return
+    end
+    if sp_to.unavailable?
+      flash[:alert] = -'Service Pack cannot be assigned'
+      redirect_to action: :show and return
+    end
+
+    assigned_time = @assignment.updated_at.strftime(-'%Y-%m-%d %H:%M:%S')
+    binding.pry
+
+    sp_from_id = @assignment.service_pack_id
+    get_parent_id = <<-SQL
+      SELECT id, COALESCE(parent_id, id) AS pid
+      FROM #{TimeEntryActivity.table_name}
+      WHERE type = 'TimeEntryActivity'
+      SQL
+    join_clause = <<-SQL
+      service_pack_entries t1
+      INNER JOIN time_entries t2
+      ON t1.time_entry_id = t2.id AND t1.updated_at >= '#{assigned_time}'
+      AND t2.project_id = #{@project.id}
+      INNER JOIN (#{get_parent_id}) t3
+      ON t2.activity_id = t3.id
+      INNER JOIN mapping_rates t4
+      ON t3.pid = t4.activity_id AND t4.service_pack_id = #{sp_to.id}
+      SQL
+
+    # 1. Return units back to SP_from
+    # 2. Change all units "marked" to SP_to and update consumption
+    # 3. Update assignment
+    # 4. Update all the entries --
+
+    queries = []
+
+    queries << <<-SQL
+              UPDATE service_packs 
+              SET updated_at = CURRENT_TIMESTAMP(),
+              remained_units = remained_units + 
+                (SELECT SUM(units)
+                FROM service_pack_entries t1
+                INNER JOIN #{TimeEntry.table_name} t2
+                ON t1.time_entry_id = t2.id AND t2.project_id = #{@project.id}
+                WHERE t1.updated_at >= '#{assigned_time}'
+                )
+              WHERE id = #{sp_from_id}
+              SQL
+    queries << <<-SQL
+              UPDATE service_packs
+              SET
+              remained_units = remained_units -
+                (SELECT SUM(t2.hours * t4.units_per_hour)
+                FROM #{join_clause})
+              , updated_at = CURRENT_TIMESTAMP()
+              WHERE id = #{sp_to.id}
+              SQL
+    queries << <<-SQL
+              UPDATE #{Assign.table_name}
+              SET service_pack_id = #{sp_to.id},
+              unassign_date = '#{sp_to.expired_date}'
+              WHERE id = #{@assignment.id}
+              SQL
+    queries << <<-SQL
+              UPDATE #{join_clause}
+              SET t1.updated_at = CURRENT_TIMESTAMP(), t1.units = t2.hours * t4.units_per_hour,
+              t1.service_pack_id = #{sp_to.id}
+              WHERE t1.updated_at >= '#{assigned_time}';
+              SQL
+    # render plain: queries
+    ActiveRecord::Base.transaction do
+      queries.each do |sql| ActiveRecord::Base.connection.exec_query(sql) end
+      flash[:success] = -'Assignment successfully transferred'
+    rescue
+      flash[:alert] = -'One or both Service Packs might have been removed!'
+    ensure
+      redirect_to action: :show and return
+    end
+>>>>>>> Backend of transfer SP
   end
   
   # =======================================================
@@ -141,8 +231,9 @@ class AssignsController < ApplicationController
     where_clause = "WHERE t2.project_id = ?"
     where_clause << (start_day.nil? ? '' : ' AND t1.created_at BETWEEN ? AND ?')
     query = body_query + where_clause + group_clause
-    par = start_day.nil? ? [query, params[@project.id]] : [query, params[@project.id], start_day, end_day]
+    par = start_day.nil? ? [query, @project.id] : [query, @project.id, start_day, end_day]
     sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
+    # render plain: sql
     render json: ActiveRecord::Base.connection.exec_query(sql).to_hash, status: 200
   end
 end
