@@ -75,9 +75,7 @@ class AssignsController < ApplicationController
   end
   
   def transfer
-    return head 403 unless
-    User.current.allowed_to?(:assign_service_packs, @project) &&
-    User.current.allowed_to?(:unassign_service_packs, @project)
+    return head 403 unless User.current.allowed_to?(:transfer_service_packs, @project)
 
     unless @assignment = assigned?(@project)
       flash.now[:alert] = -'Project has not been assigned'
@@ -159,13 +157,21 @@ class AssignsController < ApplicationController
     # render plain: queries
     ActiveRecord::Base.transaction do
       queries.each do |sql| ActiveRecord::Base.connection.exec_query(sql) end
-      flash[:success] = -'Assignment successfully transferred'
+      flash[:success] = "Assignment successfully transferred to #{sp_to.name}"
     rescue
       flash[:alert] = -'One or both Service Packs might have been removed!'
     ensure
       redirect_to action: :show and return
     end
 >>>>>>> Backend of transfer SP
+  end
+
+  def transferables
+    if User.current.allowed_to?(:transfer_service_packs, @project)
+      render plain: ServicePack.availables.to_json(except: [:threshold1, :threshold2, :updated_at, :created_at])
+    else
+      render plain: -'unauthorized', status: 403
+    end
   end
   
   # =======================================================

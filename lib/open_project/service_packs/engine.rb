@@ -20,13 +20,13 @@ module OpenProject::ServicePacks
         permission :assign_service_packs, {assigns: [:assign, :show]}, require: :member
         permission :unassign_service_packs, {assigns: [:unassign, :show]}, require: :member
         permission :see_assigned_service_packs, {assigns: [:show]}, require: :member
+        permission :transfer_assignment, {assigns: [:transfer, :transferables]}, require: :member
       end
 
       menu :admin_menu,
            :service_packs,
            { controller: '/service_packs', action: 'index' },
            after: :overview,
-           param: :project_id,
            caption: 'Service Packs',
            icon: 'icon2 icon-bug',
            html: {id: 'service_packs-menu-item'}
