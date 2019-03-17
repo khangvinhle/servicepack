@@ -18,4 +18,6 @@
 <br/>
 <% if @can_unassign ||= User.current.allowed_to?(:unassign_service_packs, @project) %>
   <%= link_to -'Unassign', assigns_unassign_path(@project), method: :post, class: -'button', data: { confirm: -'Are you sure?' }%>
+  <% binding.pry %>
+  <%= link_to 'Transfering this SP', sp_transfer_path(assignment_id: "#{@assignment.id}") %>
 <% end %>

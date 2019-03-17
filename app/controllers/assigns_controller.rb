@@ -69,6 +69,10 @@ class AssignsController < ApplicationController
       render -'already_assigned'
     end
   end
+
+  def select_to_transfer
+      return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
+  end
   
   # =======================================================
   # :Docs
