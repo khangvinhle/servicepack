@@ -20,33 +20,48 @@
         </ul>
       </div>
     <% end %>
-    
-    <p>
-      <%= form.label :threshold1 %>
-      <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
-    </p>
-    <p>
-      <%= form.label :threshold2 %>
-      <%= form.number_field :threshold2, placeholder: 'Threshold 2' %>
-    </p>
 
-    <h2>Mapping rates:</h2>
+    <div class="form--field">
+      <%= form.label :threshold1, class: "form--label" %>
+      <span class="form--field-container">
+        <span class="form--text-field-container -slim">
+          <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
+        </span>
+      </span>
+    </div>
 
-    <ul>
+    <div class="form--field">
+      <%= form.label :threshold2, class: "form--label" %>
+      <span class="form--field-container">
+        <span class="form--text-field-container -slim">
+          <%= form.number_field :threshold2, placeholder: 'Threshold 2' %>
+        </span>
+      </span>
+    </div>
+
+    <hr>
+
+    <div id="rates-input">
+      <table id="table-rates-input">
+        <tr>
+          <th>Activity</th>
+          <th>Rate</th>
+        </tr>
         <%= form.fields_for :mapping_rates do |rates_form| %>
-          <li>
-            <%= rates_form.label rates_form.object.activity.name %>
-            <%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', required: true %>
-            <%= rates_form.hidden_field :activity_id %>
-          </li>
+          <tr>
+            <td><%= rates_form.label "#{rates_form.object.activity.name}:" %></td>
+            <td><%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', required: true %></td>
+            <span><%= rates_form.hidden_field :activity_id %></span>
+          </tr>
         <% end %>
-    </ul>
-   
+      </table>
+    </div>
+
    <div class="button-container">
-    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %> 
-    <%= link_to "Back", service_packs_path, class: 'button -highlight -edit' %> 
+    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
+    <%= link_to "Back", service_packs_path, class: 'button -highlight -edit' %>
    </div>
-    
+
 <% end %>
 
 

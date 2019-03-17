@@ -17,9 +17,6 @@ td, th {
   padding: 8px;
 }
 
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
 
 .grid-container {
   display: grid;
@@ -75,3 +72,22 @@ hr {
 .button-container {
   margin-bottom: 10px;
 }
+
+#rates-input {
+  padding-left: 30px;
+  padding-bottom: 20px;
+  overflow-x: auto;
+}
+
+#table-rates-input {
+  width: 40%;
+}
+
+table#table-rates-input td {
+  border: 0px;
+}
+
+table#table-rates-input th {
+  border: 0px;
+}
+

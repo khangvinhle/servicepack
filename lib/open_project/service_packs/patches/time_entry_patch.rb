@@ -2,7 +2,7 @@ module OpenProject::ServicePacks
 	module Patches
 		module TimeEntryPatch
 			module ClassMethods
-				
+
 			end
 
 
@@ -12,11 +12,13 @@ module OpenProject::ServicePacks
 			# Create an SP_entry with the log entry cost.
 			# Subtract the remaining counter of SP to the cost.
 
-			module InstanceMethods			
-				
+			module InstanceMethods
+
 				def log_consumed_units
 					assignment = project.assigns.where(assigned: true).first
-					return if assignment.nil?
+					if assignment.nil?
+            raise ActiveRecord::Rollback
+          end
 					activity_of_time_entry_id = self.activity.parent_id || self.activity.id
 					sp_of_project = assignment.service_pack
 					rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
@@ -24,7 +26,7 @@ module OpenProject::ServicePacks
 					# binding.pry
 					sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
 					sp_of_project.service_pack_entries << sp_entry
-					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)	
+					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
 				end
 
 
@@ -41,7 +43,7 @@ module OpenProject::ServicePacks
 					activity_of_time_entry_id = self.activity.parent_id || self.activity.id
 					rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
 					units_cost = rate * self.hours
-					
+
 					extra_consumption = units_cost - sp_entry.units
 					# Keep callbacks for SP. Entries have no callback.
 					sp_entry.update(units: units_cost) if extra_consumption != 0
@@ -49,16 +51,16 @@ module OpenProject::ServicePacks
 					sp_of_project.save
 				end
 
-				def get_consumed_units_back				
+				def get_consumed_units_back
 					sp_entry = self.service_pack_entry
 					return if sp_entry.nil?
 					service_pack = sp_entry.service_pack
 					service_pack.remained_units += sp_entry.units
 					service_pack.save
-				end			
+				end
 
 			end
-			
+
 			def self.included(receiver)
 				receiver.extend         ClassMethods
 				receiver.send :include, InstanceMethods
@@ -69,7 +71,7 @@ module OpenProject::ServicePacks
 					before_destroy :get_consumed_units_back
 				end
 			end
-		
+
 		end
 	end
 end

@@ -30,8 +30,7 @@
 
     <ul>
       <% @rates.find_each do |rate| %>
-        <li> <%= rate.activity.name %>: <%= pluralize(rate.units_per_hour, -'unit') %>/hour
-        </li>
+        <li> <%= rate.activity.name %>: <%= pluralize(rate.units_per_hour, -'unit') %>/hour </li>
       <% end %>
     </ul>
   </div>
