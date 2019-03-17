@@ -30,8 +30,9 @@ class ServicePacksController < ApplicationController
         render plain: ServicePackPresenter.new(@service_pack).json_export(:rate), status: 200
       }
       format.html {
-        @rates = @service_pack.mapping_rates
-        @assignments = @service_pack.assignments
+        # http://www.chrisrolle.com/en/blog/benchmark-preload-vs-eager_load
+        @rates = @service_pack.mapping_rates.preload(:activity)
+        @assignments = @service_pack.assignments.preload(:project)
       }
       format.csv {
         # projection order is not significant
@@ -80,11 +81,11 @@ class ServicePacksController < ApplicationController
         flash[:notice] = -'Service Pack creation successful.'
         redirect_to action: :show, id: @service_pack.id and return
       else
-        flash[:error] = -'Service Pack creation failed.'
+        flash.now[:error] = -'Service Pack creation failed.'
       end
     else
       # render plain: 'duplicated'
-      flash[:error] = -'Only one rate can be defined to one activity.'
+      flash.now[:error] = -'Only one rate can be defined to one activity.'
     end
     # the only successful path has returned 10 lines ago.
     @sh = TimeEntryActivity.shared
@@ -98,7 +99,7 @@ class ServicePacksController < ApplicationController
       flash[:error] = -"Service Pack not found"
       redirect_to action: :index and return
     end
-    @activity = @sp.time_entry_activities.build
+    # @activity = @sp.time_entry_activities.build
   end
 
   def update
@@ -112,20 +113,20 @@ class ServicePacksController < ApplicationController
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
     if activity_id.uniq.length == activity_id.length
-      @sp.update(service_pack_edit_params)
-      # render plain: 'not duplicated'
+      # No duplication
+      add_units
+      @sp.assign_attributes(service_pack_edit_params)
+      # binding.pry
       if @sp.save
         flash[:notice] = -'Service Pack update successful.'
-        redirect_to action: :show, id: @sp.id and return
+        redirect_to @sp
       else
         flash.now[:error] = -'Service Pack update failed.'
-        @activity = @sp.time_entry_activities.build
         render 'edit'
       end
     else
-      # render plain: 'duplicated'
+      # Duplication
       flash.now[:error] = -'Only one rate can be defined to one activity.'
-      @activity = @sp.time_entry_activities.build
       render 'edit'
     end
   end
@@ -137,8 +138,8 @@ class ServicePacksController < ApplicationController
       redirect_to action: :index and return
     end
     if @sp.assigned?
-      flash[:error] = "Please unassign this SP from all projects before proceeding!"
-      render 'show' and return
+      flash.now[:error] = "Please unassign this SP from all projects before proceeding!"
+      redirect_to @sp
     end
     @sp.destroy!
 
@@ -228,6 +229,14 @@ class ServicePacksController < ApplicationController
   def service_pack_edit_params
     params.require(:service_pack).permit(:threshold1, :threshold2,
                                         mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+  end
+
+  def add_units
+    return unless params[:service_pack][:total_units]
+    if (t = params[:service_pack][:total_units].to_f) <= 0.0
+      @sp.errors.add(:total_units, 'is invalid') and return
+    end
+    @sp.grant(t - @sp.total_units) unless t == @sp.total_units
   end
 
 end

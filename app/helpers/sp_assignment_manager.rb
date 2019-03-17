@@ -1,7 +1,7 @@
 module SPAssignmentManager
 	# Implementation is subject to change.
 	def assign_to(service_pack, project)
-		#binding.pry
+		# binding.pry
 		ActiveRecord::Base.transaction do
 			# one query only
 			project.assigns.update_all(assigned: false)
@@ -9,7 +9,7 @@ module SPAssignmentManager
 			@assignment.assigned = true
 			@assignment.assign_date = Date.today
 			@assignment.unassign_date = service_pack.expired_date
-			@assignment.service_pack_id = service_pack.id
+			@assignment.service_pack_id = service_pack.id if @assignment.new_record?
 			@assignment.save!
 		end
 	end
@@ -17,9 +17,9 @@ module SPAssignmentManager
 		project.assigns.find_by(assigned: true)&.terminate # ruby >= 2.3.0 "safe navigation operator"
 	end
 	def unassigned?(project)
-		project.assigns.where(assigned: true).empty?
+		!assigned?(project)
 	end
 	def assigned?(project)
-		!unassigned?(project)
+		project.assigns.find_by(assigned: true)
 	end
 end

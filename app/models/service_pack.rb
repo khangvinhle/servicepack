@@ -100,6 +100,11 @@ class ServicePack < ApplicationRecord
     assigns.where(assigned: true)
   end
 
+  def grant(units)
+    self.total_units += units
+    self.remained_units += units
+    self
+  end
 
   private
 

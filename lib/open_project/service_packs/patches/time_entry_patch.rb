@@ -17,6 +17,7 @@ module OpenProject::ServicePacks
 				def log_consumed_units
 					assignment = project.assigns.where(assigned: true).first
 					if assignment.nil?
+            self.errors[:base] << "Cannot log time because none SP was assigned"
             raise ActiveRecord::Rollback
           end
 					activity_of_time_entry_id = self.activity.parent_id || self.activity.id

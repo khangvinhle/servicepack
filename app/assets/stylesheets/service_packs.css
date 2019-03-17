@@ -91,3 +91,32 @@ table#table-rates-input th {
   border: 0px;
 }
 
+#error-explanation {
+  background-color: rgba(255,255,0,0.41);
+}
+
+#error-explanation h2 {
+  color: #fc0000;
+}
+
+#detailed-sp {
+  overflow: auto;
+}
+
+.sp {
+  border: 1.5px solid;
+  border-color: #EAEAEA;
+  height: 250px;
+  margin: 20px;
+  padding: 20px;
+}
+
+.sp.description {
+  float: left;
+  width: 45%;
+}
+
+.sp.rates {
+  float: left;
+  width: 45%;
+}

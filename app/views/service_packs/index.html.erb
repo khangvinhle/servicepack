@@ -17,7 +17,7 @@
 	  <th>Assigned</th>
   </tr>
  
-  <% @service_packs.find_each do |sp| %>
+  <% @service_packs.each do |sp| %>
     <tr>
       <td><%= link_to sp.name, service_pack_path(sp) %></td>
       <td><%= sp.total_units %></td>
@@ -26,7 +26,7 @@
       <td><%= sp.expired_date %></td>
       <td><%= sp.threshold1 %></td>
       <td><%= sp.threshold2 %></td>
-      <td><%= (sp.assigned? ? '&#x2714' : '<strong>X</strong>').html_safe %></td>
+      <td><%= (sp.assigned? ? -'&#x2714' : -'<strong>X</strong>').html_safe %></td>
     </tr>
   <% end %>
 

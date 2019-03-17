@@ -4,7 +4,7 @@
 <% local_assigns[:additional_breadcrumb] = @service_pack.name %>
 <% html_title l(:label_administration), @service_pack.name %>
 
-<h2><%= @service_pack.name %></h2>
+<h2 style="text-align: center;"><%= @service_pack.name %></h2>
 
 <!-- this can be improved, less thick border, a bit more line-height and stuff -->
 
@@ -17,31 +17,29 @@
 <!--  <div> <%#= @service_pack.started_date %> </div>-->
 <!--  <div> Expired Date: </div>-->
 <!--  <div> <%#= @service_pack.expired_date %> </div>-->
-<p>Total units: <%= @service_pack.total_units %></p>
-<p>Remain units: <%= @service_pack.remained_units %></p>
-<p>Started date: <%= @service_pack.started_date %></p>
-<p>Expired date: <%= @service_pack.expired_date %></p>
-<!--</div>-->
 
-<br/>
-<div class='combine'>
-  <div class='rates'>
-    <h2>Rates:</h2>
-
-    <ul>
-      <% @rates.find_each do |rate| %>
-        <li> <%= rate.activity.name %>: <%= pluralize(rate.units_per_hour, -'unit') %>/hour </li>
-      <% end %>
-    </ul>
+<section id="detailed-sp">
+  <div class="sp description">
+    <div class="sp-content">
+      <h2>Description</h2>
+      <p>Total units: <%= @service_pack.total_units %></p>
+      <p>Remain units: <%= @service_pack.remained_units %></p>
+      <p>Started date: <%= @service_pack.started_date %></p>
+      <p>Expired date: <%= @service_pack.expired_date %></p>
+    </div>
   </div>
-<!--
-  <div class='stat'>
-    <button id='view-stat'>View Stat</button>
-  </div>
--->
-</div>
 
-<%= render partial: 'active_assignments' %>
+  <div class="sp rates">
+    <div class="sp-content">
+      <h2>Rates</h2>
+      <ul>
+        <% @rates.each do |rate| %>
+          <li> <%= rate.activity.name %>: <%= pluralize(rate.units_per_hour, -'unit') %>/hour</li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</section>
 
 <div class='button-container'>
   <%= link_to -'Edit Service Pack', edit_service_pack_path(@service_pack), class: -'button -alt-highlight' %>
