@@ -16,6 +16,22 @@
   <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
 </div>
 <br/>
+<% if User.current.allowed_to?(:transfer_assignment, @project) %>
+  <%= form_with model: @assignment, url: assigns_transfer_path(@project), local: true, method: :post do |f| %>
+    Choose a Service Pack to apply:
+    <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>
+      <option selected>--Pick one Service Pack--</option> 
+      <% ServicePack.availables.each do |assignable| %>
+        <%= content_tag(:option, assignable.name, value: assignable.id, data: {start: assignable.started_date.to_s, end: assignable.expired_date.to_s, cap: assignable.total_units, rem: assignable.remained_units}) %>
+      <% end %>
+    <% end %>
+    <br/>
+    <%= f.submit -'Transfer Assignment', class: -'button -alt-highlight', id: 'sp-assign-button' %>
+  <% end %>
+  <%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs %>
+  <div id='sp-content'></div>
+<br/>
+<% end %>
 <% if @can_unassign ||= User.current.allowed_to?(:unassign_service_packs, @project) %>
   <%= link_to -'Unassign', assigns_unassign_path(@project), method: :post, class: -'button', data: { confirm: -'Are you sure?' }%>
   <% binding.pry %>

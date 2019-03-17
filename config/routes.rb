@@ -7,7 +7,7 @@ OpenProject::Application.routes.draw do
   	get '/assigns', to: 'assigns#show'
   	post '/assigns/assign', to: 'assigns#assign'
   	post '/assigns/unassign', to: 'assigns#unassign'
-  	get '/assigns/transfer', to: 'assigns#transfer'
+  	post'/assigns/transfer', to: 'assigns#transfer'
     get '/assigns/transferables', to: 'assigns#transferables', constraints: lambda { |req| req.format == :json }
   	get '/assigns/statistics', to: 'assigns#statistics', constraints: lambda { |req| req.format == :json }
   	get '/assigns/:assignment_id/transfer', to: 'assigns#select_to_transfer', as: 'sp_transfer'

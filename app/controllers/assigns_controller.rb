@@ -57,7 +57,7 @@ class AssignsController < ApplicationController
         # as the single one is terminated.
       end
     end
-    # binding.pry
+    binding.pry
     if @assignment.nil?
       if @can_assign ||= User.current.allowed_to?(:assign_service_packs, @project)
         @assignables = ServicePack.availables
@@ -75,17 +75,17 @@ class AssignsController < ApplicationController
   end
   
   def transfer
-    return head 403 unless User.current.allowed_to?(:transfer_service_packs, @project)
-
+    return head 403 unless User.current.allowed_to?(:transfer_assignment, @project)
+    sp_to = params[:assign][:service_pack_id]
     unless @assignment = assigned?(@project)
       flash.now[:alert] = -'Project has not been assigned'
       render_400 and return
     end
-    if params[:sp_to].to_i == @assignment.service_pack_id
+    if sp_to.to_i == @assignment.service_pack_id
       flash[:alert] = -'Transfering to the same SP'
       redirect_to action: :show and return
     end
-    unless sp_to = ServicePack.find_by(id: params[:sp_to])
+    unless sp_to = ServicePack.find_by(id: sp_to)
       flash.now[:alert] = -'Service Pack not found'
       render_400 and return
     end
@@ -95,7 +95,7 @@ class AssignsController < ApplicationController
     end
 
     assigned_time = @assignment.updated_at.strftime(-'%Y-%m-%d %H:%M:%S')
-    binding.pry
+    # binding.pry
 
     sp_from_id = @assignment.service_pack_id
     get_parent_id = <<-SQL
@@ -145,7 +145,8 @@ class AssignsController < ApplicationController
     queries << <<-SQL
               UPDATE #{Assign.table_name}
               SET service_pack_id = #{sp_to.id},
-              unassign_date = '#{sp_to.expired_date}'
+              unassign_date = '#{sp_to.expired_date}',
+              updated_at = CURRENT_TIMESTAMP()
               WHERE id = #{@assignment.id}
               SQL
     queries << <<-SQL
@@ -157,17 +158,16 @@ class AssignsController < ApplicationController
     # render plain: queries
     ActiveRecord::Base.transaction do
       queries.each do |sql| ActiveRecord::Base.connection.exec_query(sql) end
-      flash[:success] = "Assignment successfully transferred to #{sp_to.name}"
+      flash[:notice] = "Assignment successfully transferred to #{sp_to.name}"
     rescue
       flash[:alert] = -'One or both Service Packs might have been removed!'
     ensure
       redirect_to action: :show and return
     end
->>>>>>> Backend of transfer SP
   end
 
   def transferables
-    if User.current.allowed_to?(:transfer_service_packs, @project)
+    if User.current.allowed_to?(:transfer_assignment, @project)
       render plain: ServicePack.availables.to_json(except: [:threshold1, :threshold2, :updated_at, :created_at])
     else
       render plain: -'unauthorized', status: 403
