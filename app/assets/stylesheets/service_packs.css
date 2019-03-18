@@ -106,17 +106,22 @@ table#table-rates-input th {
 .sp {
   border: 1.5px solid;
   border-color: #EAEAEA;
-  height: 250px;
+  height: 300px;
   margin: 20px;
   padding: 20px;
 }
 
 .sp.description {
   float: left;
-  width: 45%;
+  width: 27%;
 }
 
 .sp.rates {
   float: left;
-  width: 45%;
+  width: 27%;
+}
+
+.sp.assigned {
+  float: left;
+  width: 27%;
 }

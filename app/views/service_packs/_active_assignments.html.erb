@@ -4,7 +4,7 @@
   </p>
   <ul>
     <% @assignments.each do |assignment| %>
-      <li><%= assignment.project.name %></li>
+      <li><%= link_to "#{assignment.project.name}", project_path(project_id: assignment.project.id)  %></li>
     <% end %>
   </ul>
 <% else %>
