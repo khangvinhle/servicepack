@@ -1,10 +1,10 @@
-<% if !(@assignments.empty?) %>
+<% unless @assignments.empty? %>
   <p id='assignments-box'>
     This Service Pack has been assigned for <%= @assignments.count>1? -'these projects:' : -'this project:' %>
   </p>
   <ul>
     <% @assignments.each do |assignment| %>
-      <li><%= link_to "#{assignment.project.name}", project_path(project_id: assignment.project.id)  %></li>
+      <li><%= link_to assignment.project.name, project_path(assignment.project)  %></li>
     <% end %>
   </ul>
 <% else %>
