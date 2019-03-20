@@ -10,6 +10,8 @@ class ServicePacksController < ApplicationController
 
   def index
     @service_packs = ServicePack.all
+      # for demo
+      #ServicePacksMailer.notify_under_threshold1(User.first,@service_packs.first).deliver_now
   end
 
   def new
