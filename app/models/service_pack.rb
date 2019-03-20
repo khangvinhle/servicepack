@@ -2,6 +2,8 @@ class ServicePack < ApplicationRecord
   before_create :default_remained_units
 
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
+  after_save :knock_out, if: :used_up?, on: :consumption
+
   has_many :assigns, dependent: :destroy
   has_many :active_assignments, -> {where("assigned = ? and unassign_date >= ?", true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
@@ -39,7 +41,8 @@ class ServicePack < ApplicationRecord
   end
 
   def revoke_all_assignments
-    assignments.update_all(assigned: false, unassign_date: Date.today)
+    # 
+    assignments.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
   end
 
   def remain_units_in_percent
@@ -108,12 +111,16 @@ class ServicePack < ApplicationRecord
   end
 
   ### START CRON JOBS ###
+  # modify User param first
+  # deliver_later doesn't work
+
   def self.check_expired_sp
-    # modify the User param
     ServicePack.find_each do |sp|
       ServicePacksMailer.expired_email(User.last, sp).deliver_now if sp.expired?
     end
   end
+
+  # will be replaced
 
   def self.check_used_up
     ServicePack.find_each do |sp|
@@ -147,5 +154,12 @@ class ServicePack < ApplicationRecord
 
   def must_not_expire_in_the_past
     @errors.add(:expired_date, 'must not be in the past') if expired_date < Date.today
+  end
+
+  def knock_out
+    self.revoke_all_assignments
+    User.where(admin: true).each do |admin|
+      ServicePacksMailer.used_up_email(admin, self).deliver_later
+    end
   end
 end

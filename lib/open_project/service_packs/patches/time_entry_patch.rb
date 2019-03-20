@@ -17,9 +17,9 @@ module OpenProject::ServicePacks
 				def log_consumed_units
 					assignment = project.assigns.where(assigned: true).first
 					if assignment.nil?
-            self.errors[:base] << "Cannot log time because none SP was assigned"
-            raise ActiveRecord::Rollback
-          end
+            			self.errors[:base] << "Cannot log time because none SP was assigned"
+            			raise ActiveRecord::Rollback
+          			end
 					activity_of_time_entry_id = self.activity.parent_id || self.activity.id
 					sp_of_project = assignment.service_pack
 					rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
@@ -27,8 +27,9 @@ module OpenProject::ServicePacks
 					# binding.pry
 					sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
 					sp_of_project.service_pack_entries << sp_entry
-					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
-
+					sp_of_project.remained_units -= units_cost
+					sp_of_project.save(context: :consumption)
+=begin
           if sp_of_project.remained_units <= 0
             assignment.update(assigned: false)
             admin_users = User.where(admin: true)
@@ -36,6 +37,7 @@ module OpenProject::ServicePacks
               ServicePacksMailer.used_up_email(admin_user, sp_of_project).deliver_now
             end
           end
+=end
 
         end
 
@@ -58,7 +60,7 @@ module OpenProject::ServicePacks
 					# Keep callbacks for SP. Entries have no callback.
 					sp_entry.update(units: units_cost) if extra_consumption != 0
 					sp_of_project.remained_units -= extra_consumption
-					sp_of_project.save
+					sp_of_project.save(context: :consumption)
 				end
 
 				def get_consumed_units_back
