@@ -28,7 +28,16 @@ module OpenProject::ServicePacks
 					sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
 					sp_of_project.service_pack_entries << sp_entry
 					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
-				end
+
+          if sp_of_project.remained_units <= 0
+            assignment.update(assigned: false)
+            admin_users = User.where(admin: true)
+            admin_users.each do |admin_user|
+              ServicePacksMailer.used_up_email(admin_user, sp_of_project).deliver_now
+            end
+          end
+
+        end
 
 
 				def update_consumed_units
