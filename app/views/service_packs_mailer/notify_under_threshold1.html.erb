@@ -1,0 +1,2 @@
+<h3>Hi <%= @user.firstname %> <%= @user.lastname %></h3>
+<p>The service pack <%= @sp.name %> applied on your projects now only has <%= @sp.remained_units %> units left, or <%= (@sp.remained_units*100.0/@sp.total_units).round(1) %>% left</p>

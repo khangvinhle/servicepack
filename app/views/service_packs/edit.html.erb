@@ -1,59 +1,68 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
+<%= stylesheet_link_tag -'service_packs', plugin: :openproject_service_packs %>
+
+<% local_assigns[:additional_breadcrumb] = @sp.name %>
+<% html_title l(:label_administration), -'Edit Service Pack' %>
 
 <h2> <%= @sp.name %> </h2>
 
-<%= form_for @sp, url: service_packs_path, local: true do |form| %>
+<%= form_for @sp, local: true do |form| %>
 
-  <!--  print errors if any-->
-  <% if @sp.errors.any? %>
-    <div id="error_explanation">
-      <h2>
-        <%= pluralize(@sp.errors.count, "error") %> prohibited this service pack from being saved:
-      </h2>
-      <ul>
-        <% @sp.errors.full_messages.each do |e| %>
-          <li><%= e %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <!--  edit form-->
-  <p>
-    <%= form.label :threshold1 %><br>
-    <%= form.number_field :threshold1, placeholder: "threshold1" %>
-  </p>
-  <p>
-    <%= form.label :threshold2 %><br>
-    <%= form.number_field :threshold2 %>
-  </p>
-
-  <h2>Mapping rates:</h2>
-
-  <ul>
-    <%= form.fields_for :mapping_rates do |rates_form| %>
-      <li>
-        <%= rates_form.label "#{rates_form.object.activity.name}" %>  
-        <%= rates_form.label :units_per_hour %>
-        <%= rates_form.number_field :units_per_hour %>
-        <%= rates_form.hidden_field :activity_id %>
-      </li>
-      <hr>
+    <% if @sp.errors.any? %>
+      <div id="error-explanation">
+        <h2>
+          <%= pluralize(@sp.errors.count, -"error") %> prohibited this service pack from being saved:
+        </h2>
+        <ul>
+          <% @sp.errors.full_messages.each do |e| %>
+            <li><%= e %></li>
+          <% end %>
+        </ul>
+      </div>
     <% end %>
-  </ul>
 
-  <p>
-    <%= form.submit "Update" %>
-  </p>
+    <div class="form--field">
+      <%= form.label :threshold1, class: "form--label" %>
+      <span class="form--field-container">
+        <span class="form--text-field-container -slim">
+          <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
+        </span>
+      </span>
+    </div>
+
+    <div class="form--field">
+      <%= form.label :threshold2, class: "form--label" %>
+      <span class="form--field-container">
+        <span class="form--text-field-container -slim">
+          <%= form.number_field :threshold2, placeholder: 'Threshold 2' %>
+        </span>
+      </span>
+    </div>
+
+    <hr>
+
+    <div id="rates-input">
+      <table id="table-rates-input">
+        <tr>
+          <th>Activity</th>
+          <th>Rate</th>
+        </tr>
+        <%= form.fields_for :mapping_rates do |rates_form| %>
+          <tr>
+            <td><%= rates_form.label "#{rates_form.object.activity.name}:" %></td>
+            <td><%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', required: true %></td>
+            <span><%= rates_form.hidden_field :activity_id %></span>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+
+   <div class="button-container">
+    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
+    <%= link_to "Back", service_packs_path, class: 'button -highlight -edit' %>
+   </div>
+
 <% end %>
 
 </body>
 </html>
+

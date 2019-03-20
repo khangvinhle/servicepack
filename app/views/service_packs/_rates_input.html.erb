@@ -1,0 +1,15 @@
+<div id="rates-input">
+  <table id="table-rates-input">
+    <tr>
+      <th>Activity</td>
+      <th>Rate</td>
+    </tr>
+    <% (1..@c).each do |i| %>
+      <tr>
+      	<td><label><%= @sh[i - 1].name %>: </label></td>
+        <td><input type='number' name="service_pack[mapping_rates_attributes][<%= i %>][units_per_hour]" min='0' class='rates' placeholder='Unit per hour' required></td>
+        <span><input type='hidden' name="service_pack[mapping_rates_attributes][<%= i %>][activity_id]" value="<%= @sh[i - 1].id %>"/></span>
+      </tr>
+    <% end %>
+  </table>
+</div>

@@ -1,50 +1,61 @@
-<style>
-.grid-container {
-  display: grid;
-  grid-template-columns: auto auto;
-/*  background-color: #2196F3;*/
-  padding: 10px;
-}
+<%= javascript_include_tag 'service_packs.js', plugin: :openproject_service_packs %>
+<%= stylesheet_link_tag 'service_packs', plugin: :openproject_service_packs %>
 
-.grid-container > div {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid black;
-  text-align: left;
-  font-size: 20px;
-}
-</style>
+<% local_assigns[:additional_breadcrumb] = @service_pack.name %>
+<% html_title l(:label_administration), @service_pack.name %>
 
+<h2 style="text-align: center;"><%= @service_pack.name %></h2>
 
-<h2>
-  <strong><%= @service_pack.name %></strong>
-</h2>
- 
-<div class="grid-container">
-  <div> Total Units: </div>
-  <div> <%= @service_pack.total_units %> </div>
-  <div> Remained Units: </div>
-  <div> <%= @service_pack.remained_units %> </div>
-  <div> Started Date: </div>  
-  <div> <%= @service_pack.started_date %> </div>
-  <div> Expired Date: </div>
-  <div> <%= @service_pack.expired_date %> </div>
-</div>
+<!-- this can be improved, less thick border, a bit more line-height and stuff -->
 
-<br>
+<!--<div class='grid-container'>-->
+<!--  <div> Total Units: </div>-->
+<!--  <div> <%#= @service_pack.total_units %> </div>-->
+<!--  <div> Remained Units: </div>-->
+<!--  <div> <%#= @service_pack.remained_units %> </div>-->
+<!--  <div> Started Date: </div>  -->
+<!--  <div> <%#= @service_pack.started_date %> </div>-->
+<!--  <div> Expired Date: </div>-->
+<!--  <div> <%#= @service_pack.expired_date %> </div>-->
 
-<h2>
-  Rates:
-</h2>
+<section id="detailed-sp">
+  <div class="sp description">
+    <div class="sp-content">
+      <h2>Description</h2>
+      <p>Total units: <%= @service_pack.total_units %></p>
+      <p>Remain units: <%= @service_pack.remained_units %></p>
+      <p>Started date: <%= @service_pack.started_date %></p>
+      <p>Expired date: <%= @service_pack.expired_date %></p>
+    </div>
+  </div>
 
-<ul>
-  <% @rates.each do |rate| %>  
-    <li> <%= "#{rate.activity.name}: #{rate.units_per_hour} (Units/hour)" %> </li>
+  <div class="sp rates">
+    <div class="sp-content">
+      <h2>Rates</h2>
+      <ul>
+        <% @rates.each do |rate| %>
+          <li> <%= rate.activity.name %>: <%= pluralize(rate.units_per_hour, -'unit') %>/hour</li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sp assigned">
+    <div class="sp-content">
+      <%=  render partial: 'active_assignments' %>
+    </div>
+  </div>
+</section>
+
+<div class='button-container'>
+  <%= link_to -'Edit Service Pack', edit_service_pack_path(@service_pack), class: -'button -alt-highlight' %>
+  <%= link_to -'Back to Service Pack home page', service_packs_path, class: -'button' %>
+  <% if @service_pack.assigned? %>
+    <%= link_to -'Delete', -'#', class: -'button destroy blocked', disabled: true %>
+    <span id='warnbox'>Please unassign this from all projects before deleting.</span>
+  <% else %>
+    <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
   <% end %>
-</ul>
-
-<%= link_to "Edit Service Pack", edit_service_pack_path(@service_pack), :class => "button -alt-highlight" %> 
-<%= link_to "Back to Service Pack home page", service_packs_path, :class => "button -alt-highlight" %>
-
-<%= link_to 'Destroy', service_pack_path(@service_pack), :class => "button", method: :delete, data: { confirm: 'Are you sure?' } %>
-
-
+</div>
+<hr/>
+<p class='other-formats'>Also available in: <%= link_to -'CSV', {action: :show, format: :csv} %></p>

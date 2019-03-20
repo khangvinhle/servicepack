@@ -1,0 +1,33 @@
+To test sending mails, two ways are sketched here:
+
+1. Use mailcatcher ‘gem install mailcatcher’. Use port 1080 to check
+mail and smtp port 1025 to send.
+
+Settings: (OP/config/environment/#{environment}.rb)
+
+config.action_mailer.delivery_method = :smtp
+config.action_mailer.smtp_settings = { address: ‘localhost‘, port: 1025 }
+
+DO NOT INCLUDE mailcatcher IN Gemfile. This is a standalone app.
+
+2. Use Gmail.
+
+This can also be used for integration test.
+
+If you are using 2FA then generate an app password from
+https://myaccount.google.com/apppasswords instead.
+
+The setting is similar to mailcatcher case.
+
+config.action_mailer.delivery_method = :smtp
+config.action_mailer.smtp_settings = {
+  address:              'smtp.gmail.com',
+  port:                 465,
+  domain:               'smtp.gmail.com',
+  user_name:            '<gmail_address>’,
+  password:             '<password>',
+  authentication:       'login',
+  enable_starttls_auto: true,
+  ssl:                  true
+}
+

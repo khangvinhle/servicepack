@@ -1,24 +1,8 @@
-<style>
-	table {
-	  font-family: arial, sans-serif;
-	  border-collapse: collapse;
-	  width: 100%;
-	}
+<%= stylesheet_link_tag -'service_packs', plugin: :openproject_service_packs %>
 
-	td, th {
-	  border: 1px solid #dddddd;
-	  text-align: left;
-	  padding: 8px;
-	}
+<% html_title l(:label_administration), -'Service Packs' %>
 
-	tr:nth-child(even) {
-	  background-color: #dddddd;
-	}
-</style>
-
-<% html_title l(:label_administration), t(:service_packs) %>
-
-<%= link_to 'New', new_service_pack_path, :class => "button -alt-highlight" %>
+<%= link_to -'New', new_service_pack_path, class: -"button -alt-highlight" %>
 
 <table>
   
@@ -26,10 +10,11 @@
     <th>Name</th>
     <th>Total Units</th>
     <th>Remained Units</th>
-	<th>Started Date</th>
-	<th>End Date</th>
-	<th>Threshold 1</th>
-	<th>Threshold 2</th>	    
+	  <th>Started Date</th>
+	  <th>Ended Date</th>
+	  <th>Threshold 1</th>
+	  <th>Threshold 2</th>
+	  <th>Assigned</th>
   </tr>
  
   <% @service_packs.each do |sp| %>
@@ -41,6 +26,7 @@
       <td><%= sp.expired_date %></td>
       <td><%= sp.threshold1 %></td>
       <td><%= sp.threshold2 %></td>
+      <td><%= (sp.assigned? ? -'&#x2714' : -'<strong>X</strong>').html_safe %></td>
     </tr>
   <% end %>
 

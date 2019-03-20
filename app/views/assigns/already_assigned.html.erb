@@ -1,0 +1,21 @@
+ <style>
+   a.button{
+    background-color: #1a67a3 !important;
+    color: #ffffff !important;
+  }
+  h2 {
+    padding-bottom: 0px;
+    font-size: 1.25em;
+  }
+</style>
+
+<div id="sp-display">
+  <h2>Service Pack <%= @service_pack.name %> already assigned to <%= @project.name %></h2><hr/>
+  <strong>Assignment Date</strong>: <%= @assignment.assign_date %>
+  <strong>Valid Until</strong>: <%= @assignment.unassign_date %>
+  <strong>Remained:</strong> <%= @service_pack.remained_units %>/<%= @service_pack.total_units %>
+</div>
+<br/>
+<% if @can_unassign ||= User.current.allowed_to?(:unassign_service_packs, @project) %>
+  <%= link_to -'Unassign', assigns_unassign_path(@project), method: :post, class: -'button', data: { confirm: -'Are you sure?' }%>
+<% end %>

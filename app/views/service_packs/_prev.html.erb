@@ -1,0 +1,5 @@
+  <%= form.fields_for :mapping_rates do |rates_form| %>
+    <%= rates_form.collection_select(:activity_id, TimeEntryActivity.shared, :id, :name) %>
+    <%= rates_form.number_field :units_per_hour, placeholder: "Units per hours" %>
+    <br>
+  <% end %>
