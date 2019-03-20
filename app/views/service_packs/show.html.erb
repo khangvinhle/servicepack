@@ -4,8 +4,6 @@
 <% local_assigns[:additional_breadcrumb] = @service_pack.name %>
 <% html_title l(:label_administration), @service_pack.name %>
 
-<h2 style="text-align: center;"><%= @service_pack.name %></h2>
-
 <!-- this can be improved, less thick border, a bit more line-height and stuff -->
 
 <!--<div class='grid-container'>-->
@@ -22,6 +20,7 @@
   <div class="sp description">
     <div class="sp-content">
       <h2>Description</h2>
+      <p>Name: <%= @service_pack.name %> </p>
       <p>Total units: <%= @service_pack.total_units %></p>
       <p>Remain units: <%= @service_pack.remained_units %></p>
       <p>Started date: <%= @service_pack.started_date %></p>

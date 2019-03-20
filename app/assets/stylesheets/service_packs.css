@@ -113,15 +113,17 @@ table#table-rates-input th {
 
 .sp.description {
   float: left;
-  width: 27%;
+  width: 46%;
 }
 
 .sp.rates {
   float: left;
-  width: 27%;
+  width: 46%;
+  height: auto;
 }
 
 .sp.assigned {
   float: left;
-  width: 27%;
+  width: 47%;
+  height: auto;
 }
