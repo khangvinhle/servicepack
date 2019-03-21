@@ -158,8 +158,7 @@ class ServicePack < ApplicationRecord
 
   def knock_out
     self.revoke_all_assignments
-    User.where(admin: true).each do |admin|
-      ServicePacksMailer.used_up_email(admin, self).deliver_later
-    end
+    Delayed::Job.enqueue UsedUpServicePackJob.new(self)
+   end
   end
 end
