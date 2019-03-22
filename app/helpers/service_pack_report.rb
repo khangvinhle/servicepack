@@ -13,7 +13,8 @@ class ServicePackReport
 		sql = <<-SQL
 			SELECT t2.spent_on, concat(t4.firstname, ' ', t4.lastname) AS user_name, t3.name AS activity_name,
 			#{project.nil? ? 't6.name' : "'#{project.name}'"} AS project_name, t5.id AS work_package_id,
-			t7.name AS type_name, t5.subject AS subject, t2.comments AS comment, t1.units AS units
+			t7.name AS type_name, t5.subject AS subject, t2.comments AS comment, t1.units AS units,
+                  t2.hours AS hours
 			FROM service_pack_entries t1
             INNER JOIN #{TimeEntry.table_name} t2
             ON t1.time_entry_id = t2.id
@@ -35,8 +36,9 @@ class ServicePackReport
 
 	def csv_extractor
 		raise -'Query not run yet' unless @entries
+            decimal_separator = I18n.t(:general_csv_decimal_separator)
 		export = CSV.generate(col_sep: ';') { |csv|
-			headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Type', -'Subject', -'Units', -'Comments']
+			headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type', -'Subject', -'Units', -'Comments']
 			# headers += custom_fields.map(&:name) # not supported
 			csv << headers
       		@entries.each do |entry|
@@ -45,9 +47,10 @@ class ServicePackReport
       				entry[-'activity_name'],
       				entry[-'project_name'],
       				entry[-'work_package_id'],
+                              entry[-'hours'].round(2).to_s.gsub(-'.', decimal_separator),
       				entry[-'type_name'],
       				entry[-'subject'],
-      				entry[-'units'],
+      				entry[-'units'].round(0),
       				entry[-'comment']
       			]
       			# fields += custom_fields.map { |f| show_value(entry.custom_value_for(f)) }
