@@ -1,7 +1,4 @@
 class ServicePacksController < ApplicationController
-
-  include CsvExtractionHelper
-
   # only allow admin
   before_action :require_admin
 
@@ -35,30 +32,7 @@ class ServicePacksController < ApplicationController
         @assignments = @service_pack.assignments.preload(:project)
       }
       format.csv {
-        # projection order is not significant
-        # Work packages can be deleted.
-        sql = <<-SQL
-            SELECT t2.spent_on, concat(t4.firstname, ' ', t4.lastname) AS user_name, t3.name AS activity_name,
-            t6.name AS project_name, t5.id AS work_package_id, t7.name AS type_name, t5.subject AS subject,
-            t2.comments AS comment, t1.units
-            FROM service_pack_entries t1
-            INNER JOIN #{TimeEntry.table_name} t2
-            ON t1.time_entry_id = t2.id
-            INNER JOIN #{TimeEntryActivity.table_name} t3
-            ON t2.activity_id = t3.id
-            INNER JOIN users t4
-            ON t2.user_id = t4.id
-            INNER JOIN projects t6
-            ON t2.project_id = t6.id
-            LEFT JOIN #{WorkPackage.table_name} t5
-            ON t2.work_package_id = t5.id
-            LEFT JOIN types t7
-            ON t5.type_id = t7.id
-            WHERE service_pack_id = #{@service_pack.id}
-            ORDER BY spent_on DESC
-            SQL
-        entries = ActiveRecord::Base.connection.exec_query(sql).to_hash
-        render csv: csv_extractor(entries), filename: "service_pack_#{@service_pack.name}.csv"
+        render csv: ServicePackReport.new(@service_pack).call, filename: "service_pack_#{@service_pack.name}.csv"
       }
     end
   end
@@ -122,12 +96,12 @@ class ServicePacksController < ApplicationController
         redirect_to @sp
       else
         flash.now[:error] = -'Service Pack update failed.'
-        render 'edit'
+        render -'edit'
       end
     else
       # Duplication
       flash.now[:error] = -'Only one rate can be defined to one activity.'
-      render 'edit'
+      render -'edit'
     end
   end
 

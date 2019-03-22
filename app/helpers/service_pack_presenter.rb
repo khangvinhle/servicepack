@@ -2,10 +2,10 @@ class ServicePackPresenter
 	attr_reader :service_pack
 	def initialize(service_pack)
 		# we don't take NIL as an option
-		if service_pack && service_pack.id
+		if service_pack&.id
 			@service_pack = service_pack
 		else
-			raise "This is NIL cannot print"
+			raise 'This is NIL cannot print'
 		end
 	end
 	def json_full_header
