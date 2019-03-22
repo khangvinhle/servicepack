@@ -19,3 +19,5 @@
 <% if @can_unassign ||= User.current.allowed_to?(:unassign_service_packs, @project) %>
   <%= link_to -'Unassign', assigns_unassign_path(@project), method: :post, class: -'button', data: { confirm: -'Are you sure?' }%>
 <% end %>
+<hr/>
+<p class='other-formats'>Also available in: <%= link_to -'CSV', {action: :report, format: :csv} %></p>
