@@ -4,6 +4,6 @@ class UsedUpServicePackJob < ApplicationJob
 		@sp = sp
 	end
 	def perform
-		ServicePacksMailer.used_up_email(*(User.where(admin: true)), @sp).deliver_now
+		User.where(admin: true).each do |user| ServicePacksMailer.used_up_email(user, @sp).deliver_now
 	end
 end

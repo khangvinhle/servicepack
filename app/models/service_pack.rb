@@ -159,6 +159,5 @@ class ServicePack < ApplicationRecord
   def knock_out
     self.revoke_all_assignments
     Delayed::Job.enqueue UsedUpServicePackJob.new(self)
-   end
   end
 end
