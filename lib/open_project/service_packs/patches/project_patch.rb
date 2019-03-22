@@ -11,4 +11,4 @@ module OpenProject::ServicePacks
   end
 end
 
-Project.send(:include, OpenProject::ServicePacks::Patches::ProjectPatch)
+# Project.send(:include, OpenProject::ServicePacks::Patches::ProjectPatch)

@@ -1,12 +1,11 @@
 //use <% javascript_include_tag %>
 function loadServicePack() {
-	var co = document.querySelector("#select-sp");
-	if (co.selectedIndex == 0) {
+	if (this.selectedIndex == 0) {
 		document.querySelector("#sp-content").innerHTML = "Please select a Service Pack";
 		document.querySelector("#sp-assign-button").disabled = true;
 		return;
 	}
-	var comp = co.options[co.selectedIndex];
+	var comp = this.options[this.selectedIndex];
 	var str = "Activation Date: " + comp.dataset.start + "<br/>";
 	str += "Expiration Date: " + comp.dataset.end + "<br/>";
 	str += "Capacity: " + comp.dataset.cap + "<br/>";
@@ -17,6 +16,5 @@ function loadServicePack() {
 }
 document.addEventListener("DOMContentLoaded", function(event) { 
 	document.querySelector("#select-sp").addEventListener("change", loadServicePack);
-	// unintrusive
 	document.querySelector("#sp-assign-button").disabled = true;
 })

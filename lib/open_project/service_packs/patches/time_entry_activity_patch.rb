@@ -13,4 +13,4 @@ module OpenProject::ServicePacks
   end
 end
 
-TimeEntryActivity.send(:include, OpenProject::ServicePacks::Patches::TimeEntryActivityPatch)
+# TimeEntryActivity.send(:include, OpenProject::ServicePacks::Patches::TimeEntryActivityPatch)

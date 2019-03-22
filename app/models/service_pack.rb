@@ -6,9 +6,9 @@ class ServicePack < ApplicationRecord
   has_many :active_assignments, -> {where("assigned = ? and unassign_date >= ?", true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
-  has_many :mapping_rates, inverse_of: :service_pack, dependent: :destroy
+  has_many :mapping_rates, inverse_of: :service_pack, dependent: :delete_all
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
-  has_many :service_pack_entries, inverse_of: :service_pack, dependent: :destroy
+  has_many :service_pack_entries, inverse_of: :service_pack, dependent: :delete_all
   # :source is the name of association on the "going out" side of the joining table
   # (the "going in" side is taken by this association)
   # example: User has many :pets, Dog is a :pets and has many :breeds. Breeds have ...

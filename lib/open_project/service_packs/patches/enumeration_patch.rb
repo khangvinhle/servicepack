@@ -34,4 +34,4 @@ module OpenProject::ServicePacks
   	end
 end
 
-Enumeration.send(:include, OpenProject::ServicePacks::Patches::EnumerationPatch)
+# Enumeration.send(:include, OpenProject::ServicePacks::Patches::EnumerationPatch)
