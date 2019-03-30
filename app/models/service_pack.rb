@@ -19,8 +19,9 @@ class ServicePack < ApplicationRecord
 
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
-
-  validates_uniqueness_of :name
+  validates_uniqueness_of :name, on: :create # SP name never changes
+  # https://rubular.com/r/CCtRDRq9jDuMmb
+  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)"
 
   validates_numericality_of :total_units, greater_than: 0
   validates_numericality_of :threshold1, :threshold2, greater_than_or_equal_to: 0, less_than_or_equal_to: 100, only_integer: true
