@@ -81,7 +81,7 @@ class AssignsController < ApplicationController
   def report
     return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
     if assignment = assigned?(@project)
-      render csv: ServicePackReport.new(assigned?(@project).service_pack).call(@project), filename: "ServicePackReport_#{@project.name.gsub(/\s+/, -'_')}.csv"
+      render csv: ServicePackReport.new(assignment.service_pack).call(@project), filename: "ServicePackReport_#{@project.name.gsub(/\s+/, -'_')}.csv"
     else
       render_404
     end
