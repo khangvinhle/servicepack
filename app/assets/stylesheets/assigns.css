@@ -1,4 +1,9 @@
-/*
-  Place all the styles related to the matching controller here.
-  They will automatically be included in application.css.
-*/
+  a.button.norm {
+    background-color: #1a67a3 !important;
+    color: #ffffff !important;
+    margin-bottom: 0;
+  }
+  #sp-display h2 {
+    padding-bottom: 0px;
+    font-size: 1.25em;
+  }
