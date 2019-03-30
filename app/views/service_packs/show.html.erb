@@ -41,20 +41,21 @@
 
   <div class="sp assigned">
     <div class="sp-content">
-      <%=  render partial: 'active_assignments' %>
+      <%= render partial: 'active_assignments' %>
     </div>
   </div>
 </section>
 
 <div class='button-container'>
-  <%= link_to -'Edit Service Pack', edit_service_pack_path(@service_pack), class: -'button -alt-highlight' %>
-  <%= link_to -'Back to Service Pack home page', service_packs_path, class: -'button' %>
+  <%= link_to -'Back to Service Pack home page', service_packs_path, class: -'button float-left' %>
+
   <% if @service_pack.assigned? %>
-    <%= link_to -'Delete', -'#', class: -'button destroy blocked', disabled: true %>
-    <span id='warnbox'>Please unassign this from all projects before deleting.</span>
+    <%= link_to -'Delete', -'#', class: -'button destroy blocked float-right', disabled: true, :title => "Please unassign this service pack from all projects before deleting!" %>
   <% else %>
-    <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
+    <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy float-right', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
   <% end %>
+  <%= link_to -'Edit Service Pack', edit_service_pack_path(@service_pack), class: -'button -alt-highlight float-right' %>
 </div>
+
 <hr/>
-<p class='other-formats'>Also available in: <%= link_to -'CSV', {action: :show, format: :csv} %></p>
+<p class='other-formats'>Report available in: <%= link_to -'CSV', {action: :show, format: :csv} %></p>
