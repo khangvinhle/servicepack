@@ -44,7 +44,11 @@ module OpenProject::ServicePacks
     end
     patches %i[Project TimeEntryActivity TimeEntry Enumeration]
     assets %w(assigns.js service_packs.js assigns.css service_packs.css)
+
+    initializer 'service_packs.register_hooks' do
+      require 'open_project/service_packs/hooks'
     end
+  end
 end
 # preserve lost path: no, you can't add a new tab into project settings from the plugin extension.
 # add_tab_entry :project_settings, name: "service_packs", partial: "assigns/show", label: :caption_service_pack
