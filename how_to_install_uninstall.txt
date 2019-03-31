@@ -1,0 +1,25 @@
+How to Install:
+0. Install OpenProject as normal.
+1. In the terminal, run "gem install rake -v 12.3.1" (all strings in this file
+are without double quotes)
+2. In the file named "Gemfile", look for "group :opf_plugins"
+3. Insert the string "gem 'openproject-service_packs', path: <replace this
+with the directory of the mod>" in one separate line.
+For example:
+group :opf_plugins do
+  gem 'openproject-service_packs', path: '~/servicepack'
+end
+4. From the OpenProject directory, run "bundle install && RAILS_ENV=production bundle exec db:migrate"
+5. Run "RAILS_ENV=production bundle exec rake assets:precompile"
+6. Start OpenProject normally.
+Service Packs should be on the Administration menu and Service Pack Assignment
+should be on the left menu in the Project.
+
+How to Uninstall:
+1. In the file named "Gemfile", look for "openproject-service_packs"
+2. Delete the line found.
+3. Run "bundle install" in the terminal.
+4. (Optional) To fully remove the plugin, remove tables named "service_pack_entries",
+"mapping_rates", "assigns" then finally "service_packs".
+
+Thanks for using our plugins.
