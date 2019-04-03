@@ -3,9 +3,16 @@
 	<span class="form--field-container">
 		<span class="form--select-container -slim">
 			<select name="[time_entry][service_pack_id]" required>
-				<option selected>--- Pick a Service Pack ---</option>
-				<% ServicePack.availables.pluck(:id, :name).each do |sp| %>
-					<option value="<%= sp[0] %>"><%= sp[1] %></option>
+				<% sp_availables = ServicePack.availables.pluck(:id, :name) %>
+				<% if te_spid = time_entry.service_pack_id %>
+					<% sp_availables.each do |sp| %>
+						<%= content_tag :option, sp[1], selected: te_spid == sp[0] %>
+					<% end %>
+				<% else %>
+					<option selected>--- Pick a Service Pack ---</option>
+					<% sp_availables.each do |sp| %>
+						<option value="<%= sp[0] %>"><%= sp[1] %></option>
+					<% end %>
 				<% end %>
 			</select>
 		</span>
