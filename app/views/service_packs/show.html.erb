@@ -25,6 +25,8 @@
       <p>Remain units: <%= @service_pack.remained_units %></p>
       <p>Started date: <%= @service_pack.started_date %></p>
       <p>Expired date: <%= @service_pack.expired_date %></p>
+      <p>Threshold 1: <%= @service_pack.threshold1 %> %</p>
+      <p>Threshold 2: <%= @service_pack.threshold2 %> %</p>
     </div>
   </div>
 
@@ -47,7 +49,7 @@
 </section>
 
 <div class='button-container'>
-  <%= link_to -'Back to Service Pack home page', service_packs_path, class: -'button float-left' %>
+  <%#= link_to -'Back to Service Pack home page', service_packs_path, class: -'button float-left' %>
 
   <% if @service_pack.assigned? %>
     <%= link_to -'Delete', -'#', class: -'button destroy blocked float-right', disabled: true, :title => "Please unassign this service pack from all projects before deleting!" %>
