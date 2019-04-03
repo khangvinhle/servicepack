@@ -10,3 +10,4 @@ class UsedUpServicePackJob < ApplicationJob
       ServicePacksMailer.used_up_email(user, @sp).deliver_now
     end
   end
+end
