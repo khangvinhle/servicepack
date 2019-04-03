@@ -27,8 +27,19 @@ module OpenProject::ServicePacks
 					# binding.pry
 					sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
 					sp_of_project.service_pack_entries << sp_entry
-					sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
-				end
+          sp_of_project.remained_units -= units_cost
+          sp_of_project.save(context: :consumption)
+=begin
+          if sp_of_project.remained_units <= 0
+            assignment.update(assigned: false)
+            admin_users = User.where(admin: true)
+            admin_users.each do |admin_user|
+              ServicePacksMailer.used_up_email(admin_user, sp_of_project).deliver_now
+            end
+          end
+=end
+
+        end
 
 
 				def update_consumed_units
@@ -49,7 +60,7 @@ module OpenProject::ServicePacks
 					# Keep callbacks for SP. Entries have no callback.
 					sp_entry.update(units: units_cost) if extra_consumption != 0
 					sp_of_project.remained_units -= extra_consumption
-					sp_of_project.save
+          sp_of_project.save(context: :consumption)
 				end
 
 				def get_consumed_units_back
@@ -66,7 +77,7 @@ module OpenProject::ServicePacks
 				receiver.extend         ClassMethods
 				receiver.send :include, InstanceMethods
 				receiver.class_eval do
-					has_one :service_pack_entry, dependent: :destroy
+          has_one :service_pack_entry, dependent: :delete
 					after_create :log_consumed_units
 					after_update :update_consumed_units
 					before_destroy :get_consumed_units_back

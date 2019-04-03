@@ -49,7 +49,7 @@
         <%= form.fields_for :mapping_rates do |rates_form| %>
           <tr>
             <td><%= rates_form.label "#{rates_form.object.activity.name}:" %></td>
-            <td><%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', required: true %></td>
+            <td><%= rates_form.number_field :units_per_hour, placeholder: -'Units per hour', class: -'rates', min: -'0', step: -'any', required: true %></td>
             <span><%= rates_form.hidden_field :activity_id %></span>
           </tr>
         <% end %>
