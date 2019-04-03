@@ -2,7 +2,7 @@
 	<label class="form--label -required" title="Which Service Pack this belongs to" for="service_pack_id">Service Pack<span class="form--label-required" aria-hidden="true">*</span></label>
 	<span class="form--field-container">
 		<span class="form--select-container -slim">
-			<select name="service_pack_id" required>
+			<select name="[time_entry][service_pack_id]" required>
 				<option selected>--- Pick a Service Pack ---</option>
 				<% ServicePack.availables.pluck(:id, :name).each do |sp| %>
 					<option value="<%= sp[0] %>"><%= sp[1] %></option>

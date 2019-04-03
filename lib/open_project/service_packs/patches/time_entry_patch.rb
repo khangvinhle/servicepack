@@ -67,6 +67,7 @@ module OpenProject::ServicePacks
 				receiver.send :include, InstanceMethods
 				receiver.class_eval do
 					has_one :service_pack_entry, dependent: :destroy
+					belongs_to :service_pack
 					after_create :log_consumed_units
 					after_update :update_consumed_units
 					before_destroy :get_consumed_units_back

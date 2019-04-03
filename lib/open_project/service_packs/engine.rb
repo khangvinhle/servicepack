@@ -48,6 +48,12 @@ module OpenProject::ServicePacks
     initializer 'service_packs.register_hooks' do
       require 'open_project/service_packs/hooks'
     end
+
+    config.to_prepare do
+      # Getting service_pack_id into time_entry
+      require 'open_project/service_packs/patches/permitted_params_patch'
+      require 'open_project/service_packs/patches/base_contract_patch'
+    end
   end
 end
 # preserve lost path: no, you can't add a new tab into project settings from the plugin extension.
