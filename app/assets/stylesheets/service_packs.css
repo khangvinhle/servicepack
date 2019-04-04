@@ -19,21 +19,6 @@ td, th {
     padding: 8px;
 }
 
-
-.grid-container {
-    display: grid;
-    grid-template-columns: auto auto;
-    /*  background-color: #2196F3;*/
-    padding: 10px;
-}
-
-.grid-container > div {
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid black;
-    text-align: left;
-    font-size: 20px;
-}
-
 .destroy {
     background-color: #fc0000 !important;
     color: #ffeeee !important;
@@ -56,11 +41,6 @@ a.blocked {
 
 hr {
     margin-top: 12px;
-}
-
-#assignments-box {
-    line-height: 1.25;
-    margin-bottom: 0.9rem;
 }
 
 .button.-highlight.-edit {
@@ -101,32 +81,52 @@ table#table-rates-input th {
     color: #fc0000;
 }
 
+
 #detailed-sp {
-    overflow: auto;
+  position: relative;
+  right: 15px;
+}
+
+#block-left {
+  float: left;
+  width: 47%;
+  height: auto;
+}
+
+#block-right {
+  float: right;
+  width: 47%;
+  height: auto;
+}
+
+@media screen and (max-width: 860px) {
+    #block-left, #block-right {
+        width: 95%;
+        float: none;
+        height: auto;
+    }
 }
 
 .sp {
     border: 1.5px solid;
     border-color: #EAEAEA;
-    height: 300px;
-    margin: 20px;
-    padding: 20px;
+    min-height: 200px;
+    margin: 0 20px 20px 20px;
+    padding: 20px 0 20px 20px;
+    box-sizing: border-box;
 }
 
 .sp.description {
     float: left;
-    width: 46%;
+    width: 100%;
+    line-height: 1.8em;
+}
+
+.sp.rates, .sp.assigned {
+    width: 100%;
     height: auto;
 }
 
-.sp.rates {
-    float: left;
-    width: 46%;
-    height: auto;
-}
-
-.sp.assigned {
-    float: left;
-    width: 47%;
-    height: auto;
+.clearfix {
+    clear: both;
 }
