@@ -27,7 +27,7 @@ class ServicePack < ApplicationRecord
   validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)"
 
   validates_numericality_of :total_units, greater_than: 0
-  validates_numericality_of :threshold1, :threshold2, only_integer: true
+  validates_numericality_of :threshold1, :threshold2, only_integer: true, greater_than: 0
 
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
