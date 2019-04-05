@@ -15,16 +15,16 @@
   <% end %>
 
   <div class="form--field">
-    <%= form.label :name, class: "form--label" %>
+    <%= form.label :name, class: "form--label", title: 'The name of this service pack' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
-        <%= form.text_field :name, required: true, container_class:"-slim" %>
+        <%= form.text_field :name, required: true, container_class: "-slim" %>
       </span>
     </span>
   </div>
 
   <div class="form--field">
-    <%= form.label :total_units, class: "form--label" %>
+    <%= form.label :total_units, class: "form--label", title: 'The total units of this service pack' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
         <%= form.number_field :total_units, step: 'any', required: true %>
@@ -33,7 +33,7 @@
   </div>
 
   <div class="form--field">
-    <%= form.label :started_date, class: "form--label" %>
+    <%= form.label :started_date, class: "form--label", title: 'The date this service pack starts' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
         <%= form.date_field :started_date, required: true %>
@@ -42,7 +42,7 @@
   </div>
 
   <div class="form--field">
-    <%= form.label :expired_date, class: "form--label" %>
+    <%= form.label :expired_date, class: "form--label", title: 'The date this service pack expired' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
         <%= form.date_field :expired_date, required: true %>
@@ -51,19 +51,19 @@
   </div>
 
   <div class="form--field">
-    <%= form.label :threshold_1, class: "form--label" %>
+    <%= form.label :threshold_1, class: "form--label", title: 'Notification will be sent when the available units below the this threshold' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
-        <%= form.number_field :threshold1, required: true %>
+        <%= form.number_field :threshold1, required: true, placeholder: 'In unit' %>
       </span>
     </span>
   </div>
 
   <div class="form--field">
-    <%= form.label :threshold_2, class: "form--label" %>
+    <%= form.label :threshold_2, class: "form--label", title: 'Notification will be sent when the available units below the this threshold' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
-        <%= form.number_field :threshold2, required: true %>
+        <%= form.number_field :threshold2, required: true, placeholder: 'In unit' %>
       </span>
     </span>
   </div>
