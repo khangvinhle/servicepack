@@ -1,6 +1,5 @@
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
-
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   after_save :knock_out, if: :used_up?, on: :consumption
 
@@ -21,16 +20,20 @@ class ServicePack < ApplicationRecord
 
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
+
   validates_uniqueness_of :name, on: :create # SP name never changes
   # https://rubular.com/r/CCtRDRq9jDuMmb
+
   validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)"
 
   validates_numericality_of :total_units, greater_than: 0
-  validates_numericality_of :threshold1, :threshold2, greater_than_or_equal_to: 0, less_than_or_equal_to: 100, only_integer: true
+  validates_numericality_of :threshold1, :threshold2, only_integer: true
 
   validate :threshold2_is_greater_than_threshold1
   validate :end_after_start
   validate :must_not_expire_in_the_past
+  validate :threshold1_is_greater_than_total_units
+  validate :threshold2_is_greater_than_total_units
 
   scope :assignments, -> {joins(:assigns).where(assigned: true)}
   scope :availables, -> {where("remained_units > 0 and expired_date >= ?", Date.today)}
@@ -144,6 +147,14 @@ class ServicePack < ApplicationRecord
   ### END CRON JOBS ###
 
   private
+
+  def threshold1_is_greater_than_total_units
+    @errors.add(:threshold1, 'must be <= total units') if threshold1 > total_units
+  end
+
+  def threshold2_is_greater_than_total_units
+    @errors.add(:threshold2, 'must be <= total units') if threshold2 > total_units
+  end
 
   def threshold2_is_greater_than_threshold1
     @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
