@@ -49,9 +49,9 @@ class ServicePack < ApplicationRecord
     assignments.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
   end
 
-  def remain_units_in_percent
-    ((remained_units * 100.0) / total_units).to_f
-  end
+  # def remain_units_in_percent
+  #   ((remained_units * 100.0) / total_units).to_f
+  # end
 
   ### CHECKERS ###
   def expired?
@@ -134,13 +134,13 @@ class ServicePack < ApplicationRecord
 
   def self.check_threshold1
     ServicePack.find_each do |sp|
-      ServicePacksMailer.notify_under_threshold1(User.last, sp).deliver_now if sp.remain_units_in_percent < sp.threshold1
+      ServicePacksMailer.notify_under_threshold1(User.last, sp).deliver_now if sp.remained_units < sp.threshold1
     end
   end
 
   def self.check_threshold2
     ServicePack.find_each do |sp|
-      ServicePacksMailer.notify_under_threshold2(User.last, sp).deliver_now if sp.remain_units_in_percent < sp.threshold2
+      ServicePacksMailer.notify_under_threshold2(User.last, sp).deliver_now if sp.remained_units < sp.threshold2
     end
   end
 
