@@ -1,10 +1,11 @@
+# freeze_literal_string: true
 class ServicePack < ApplicationRecord
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   after_save :knock_out, if: :used_up?, on: :consumption
 
   has_many :assigns, dependent: :destroy
-  has_many :active_assignments, -> {where("assigned = ? and unassign_date >= ?", true, Date.today)}, class_name: 'Assign'
+  has_many :active_assignments, -> {where('assigned = ? and unassign_date >= ?', true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :delete_all
@@ -36,8 +37,8 @@ class ServicePack < ApplicationRecord
   validate :threshold2_is_greater_than_total_units
 
   scope :assignments, -> {joins(:assigns).where(assigned: true)}
-  scope :availables, -> {where("remained_units > 0 and expired_date >= ?", Date.today)}
-  # scope :gone_low, ->{where('remained_units <= total_units / 100.0 * threshold1')}
+  scope :availables, -> {where('remained_units > 0 and expired_date >= ?', Date.today)}
+  scope :notifiable, -> thresno {where("remained_units <= threshold#{thresno}")}
 
 
   def default_remained_units
@@ -125,22 +126,23 @@ class ServicePack < ApplicationRecord
   end
 
   # will be replaced
-
+=begin # notify immediately at entries
   def self.check_used_up
     ServicePack.find_each do |sp|
       ServicePacksMailer.used_up_email(User.last, sp).deliver_now if sp.used_up?
     end
   end
+=end
 
   def self.check_threshold1
-    ServicePack.find_each do |sp|
-      ServicePacksMailer.notify_under_threshold1(User.last, sp).deliver_now if sp.remained_units < sp.threshold1
+    ServicePack.notifiable(1).find_each do |sp|
+      ServicePacksMailer.notify_under_threshold1(User.last, sp).deliver_now
     end
   end
 
   def self.check_threshold2
-    ServicePack.find_each do |sp|
-      ServicePacksMailer.notify_under_threshold2(User.last, sp).deliver_now if sp.remained_units < sp.threshold2
+    ServicePack.notifiable(2).find_each do |sp|
+      ServicePacksMailer.notify_under_threshold2(User.last, sp).deliver_now
     end
   end
 
@@ -149,15 +151,15 @@ class ServicePack < ApplicationRecord
   private
 
   def threshold1_is_greater_than_total_units
-    @errors.add(:threshold1, 'must be <= total units') if threshold1 > total_units
+    @errors.add(:threshold1, 'must be smaller than total units') if threshold1 >= total_units
   end
 
   def threshold2_is_greater_than_total_units
-    @errors.add(:threshold2, 'must be <= total units') if threshold2 > total_units
+    @errors.add(:threshold2, 'must be smaller than total units') if threshold2 >= total_units
   end
 
   def threshold2_is_greater_than_threshold1
-    @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
+    @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 >= threshold1
   end
 
   def end_after_start
