@@ -1,5 +1,5 @@
 class AssignsController < ApplicationController
-  #layout 'admin'
+  
   before_action :find_project_by_project_id
   include SPAssignmentManager
 
@@ -72,10 +72,6 @@ class AssignsController < ApplicationController
       @service_pack = @assignment.service_pack
       render -'already_assigned'
     end
-  end
-
-  def select_to_transfer
-    return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
   end
 
   def report
