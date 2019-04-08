@@ -21,13 +21,21 @@
     <% end %>
 
     <div class="form--field">
-      <%= form.label :threshold1, class: "form--label" %>
+      <%= form.label :total_units, class: "form--label" %>
       <span class="form--field-container">
+        <span class="form--text-field-container -slim">
+          <%= form.number_field :total_units, placeholder: 'must not below zero' %>
+        </span>
+      </span>
+    </div>
+  <div class="form--field">
+    <%= form.label :threshold1, class: "form--label" %>
+    <span class="form--field-container">
         <span class="form--text-field-container -slim">
           <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
         </span>
       </span>
-    </div>
+  </div>
 
     <div class="form--field">
       <%= form.label :threshold2, class: "form--label" %>
@@ -58,7 +66,6 @@
 
    <div class="button-container">
     <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
-    <%= link_to "Back", service_packs_path, class: 'button -highlight -edit' %>
    </div>
 
 <% end %>

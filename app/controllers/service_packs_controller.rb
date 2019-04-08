@@ -128,7 +128,7 @@ class ServicePacksController < ApplicationController
   end
 
   def default_breadcrumb
-    action_name == 'index'? -'Service Packs' : ActionController::Base.helpers.link_to(-'Service Packs', service_packs_path)
+    action_name == 'index' ? -'Service Packs' : ActionController::Base.helpers.link_to(-'Service Packs', service_packs_path)
   end
 
   # =======================================================
@@ -203,8 +203,8 @@ class ServicePacksController < ApplicationController
   end
 
   def service_pack_edit_params
-    params.require(:service_pack).permit(:threshold1, :threshold2,
-                                        mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+    params.require(:service_pack).permit(:total_units, :threshold1, :threshold2,
+                                         mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
   end
 
   def add_units
