@@ -79,32 +79,60 @@ class ServicePacksController < ApplicationController
   end
 
   def update
+    updatable = true
+
     @sp = ServicePack.find_by(id: params[:id])
+
     if @sp.nil?
       flash[:error] = -"Service Pack not found"
       redirect_to action: :index and return
     end
-    mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
-    activity_id = []
-    mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
 
-    if activity_id.uniq.length == activity_id.length
-      # No duplication
-      add_units
-      @sp.assign_attributes(service_pack_edit_params)
-      # binding.pry
+    new_total_units = params[:service_pack][:total_units].to_f
+    old_total_units = @sp.total_units
+
+    updatable if @sp.total_unit_updatable?(new_total_units)
+
+    if !updatable
+      flash.now[:error] = -'Service Pack update failed.'
+      render -'edit'
+    else
+      #update the remain units
+      # render plain: params[:service_pack]
       if @sp.save
+        if new_total_units > old_total_units
+          unit_plus_number = new_total_units - old_total_units
+          @sp.update_attribute(:remained_units, @sp.remained_units + unit_plus_number)
+        elsif new_total_units < old_total_units
+          unit_subtract_number = old_total_units - new_total_units
+          @sp.update_attribute(:remained_units, @sp.remained_units - unit_subtract_number)
+        end
         flash[:notice] = -'Service Pack update successful.'
         redirect_to @sp
-      else
-        flash.now[:error] = -'Service Pack update failed.'
-        render -'edit'
       end
-    else
-      # Duplication
-      flash.now[:error] = -'Only one rate can be defined to one activity.'
-      render -'edit'
     end
+
+    # mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
+    # activity_id = []
+    # mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
+    #
+    # if activity_id.uniq.length == activity_id.length
+    #   # No duplication
+    #   add_units
+    #   @sp.assign_attributes(service_pack_edit_params)
+    #   # binding.pry
+    #   if @sp.save
+    #     flash[:notice] = -'Service Pack update successful.'
+    #     redirect_to @sp
+    #   else
+    #     flash.now[:error] = -'Service Pack update failed.'
+    #     render -'edit'
+    #   end
+    # else
+    #   # Duplication
+    #   flash.now[:error] = -'Only one rate can be defined to one activity.'
+    #   render -'edit'
+    # end
   end
 
   def destroy
@@ -148,7 +176,7 @@ class ServicePacksController < ApplicationController
   # Top class: None
   # Content: Array of object having [name, consumed]
   # - consumed: How many units are consumed (in given period)
-  # - act_name: Name of activity 
+  # - act_name: Name of activity
   # Status: 200
   # * When raising error
   # HTTP 404: SP not found
