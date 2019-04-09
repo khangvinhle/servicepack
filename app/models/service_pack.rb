@@ -74,17 +74,17 @@ class ServicePack < ApplicationRecord
     assigns.where(assigned: true).exists?
   end
 
-  def total_unit_updatable?(new_value, old_value = total_units)
-    # old_value=total_units
-    if new_value > old_value
-      true
-    elsif new_value == old_value
-      true
-    elsif new_value < old_value
-      unit_subtract_number = old_value - new_value
-      !(remained_units < unit_subtract_number)
-    end
-  end
+  # def total_unit_updatable?(new_value, old_value = total_units)
+  #   # old_value=total_units
+  #   if new_value > old_value
+  #     true
+  #   elsif new_value == old_value
+  #     true
+  #   elsif new_value < old_value
+  #     unit_subtract_number = old_value - new_value
+  #     !(remained_units < unit_subtract_number)
+  #   end
+  # end
 
   ### END CHECKERS ###
 
