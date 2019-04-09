@@ -2,7 +2,7 @@ You can see a more detailed guide here: [https://www.openproject.org/download-an
 
 We will guide you how to install Open Project on Ubuntu 18.04.
 
-You must execute all steps as the root user.
+*You must execute all steps as the root user.*
 
 ---
 
@@ -20,8 +20,20 @@ You must execute all steps as the root user.
 
 3. **Ensure that universe package source is added**
 
+   ```shell
+   $ sudo add-apt-repository universe
+   ```
+
 4. **Add the OpenProject package source**
+
+   ```shell
+   $ sudo wget -O /etc/apt/sources.list.d/openproject-ce.list \
+     https://dl.packager.io/srv/opf/openproject-ce/stable/8/installer/ubuntu/18.04.repo
+   ```
 
 5. **Install the OpenProject Community Edition package**
 
-
+   ```shell
+   $ apt-get update
+   $ apt-get install openproject
+   ```
