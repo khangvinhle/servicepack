@@ -8,14 +8,14 @@ You must execute all steps as the root user.
 
 1. **Import the packager.io repository signing key**
 
-   ```console
-   foo@bar:~$ sudo wget -qO- https://dl.packager.io/srv/opf/openproject-ce/key | sudo apt-key add -
+   ```shell
+   $ sudo wget -qO- https://dl.packager.io/srv/opf/openproject-ce/key | sudo apt-key add -
    ```
 
 2. **Ensure that apt-transport-https is installed**
 
-   ```bash
-   foo@bar:~$ sudo apt-get install apt-transport-https
+   ```shell
+   $ sudo apt-get install apt-transport-https
    ```
 
 3. **Ensure that universe package source is added**
