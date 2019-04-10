@@ -1,0 +1,33 @@
+<div class="generic-table--container">
+	<div class="generic-table--results-container">
+		<table interactive-table="true" class="generic-table" id="sortable-table">
+			<colgroup>
+				<%# angular boilerplate %>
+				<%= (-'<col highlight-col class>'*6).html_safe %>
+			</colgroup>
+			<thead>
+				<tr>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span class="sort desc">Time</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Activity Name</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Project</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Work Package</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Comment</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Units spent</span></div></div></th>
+				</tr>
+			</thead>
+			<tbody>
+				<% user_time_zone = User.current.time_zone %>
+				<% @entries.each do |entry| %>
+					<tr>
+						<%= content_tag :td, user_time_zone.nil? ? entry[-'spent_on'] : entry[-'spent_on'].to_time.in_time_zone(user_time_zone) %>
+						<%= content_tag :td, entry[-'activity_name'] %>
+						<%= content_tag :td, entry[-'project_name'] %>
+						<%= content_tag :td, "#{entry[-'type_name']} \##{entry[-'work_package_id']}: #{entry[-'subject']}", title: entry[-'subject']%>
+						<%= content_tag :td, entry[-'comment'], title: entry['-comment'] %>
+						<%= content_tag :td, entry[-'units'].round(0) %>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+</div>
