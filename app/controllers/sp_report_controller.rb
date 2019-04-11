@@ -54,20 +54,4 @@ class SpReportController < ApplicationController
   def sp_available
     render json: { projects: get_available_service_packs, preselect: nil } # just use the first one
   end
-
-  private
-
-    def get_projects_available
-      @projects ||= Project.allowed_to(User.current, :see_assigned_service_packs)
-    end
-
-    def get_available_service_packs
-      @sps ||=  if User.current.admin?
-                 ServicePack.all.pluck(:id, :name)
-                else
-                  Assign.active.joins(:service_pack)
-                   .where(project_id: get_projects_available.pluck(:id))
-                   .pluck(-'service_packs.id', -'service_packs.name')
-                end
-    end
 end
