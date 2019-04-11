@@ -1,6 +1,7 @@
 class ServicePacksController < ApplicationController
   # only allow admin
   before_action :require_admin
+  include ServicePacksReportHelper
 
   # Specifying Layouts for Controllers, looking at OPENPROJECT_ROOT/app/views/layouts/admin
   layout 'admin'
@@ -15,7 +16,7 @@ class ServicePacksController < ApplicationController
     @service_pack = ServicePack.new
     # TimeEntryActivity.shared.count.times {@service_pack.mapping_rates.build}
     @sh = TimeEntryActivity.shared
-    @c = TimeEntryActivity.shared.count
+    @c = @sh.count
   end
 
   def show
@@ -35,7 +36,7 @@ class ServicePacksController < ApplicationController
         @assignments = @service_pack.assignments.preload(:project)
       }
       format.csv {
-        render csv: ServicePackReport.new(@service_pack).call, filename: "service_pack_#{@service_pack.name}.csv"
+        render csv: csv_extractor(query(service_pack: @service_pack)), filename: "service_pack_#{@service_pack.name}.csv"
       }
     end
   end

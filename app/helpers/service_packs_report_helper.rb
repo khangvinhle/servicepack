@@ -54,7 +54,6 @@ module ServicePacksReportHelper
     sql = ActiveRecord::Base.send(:sanitize_sql_array, query_to_sanitize)
 
     @entries = ActiveRecord::Base.connection.exec_query(sql)
-    sql
   end
 
   def get_projects_available
@@ -69,5 +68,31 @@ module ServicePacksReportHelper
                 .where(project_id: get_projects_available.pluck(:id))
                 .pluck(-'service_packs.id', -'service_packs.name')
               end
+  end
+
+  def csv_extractor(entries = @entries)
+    raise -'Query not run yet' unless entries
+    decimal_separator = I18n.t(:general_csv_decimal_separator)
+    export = CSV.generate(col_sep: ';') { |csv|
+      headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type', -'Subject', -'Service Pack', -'Units', -'Comments']
+      # headers += custom_fields.map(&:name) # not supported
+      csv << headers
+      entries.each do |entry|
+        fields = [entry[-'spent_on'],
+                  entry[-'user_name'],
+                  entry[-'activity_name'],
+                  entry[-'project_name'],
+                  entry[-'work_package_id'],
+                  entry[-'hours'].round(2).to_s.gsub(-'.', decimal_separator),
+                  entry[-'type_name'],
+                  entry[-'subject'],
+                  entry[-'sp_name'], # new field added
+                  entry[-'units'].round(0),
+                  entry[-'comment']
+                 ]
+        # fields += custom_fields.map { |f| show_value(entry.custom_value_for(f)) }
+        csv << fields
+      end
+    }
   end
 end
