@@ -33,7 +33,6 @@ class AssignsController < ApplicationController
 
   def unassign
     return head 403 unless @can_unassign = User.current.allowed_to?(:unassign_service_packs, @project)
-
     if unassigned?(@project)
       flash[:alert] = 'No Service Pack is assigned to this project'
       render_404 and return

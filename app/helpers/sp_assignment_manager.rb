@@ -4,7 +4,6 @@ module SPAssignmentManager
 		# binding.pry
 		ActiveRecord::Base.transaction do
 			# one query only
-			project.assigns.update_all(assigned: false)
 			@assignment = service_pack.assigns.find_by(project_id: project.id) || project.assigns.new
 			@assignment.assigned = true
 			@assignment.assign_date = Date.today
@@ -14,12 +13,19 @@ module SPAssignmentManager
 		end
 	end
 	def _unassign(project)
-		project.assigns.find_by(assigned: true)&.terminate # ruby >= 2.3.0 "safe navigation operator"
+		# params should be assignment
+		assigned?(project)&.terminate # ruby >= 2.3.0 "safe navigation operator"
 	end
+
+	# these function only works with 1-n assignment
+	# to be deprecated
+
 	def unassigned?(project)
 		!assigned?(project)
 	end
 	def assigned?(project)
-		project.assigns.find_by(assigned: true)
+		Rails.logger.debug { -'1-n assignment will be deprecated' }
+		p -'1-n assignment will be deprecated\n'
+		@_assignment ||= project.assigns.find_by(assigned: true)
 	end
 end
