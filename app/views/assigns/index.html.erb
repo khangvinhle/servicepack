@@ -2,7 +2,7 @@
 <a class="button -alt-highlight float-right" href="#">
   <i class="button--icon icon-add" aria-hidden="true"></i><span class="button--text">Assign</span>
 </a>
-<% if @assignment.new_record? %>
+<% if @assignments.empty? %>
   <div id="result-table">
     <div class="generic-table--no-results-container">
       <i class="icon-info1"></i>

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Prevent load-order problems in case openproject-plugins is listed after a plugin in the Gemfile
 # or not at all
 require 'open_project/plugins'
@@ -17,9 +18,9 @@ module OpenProject::ServicePacks
         # permission :create_ServicePacks, {ServicePacks: [:new, :create]}
         # permission :update_ServicePacks, {ServicePacks: [:edit]}
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
-        permission :assign_service_packs, {assigns: [:assign, :show]}, require: :member
-        permission :unassign_service_packs, {assigns: [:unassign, :show]}, require: :member
-        permission :see_assigned_service_packs, {assigns: [:show]}, require: :member
+        permission :assign_service_packs, {assigns: [:assign, :index]}, require: :member
+        permission :unassign_service_packs, {assigns: [:unassign, :index]}, require: :member
+        permission :see_assigned_service_packs, {assigns: [:index]}, require: :member
       end
 
       menu :admin_menu,
@@ -34,10 +35,10 @@ module OpenProject::ServicePacks
 
       menu :project_menu,
            :assigns,
-           {controller: '/assigns', action: 'show'},
+           {controller: '/assigns', action: 'index'},
            after: :overview,
            param: :project_id,
-           caption: 'Service pack assignment',
+           caption: 'Service Pack assignments',
            icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
 

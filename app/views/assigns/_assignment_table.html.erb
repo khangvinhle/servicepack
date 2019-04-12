@@ -17,11 +17,13 @@
       </thead>
       <tbody>
         <tr>
-          <%= content_tag :td, @assignment.service_pack.name %>
-          <%= content_tag :td, @assignment.assign_date %>
-          <%= content_tag :td, @assignment.unassign_date %>
-          <%= content_tag :td, "#{@assignment.service_pack.remained_units}/#{@assignment.service_pack.total_units}" %>
-          <%= content_tag :td, op_icon(-'icon icon-delete') %>
+          <% @assignments.each do |assignment| %>
+            <%= content_tag :td, assignment.service_pack.name %>
+            <%= content_tag :td, assignment.assign_date %>
+            <%= content_tag :td, assignment.unassign_date %>
+            <%= content_tag :td, "#{assignment.service_pack.remained_units}/#{assignment.service_pack.total_units}" %>
+            <%= content_tag :td, op_icon(-'icon icon-delete') %>
+          <% end %>
         </tr>
       </tbody>
     </table>

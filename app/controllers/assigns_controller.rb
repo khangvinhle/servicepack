@@ -77,8 +77,9 @@ class AssignsController < ApplicationController
     end
   end
 
-  def select_to_transfer
-    return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
+  def index
+    return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
+    @assignments = @project.assigns.active
   end
 
   def report
