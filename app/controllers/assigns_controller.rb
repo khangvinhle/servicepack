@@ -8,31 +8,23 @@ class AssignsController < ApplicationController
   include SPAssignmentManager
 
   def assign
-    # binding.pry
+    binding.pry
     return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
 
-    if assigned?(@project)
-      flash.now[:alert] = "You must unassign first!"
-      render_400 and return
-    end
-    @service_pack = ServicePack.find_by(id: params[:assign][:service_pack_id])
+    @service_pack = ServicePack.find_by(id: params[:service_pack_id])
     if @service_pack.nil?
       flash.now[:alert] = "Service Pack not found"
-      render_404 and return
+      redirect_to action: :to_assign and return
     end
     if @service_pack.available?
         # binding.pry
-        assign_to(@service_pack, @project)
-        flash.now[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
-        render 'already_assigned' and return
+      assign_to(@service_pack, @project)
+      flash[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
+      redirect_to action: :index
     else
-      # already assigned for another project
-      # constraint need
-      flash.now[:alert] = "Service Pack '#{@service_pack.name}' has been already assigned"
-      render_400 and return
+      flash[:alert] = "Service Pack '#{@service_pack.name}' #{@service_pack.expired? ? -'is expired' : -'cannot be assigned'}"
+      redirect_to action: :to_assign
     end
-    flash.now[:alert] = 'Service Pack cannot be assigned'
-    redirect_to action: :show
   end
 
   def unassign
@@ -47,7 +39,9 @@ class AssignsController < ApplicationController
   end
 
   def show
-    # This will lock even admins out if the module is not activated.
+    # This method will be deprecated. Use /assigns/legacy route to invoke this.
+    Rails.logger.debug "#{self.class.name}\##{__method__} is deprecated as n-n assignment is nearing complete"
+
     return head 403 unless 
     User.current.allowed_to?(:see_assigned_service_packs, @project) ||
     (@can_assign = User.current.allowed_to?(:assign_service_packs, @project)) ||
@@ -66,20 +60,32 @@ class AssignsController < ApplicationController
         @assignables = ServicePack.availables
         if @assignables.exists?
           @assignment = Assign.new
-          render (defined?(FEATURE_SWITCH_ALREADY_ASSIGNED_VIEW) ? -'already_assigned' : -'not_assigned_yet') and return
+          render (defined?(FEATURE_SWITCH_ALREADY_ASSIGNED_VIEW) ? -'index' : -'to_assign') and return
         end
       end
       render -'unassignable'
       # binding.pry
     else
-      @service_pack = @assignment.service_pack
-      render -'already_assigned'
+      @assignments = [@assignment]
+      render -'index'
     end
   end
 
+  def to_assign
+    return head 403 unless User.current.allowed_to?(:assign_service_packs, @project)
+    get_assigned_sp_id = Assign.where(assigned: true).select(:service_pack_id)
+    @assignables = ServicePack.availables.where "id NOT IN (#{get_assigned_sp_id.to_sql})"
+    render (@assignables.any? -'to_assign' : -'unassignable')
+  end
+
   def index
+=begin
+    table = Assign.active.arel_table[:service_pack_id]
+    assign = table.project(table[:service_pack_id])
+    p ServicePack.availables.where(ServicePack.arel_table[:id].not_in assign).to_sql
+=end
     return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
-    @assignments = @project.assigns.active
+    @assignments = @project.assigns.where(assigned: true).preload(:service_pack)
   end
 
   def report
