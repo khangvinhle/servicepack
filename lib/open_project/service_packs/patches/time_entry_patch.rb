@@ -24,7 +24,7 @@ module OpenProject::ServicePacks
           end
 
           activity_of_time_entry_id = activity.parent_id || activity.id
-          sp_of_project = ServicePack.find(self.service_pack_id)
+          sp_of_project = ServicePack.find(service_pack_id)
           rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
           units_cost = rate * hours
           # binding.pry
