@@ -1,5 +1,9 @@
 class AssignsController < ApplicationController
   #layout 'admin'
+
+  # put all feature switches here
+  FEATURE_SWITCH_ALREADY_ASSIGNED_VIEW = 1
+
   before_action :find_project_by_project_id
   include SPAssignmentManager
 
@@ -62,7 +66,7 @@ class AssignsController < ApplicationController
         @assignables = ServicePack.availables
         if @assignables.exists?
           @assignment = Assign.new
-          render -'not_assigned_yet' and return
+          render (defined?(FEATURE_SWITCH_ALREADY_ASSIGNED_VIEW) ? -'already_assigned' : -'not_assigned_yet') and return
         end
       end
       render -'unassignable'
