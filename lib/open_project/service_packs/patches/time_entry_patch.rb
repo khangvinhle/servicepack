@@ -2,9 +2,7 @@ module OpenProject::ServicePacks
   module Patches
     module TimeEntryPatch
       module ClassMethods
-
       end
-
 
       # pseudocode:
       # Find an assignment in effect, if not leave in peace.
@@ -13,23 +11,27 @@ module OpenProject::ServicePacks
       # Subtract the remaining counter of SP to the cost.
 
       module InstanceMethods
-
         def log_consumed_units
-          assignment = project.assigns.where(assigned: true).first
-          if assignment.nil?
-            self.errors[:base] << "Cannot log time because none SP was assigned"
+          assignments = project.assigns.where(assigned: true)
+          if assignments.nil?
+            errors[:base] << 'Cannot log time because none SP was assigned'
             raise ActiveRecord::Rollback
           end
-          activity_of_time_entry_id = self.activity.parent_id || self.activity.id
-          sp_of_project = assignment.service_pack
+
+          unless assignments.pluck(:service_pack_id).include?(service_pack_id)
+            errors[:base] << 'The selected service pack is not assigned to this project'
+            raise ActiveRecord::Rollback
+          end
+
+          activity_of_time_entry_id = activity.parent_id || activity.id
+          sp_of_project = ServicePack.find(self.service_pack_id)
           rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
-          units_cost = rate * self.hours
+          units_cost = rate * hours
           # binding.pry
           sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
           sp_of_project.service_pack_entries << sp_entry
           sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
         end
-
 
         def update_consumed_units
           # First examine the entry
@@ -38,12 +40,12 @@ module OpenProject::ServicePacks
           # Update the entry
           # Take the delta and subtract to the remained count of SP.
 
-          sp_entry = self.service_pack_entry
+          sp_entry = service_pack_entry
           return if sp_entry.nil?
           sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
-          activity_of_time_entry_id = self.activity.parent_id || self.activity.id
+          activity_of_time_entry_id = activity.parent_id || activity.id
           rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
-          units_cost = rate * self.hours
+          units_cost = rate * hours
 
           extra_consumption = units_cost - sp_entry.units
           # Keep callbacks for SP. Entries have no callback.
@@ -53,13 +55,12 @@ module OpenProject::ServicePacks
         end
 
         def get_consumed_units_back
-          sp_entry = self.service_pack_entry
+          sp_entry = service_pack_entry
           return if sp_entry.nil?
           service_pack = sp_entry.service_pack
           service_pack.remained_units += sp_entry.units
           service_pack.save
         end
-
       end
 
       def self.included(receiver)
@@ -73,7 +74,6 @@ module OpenProject::ServicePacks
           before_destroy :get_consumed_units_back
         end
       end
-
     end
   end
 end
