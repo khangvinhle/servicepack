@@ -3,15 +3,13 @@ module OpenProject::ServicePacks
     module TimeEntryPatch
       module ClassMethods
       end
-
-      # pseudocode:
-      # Find an assignment in effect, if not leave in peace.
-      # Then find a rate associated with activity_id and sp in effect.
-      # Create an SP_entry with the log entry cost.
-      # Subtract the remaining counter of SP to the cost.
-
       module InstanceMethods
         def log_consumed_units
+          # Find an assignment in effect, if not leave in peace.
+          # Then find a rate associated with activity_id and sp in effect.
+          # Create an SP_entry with the log entry cost.
+          # Subtract the remaining counter of SP to the cost.
+
           assignments = project.assigns.where(assigned: true)
           if assignments.nil?
             errors[:base] << 'Cannot log time because none SP was assigned'
@@ -27,7 +25,6 @@ module OpenProject::ServicePacks
           sp_of_project = ServicePack.find(service_pack_id)
           rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
           units_cost = rate * hours
-          # binding.pry
           sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
           sp_of_project.service_pack_entries << sp_entry
           sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
@@ -42,16 +39,33 @@ module OpenProject::ServicePacks
 
           sp_entry = service_pack_entry
           return if sp_entry.nil?
-          sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
-          activity_of_time_entry_id = activity.parent_id || activity.id
-          rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
-          units_cost = rate * hours
 
-          extra_consumption = units_cost - sp_entry.units
-          # Keep callbacks for SP. Entries have no callback.
-          sp_entry.update(units: units_cost) if extra_consumption != 0
-          sp_of_project.remained_units -= extra_consumption
-          sp_of_project.save
+          unless project.assigns.where(assigned: true).pluck(:service_pack_id).include?(service_pack_id)
+            errors[:base] << 'The selected service pack is not assigned to this project'
+            raise ActiveRecord::Rollback
+          end
+
+          old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
+          new_sp_of_project = ServicePack.find(service_pack_id)
+          activity_of_time_entry_id = activity.parent_id || activity.id
+
+          if old_sp_of_project.id == new_sp_of_project.id
+            rate = old_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
+            units_cost = rate * hours
+            extra_consumption = units_cost - sp_entry.units
+            # Keep callbacks for SP. Entries have no callback.
+            sp_entry.update(units: units_cost) if extra_consumption != 0
+            old_sp_of_project.remained_units -= extra_consumption
+            old_sp_of_project.save
+          else
+            # give the old sp its units back
+            old_sp_of_project.remained_units += sp_entry.units
+            old_sp_of_project.save
+            # calculate the new rate for the new sp
+            new_rate = new_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
+            new_unit_cost = new_rate * hours
+            sp_entry.update(service_pack_id: new_sp_of_project.id, units: new_unit_cost)
+          end
         end
 
         def get_consumed_units_back
