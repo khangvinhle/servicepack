@@ -73,19 +73,14 @@ class AssignsController < ApplicationController
 
   def to_assign
     return head 403 unless User.current.allowed_to?(:assign_service_packs, @project)
-    get_assigned_sp_id = Assign.where(assigned: true).select(:service_pack_id)
+    get_assigned_sp_id = @project.assigns.active.select(:service_pack_id)
     @assignables = ServicePack.availables.where "id NOT IN (#{get_assigned_sp_id.to_sql})"
-    render (@assignables.any? -'to_assign' : -'unassignable')
+    render (if @assignables.any? then -'to_assign' else -'unassignable' end)
   end
 
   def index
-=begin
-    table = Assign.active.arel_table[:service_pack_id]
-    assign = table.project(table[:service_pack_id])
-    p ServicePack.availables.where(ServicePack.arel_table[:id].not_in assign).to_sql
-=end
     return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
-    @assignments = @project.assigns.where(assigned: true).preload(:service_pack)
+    @assignments = @project.assigns.active.preload(:service_pack)
   end
 
   def report
