@@ -5,29 +5,28 @@ module OpenProject::ServicePacks
       end
       module InstanceMethods
         def log_consumed_units
-          # Find an assignment in effect, if not leave in peace.
+
+          # Find an assignment in effect, if not then stop the logging.
+          # Then check the SP in the log against the assignment list.
           # Then find a rate associated with activity_id and sp in effect.
           # Create an SP_entry with the log entry cost.
           # Subtract the remaining counter of SP to the cost.
 
-          assignments = project.assigns.where(assigned: true)
-          if assignments.nil?
-            errors[:base] << 'Cannot log time because none SP was assigned'
+          assignments = project.assigns.active.pluck(:service_pack_id)
+          if assignments.empty?
+            errors[:base] << -'Cannot log time because no SP were assigned'
             raise ActiveRecord::Rollback
           end
-
-          unless assignments.pluck(:service_pack_id).include?(service_pack_id)
-            errors[:base] << 'The selected service pack is not assigned to this project'
+          unless assignments.include?(service_pack_id)
+            errors[:base] << -'The selected Service Pack is not assigned to this project'
             raise ActiveRecord::Rollback
           end
-
-          activity_of_time_entry_id = activity.parent_id || activity.id
-          sp_of_project = ServicePack.readonly(false).find_by(id: service_pack_id)
-          rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
-          units_cost = rate * hours
-          sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
-          sp_of_project.service_pack_entries << sp_entry
-          sp_of_project.update(remained_units: sp_of_project.remained_units - units_cost)
+          # binding.pry
+          unless sp_assigned = ServicePack.find_by(id: service_pack_id) and sp_assigned.available?
+            errors[:base] << -'The selected Service Pack is in frozen status'
+            raise ActiveRecord::Rollback
+          end
+          incur_cost!
         end
 
         def update_consumed_units
@@ -38,47 +37,57 @@ module OpenProject::ServicePacks
           # Take the delta and subtract to the remained count of SP.
           sp_entry = service_pack_entry
           return if sp_entry.nil?
-
-          old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
-
-          unless project.assigns.where(assigned: true).pluck(:service_pack_id).include?(old_sp_of_project.id)
-            errors[:base] << 'The selected service pack is not assigned to this project'
+          
+          unless project.assigns.active.find_by(service_pack_id: service_pack_id)
+            errors[:base] << -'The selected Service Pack is not assigned to this project'
             raise ActiveRecord::Rollback
           end
 
-          new_sp_of_project = ServicePack.readonly(false).find_by(id: service_pack_id)
-          activity_of_time_entry_id = activity.parent_id || activity.id
+          # handle if SP is in unavailable state here - leaving safely
 
-          if old_sp_of_project.id == new_sp_of_project.id # if the sp not update
-            rate = old_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
-            units_cost = rate * hours
-            extra_consumption = units_cost - sp_entry.units
-            sp_entry.update(units: units_cost) if extra_consumption != 0
-            old_sp_of_project.remained_units -= extra_consumption
-            old_sp_of_project.save!(context: :consumption)
-          else # if the user change sp
+          activity_id_to_log = activity.parent_id || activity.id
+
+          if sp_entry.service_pack_id == service_pack_id
+            # if SP is not updated
+            old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
+            units_cost = hours * old_sp_of_project.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
+            if units_cost == sp_entry.units
+              old_sp_of_project.touch # trigger after callback only, which has an all-revoke waiting
+            else
+              extra_consumption = units_cost - sp_entry.units
+              sp_entry.update(units: units_cost)
+              old_sp_of_project.remained_units -= extra_consumption
+              old_sp_of_project.save!(context: :consumption)
+            end
+          else
             # give the old sp its units back
-            old_sp_of_project.remained_units += sp_entry.units
-            old_sp_of_project.save!(context: :consumption)
-            # calculate the new rate for the new sp
-            new_rate = new_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
-            # calculate the new unit cost
-            new_unit_cost = new_rate * hours
-            # update the new unit cost to the sp entry
-            sp_entry.update(service_pack_id: new_sp_of_project.id, units: new_unit_cost)
-            # update the remain unit of the new sp
-            new_sp_of_project.remained_units -= new_unit_cost
-            new_sp_of_project.save
+            refund_units_cost! sp_entry # the SP entry is binded at the point of creation
+            # calculate the new rate for the new SP
+            incur_units_cost! activity_id_to_log
           end
         end
 
         def get_consumed_units_back
-          sp_entry = service_pack_entry
-          return if sp_entry.nil?
-          service_pack = sp_entry.service_pack
-          service_pack.remained_units += sp_entry.units
-          service_pack.save
+          refund_units_cost!
         end
+
+        private
+          # FOR THIS PATCH ONLY
+
+          def refund_units_cost!(sp_entry = service_pack_entry)
+            return if sp_entry.nil?
+            service_pack = sp_entry.service_pack
+            service_pack.remained_units += sp_entry.units
+            service_pack.save!(context: :consumption)
+          end
+
+          def incur_units_cost!(activity_id_to_log = activity.parent_id || activity.id, sp_entry = service_pack_entry)
+            units_cost = hours * service_pack.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
+            sp_entry ||= ServicePackEntry.find_or_initialize_by(time_entry_id: id)
+            sp_entry.update(service_pack_id: service_pack_id, units: units_cost)
+            service_pack.remained_units -= units_cost
+            service_pack.save!(context: :consumption)
+          end
       end
 
       def self.included(receiver)
