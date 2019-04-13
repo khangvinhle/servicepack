@@ -9,5 +9,3 @@ module OpenProject::ServicePacks
 		end
 	end
 end
-
-TimeEntries::BaseContract.send(:include, OpenProject::ServicePacks::Patches::BaseContractPatch)

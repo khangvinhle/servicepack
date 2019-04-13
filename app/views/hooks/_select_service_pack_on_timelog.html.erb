@@ -6,7 +6,7 @@
 				<% sp_availables = ServicePack.availables.pluck(:id, :name) %>
 				<% if te_spid = time_entry.service_pack_id %>
 					<% sp_availables.each do |sp| %>
-						<%= content_tag :option, sp[1], selected: te_spid == sp[0] %>
+						<%= content_tag :option, sp[1], value: sp[0], selected: te_spid == sp[0] %>
 					<% end %>
 				<% else %>
 					<option selected>--- Pick a Service Pack ---</option>

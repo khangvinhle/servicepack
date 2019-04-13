@@ -19,15 +19,15 @@ class ServicePack < ApplicationRecord
 
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
-  validates_uniqueness_of :name, on: [:create, :edit]
+  validates_uniqueness_of :name, on: [:create, :update]
   # https://rubular.com/r/CCtRDRq9jDuMmb
-  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)"
+  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)", on: [:create, :update]
 
   validates_numericality_of :total_units, greater_than: 0
-  validates_numericality_of :threshold1, :threshold2, greater_than_or_equal_to: 0, less_than_or_equal_to: 100, only_integer: true
+  validates_numericality_of :threshold1, :threshold2, on: [:create, :update] # OUTDATED: greater_than_or_equal_to: 0, less_than_or_equal_to: 100, only_integer: true
 
-  validate :threshold2_is_greater_than_threshold1
-  validate :end_after_start
+  validate :threshold2_is_greater_than_threshold1, on: [:create, :update]
+  validate :end_after_start, on: [:create, :update]
   validate :must_not_expire_in_the_past
 
   scope :assignments, -> {joins(:assigns).where(assigned: true)}

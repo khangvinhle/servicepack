@@ -10,6 +10,3 @@ module OpenProject::ServicePacks
 		end
 	end
 end
-
-# prepend has higher priority.
-PermittedParams.send(:prepend, OpenProject::ServicePacks::Patches::PermittedParamsPatch)

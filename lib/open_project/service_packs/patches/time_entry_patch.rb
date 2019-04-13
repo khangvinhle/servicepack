@@ -36,7 +36,6 @@ module OpenProject::ServicePacks
           # then recalculate the cost in the entry
           # Update the entry
           # Take the delta and subtract to the remained count of SP.
-
           sp_entry = service_pack_entry
           return if sp_entry.nil?
 
@@ -47,8 +46,8 @@ module OpenProject::ServicePacks
             raise ActiveRecord::Rollback
           end
 
-          new_sp_of_project = ServicePack.find_by(id: service_pack_id, readlony: false)
-          activity_of_time_entry_id = activity.parent_id || activity.idog
+          new_sp_of_project = ServicePack.find_by(id: service_pack_id)
+          activity_of_time_entry_id = activity.parent_id || activity.id
 
           if old_sp_of_project.id == new_sp_of_project.id
             rate = old_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
@@ -57,11 +56,13 @@ module OpenProject::ServicePacks
             # Keep callbacks for SP. Entries have no callback.
             sp_entry.update(units: units_cost) if extra_consumption != 0
             old_sp_of_project.remained_units -= extra_consumption
-            old_sp_of_project.save
+            binding.pry
+            old_sp_of_project.save!(context: :consumption)
           else
             # give the old sp its units back
             old_sp_of_project.remained_units += sp_entry.units
-            old_sp_of_project.save
+            binding.pry
+            old_sp_of_project.save!(context: :consumption)
             # calculate the new rate for the new sp
             new_rate = new_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
             new_unit_cost = new_rate * hours

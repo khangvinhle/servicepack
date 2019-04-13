@@ -54,6 +54,10 @@ module OpenProject::ServicePacks
       # Getting service_pack_id into time_entry
       require 'open_project/service_packs/patches/permitted_params_patch'
       require 'open_project/service_packs/patches/base_contract_patch'
+
+      TimeEntries::BaseContract.send(:include, OpenProject::ServicePacks::Patches::BaseContractPatch)
+      # prepend has higher priority.
+      PermittedParams.send(:prepend, OpenProject::ServicePacks::Patches::PermittedParamsPatch)
     end
   end
 end
