@@ -30,7 +30,7 @@ class AssignsController < ApplicationController
         unassign_from @service_pack, @project
       rescue ActiveRecord::RecordNotFound
         flash[:alert] = "Service Pack '#{@service_pack.name}' is not assigned from project '#{@project.name}'"
-        redirect_to action: :index
+        redirect_to action: :index and return
       rescue
         return head 500
       end

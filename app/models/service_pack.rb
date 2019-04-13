@@ -31,7 +31,7 @@ class ServicePack < ApplicationRecord
   validate :must_not_expire_in_the_past
 
   scope :assignments, -> {joins(:assigns).where(assigned: true)}
-  scope :availables, -> {where("remained_units > 0 and expired_date >= ?", Date.today)}
+  scope :availables, -> {where("remained_units > 0 and expired_date > ?", Date.today)}
   # scope :gone_low, ->{where('remained_units <= total_units / 100.0 * threshold1')}
 
 
@@ -52,7 +52,7 @@ class ServicePack < ApplicationRecord
   end
 
   def unavailable? # available SP might not be assignable
-    used_up? && expired?
+    used_up? || expired?
   end
 
   def available?
