@@ -16,13 +16,17 @@
         </tr>
       </thead>
       <tbody>
+        <% unassign_ok_to_display = (@can_unassign ||= User.current.allowed_to?(:unassign_service_packs, @project)) %>
         <% @assignments.each do |assignment| %>
           <tr>
             <%= content_tag :td, assignment.service_pack.name %>
             <%= content_tag :td, assignment.assign_date %>
             <%= content_tag :td, assignment.unassign_date %>
             <%= content_tag :td, "#{assignment.service_pack.remained_units}/#{assignment.service_pack.total_units}" %>
-            <%= content_tag :td, op_icon(-'icon icon-delete') %>
+            <%= content_tag :td, link_to(op_icon(-'icon icon-delete'),
+                                        {action: :unassign, service_pack_id: assignment.service_pack.id },
+                                         method: :post,
+                                         data: { confirm: -'Are you sure?'}) if unassign_ok_to_display %>
           </tr>
         <% end %>
       </tbody>

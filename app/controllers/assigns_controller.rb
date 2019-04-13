@@ -1,24 +1,20 @@
 class AssignsController < ApplicationController
-  #layout 'admin'
-
-  # put all feature switches here
-  FEATURE_SWITCH_ALREADY_ASSIGNED_VIEW = 1
+  # put all feature switches here as a constant (ALL CAPS)
 
   before_action :find_project_by_project_id
   include SPAssignmentManager
 
   def assign
-    binding.pry
-    return head 403 unless @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
+    return head 403 unless current_user_can_assign
 
     @service_pack = ServicePack.find_by(id: params[:service_pack_id])
     if @service_pack.nil?
-      flash.now[:alert] = "Service Pack not found"
+      flash[:alert] = "Service Pack not found"
       redirect_to action: :to_assign and return
     end
     if @service_pack.available?
         # binding.pry
-      assign_to(@service_pack, @project)
+      assign_to @service_pack, @project
       flash[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
       redirect_to action: :index
     else
@@ -28,62 +24,39 @@ class AssignsController < ApplicationController
   end
 
   def unassign
-    return head 403 unless @can_unassign = User.current.allowed_to?(:unassign_service_packs, @project)
-    if unassigned?(@project)
-      flash[:alert] = 'No Service Pack is assigned to this project'
-      render_404 and return
-    end
-    _unassign(@project)
-    flash[:notice] = 'Unassigned a Service Pack from this project'
-    redirect_to action: :show and return
-  end
-
-  def show
-    # This method will be deprecated. Use /assigns/legacy route to invoke this.
-    Rails.logger.debug "#{self.class.name}\##{__method__} is deprecated as n-n assignment is nearing complete"
-
-    return head 403 unless 
-    User.current.allowed_to?(:see_assigned_service_packs, @project) ||
-    (@can_assign = User.current.allowed_to?(:assign_service_packs, @project)) ||
-    (@can_unassign = User.current.allowed_to?(:unassign_service_packs, @project))
-    # binding.pry
-    if @assignment = @project.assigns.find_by(assigned: true)
-      if @assignment.service_pack.unavailable?
-        @assignment.terminate
-        @assignment = nil # signifying no assignments are in effect
-        # as the single one is terminated.
+    return head 403 unless current_user_can_unassign
+    if params[:service_pack_id].present? && @service_pack = ServicePack.find_by(id: params[:service_pack_id])
+      begin
+        unassign_from @service_pack, @project
+      rescue ActiveRecord::RecordNotFound
+        flash[:alert] = "Service Pack '#{@service_pack.name}' is not assigned from project '#{@project.name}'"
+        redirect_to action: :index
+      rescue
+        return head 500
       end
-    end
-    # binding.pry
-    if @assignment.nil?
-      if @can_assign ||= User.current.allowed_to?(:assign_service_packs, @project)
-        @assignables = ServicePack.availables
-        if @assignables.exists?
-          @assignment = Assign.new
-          render (defined?(FEATURE_SWITCH_ALREADY_ASSIGNED_VIEW) ? -'index' : -'to_assign') and return
-        end
-      end
-      render -'unassignable'
-      # binding.pry
+      flash[:notice] = "Service Pack '#{@service_pack.name}' successfully unassigned from project '#{@project.name}'"
+      redirect_to action: :index
     else
-      @assignments = [@assignment]
-      render -'index'
+      render_404
     end
   end
 
   def to_assign
-    return head 403 unless User.current.allowed_to?(:assign_service_packs, @project)
+    return head 403 unless current_user_can_assign
     get_assigned_sp_id = @project.assigns.active.select(:service_pack_id)
     @assignables = ServicePack.availables.where "id NOT IN (#{get_assigned_sp_id.to_sql})"
     render (if @assignables.any? then -'to_assign' else -'unassignable' end)
   end
 
   def index
-    return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
+    return head 403 unless current_user_can_see || current_user_can_assign || current_user_can_unassign
     @assignments = @project.assigns.active.preload(:service_pack)
   end
 
   def report
+    # BROKEN
+    raise "Do Not Call This Method: #{self.class.name}\##{__method__}"
+
     return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
     if assignment = assigned?(@project)
       render csv: ServicePackReport.new(assignment.service_pack).call(@project), filename: "ServicePackReport_#{@project.name.gsub(/\s+/, -'_')}.csv"
@@ -158,5 +131,19 @@ class AssignsController < ApplicationController
     par = start_day.nil? ? [query, params[@project.id]] : [query, params[@project.id], start_day, end_day]
     sql = ActiveRecord::Base.send(:sanitize_sql_array, par)
     render json: ActiveRecord::Base.connection.exec_query(sql).to_hash, status: 200
+  end
+
+  # helper
+
+  def current_user_can_see
+    User.current.allowed_to?(:see_assigned_service_packs, @project) # call once only
+  end
+
+  def current_user_can_assign
+    defined? @can_assign ? @can_assign : @can_assign = User.current.allowed_to?(:assign_service_packs, @project)
+  end
+
+  def current_user_can_unassign
+    defined? @can_unassign ? @can_unassign : @can_unassign = User.current.allowed_to?(:unassign_service_packs, @project)
   end
 end
