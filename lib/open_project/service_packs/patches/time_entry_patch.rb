@@ -22,7 +22,7 @@ module OpenProject::ServicePacks
           end
 
           activity_of_time_entry_id = activity.parent_id || activity.id
-          sp_of_project = ServicePack.find(service_pack_id)
+          sp_of_project = ServicePack.readonly(false).find_by(id: service_pack_id)
           rate = sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
           units_cost = rate * hours
           sp_entry = ServicePackEntry.new(time_entry_id: id, units: units_cost)
@@ -40,14 +40,15 @@ module OpenProject::ServicePacks
           sp_entry = service_pack_entry
           return if sp_entry.nil?
 
-          unless project.assigns.where(assigned: true).pluck(:service_pack_id).include?(service_pack_id)
+          old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
+
+          unless project.assigns.where(assigned: true).pluck(:service_pack_id).include?(old_sp_of_project.id)
             errors[:base] << 'The selected service pack is not assigned to this project'
             raise ActiveRecord::Rollback
           end
 
-          old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
-          new_sp_of_project = ServicePack.find(service_pack_id)
-          activity_of_time_entry_id = activity.parent_id || activity.id
+          new_sp_of_project = ServicePack.find_by(id: service_pack_id, readlony: false)
+          activity_of_time_entry_id = activity.parent_id || activity.idog
 
           if old_sp_of_project.id == new_sp_of_project.id
             rate = old_sp_of_project.mapping_rates.find_by(activity_id: activity_of_time_entry_id).units_per_hour
