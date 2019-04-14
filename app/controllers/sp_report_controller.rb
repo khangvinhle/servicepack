@@ -22,7 +22,7 @@ class SpReportController < ApplicationController
       render(status: 404) and return
     end
 
-    unless User.current.allowed_to?(:see_assigned_service_packs, @project)
+    unless User.current.admin? || User.current.allowed_to?(:see_assigned_service_packs, @project)
       render status: 404 and return
     end
 
@@ -42,7 +42,7 @@ class SpReportController < ApplicationController
         render json: @entries
       }
       format.csv {
-        # todo
+        render csv: csv_extractor(@entries), filename: "sp-report-#{Date.today}.csv"
       }
     end
   end
@@ -52,6 +52,6 @@ class SpReportController < ApplicationController
   end
 
   def sp_available
-    render json: { projects: get_available_service_packs, preselect: nil } # just use the first one
+    render json: { service_packs: get_available_service_packs, preselect: nil } # just use the first one
   end
 end

@@ -56,4 +56,6 @@
 	<%= no_results_box %>
 <% else %>
 	<%= render partial: -'report_table' %>
+	<br/>
+	<p class='other-formats'>Report available in: <a href="<%= url_for action: :report, format: :csv, only_path: :true, service_pack_id: params[:service_pack_id], proj_id: params[:proj_id] %>">CSV</a></p>
 <% end %>
