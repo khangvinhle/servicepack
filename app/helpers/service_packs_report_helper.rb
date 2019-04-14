@@ -34,6 +34,7 @@ module ServicePacksReportHelper
       query_to_sanitize << project.name
     else
       # all project
+      where_clause << " AND t2.#{get_where_clause_fragment(get_projects_available)}" unless User.current.admin?
       from_clause << -' INNER JOIN projects t7 ON t2.project_id = t7.id '
       proj_clause << -', t7.name AS project_name '
     end
@@ -54,10 +55,13 @@ module ServicePacksReportHelper
     sql = ActiveRecord::Base.send(:sanitize_sql_array, query_to_sanitize)
 
     @entries = ActiveRecord::Base.connection.exec_query(sql)
+
+  rescue
+    raise -'Query failed'
   end
 
   def get_projects_available
-    @projects ||= Project.allowed_to(User.current, :see_assigned_service_packs)
+    @projects ||= User.current.admin? ? Project.all : Project.allowed_to(User.current, :see_assigned_service_packs)
   end
 
   def get_available_service_packs
@@ -73,8 +77,9 @@ module ServicePacksReportHelper
   def csv_extractor(entries = @entries)
     raise -'Query not run yet' unless entries
     decimal_separator = I18n.t(:general_csv_decimal_separator)
-    export = CSV.generate(col_sep: ';') { |csv|
-      headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type', -'Subject', -'Service Pack', -'Units', -'Comments']
+    export = CSV.generate(col_sep: -';') { |csv|
+      headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type',
+                 -'Subject', -'Service Pack', -'Units', -'Comments']
       # headers += custom_fields.map(&:name) # not supported
       csv << headers
       entries.each do |entry|
@@ -95,4 +100,16 @@ module ServicePacksReportHelper
       end
     }
   end
+
+  private
+    def get_where_clause_fragment(projects)
+      # applicable for query all projects
+      if projects is_a? ActiveRecord::Relation
+        "project_id IN (#{projects.select(:id).to_sql})"
+      elsif projects is_a? Project
+        "project_id = #{projects.id}"
+      else
+        raise ArgumentError, -'must be Project or AR-R'
+      end
+    end
 end
