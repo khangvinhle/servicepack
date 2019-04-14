@@ -26,7 +26,7 @@ module OpenProject::ServicePacks
             errors[:base] << -'The selected Service Pack is in frozen status'
             raise ActiveRecord::Rollback
           end
-          incur_cost!
+          incur_units_cost!
         end
 
         def update_consumed_units
@@ -51,11 +51,9 @@ module OpenProject::ServicePacks
             # if SP is not updated
             old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
             units_cost = hours * old_sp_of_project.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
-            if units_cost == sp_entry.units
-              old_sp_of_project.touch # trigger after callback only, which has an all-revoke waiting
-            else
+            if units_cost != sp_entry.units
               extra_consumption = units_cost - sp_entry.units
-              sp_entry.update(units: units_cost)
+              sp_entry.update!(units: units_cost)
               old_sp_of_project.remained_units -= extra_consumption
               old_sp_of_project.save!(context: :consumption)
             end
@@ -84,7 +82,7 @@ module OpenProject::ServicePacks
           def incur_units_cost!(activity_id_to_log = activity.parent_id || activity.id, sp_entry = service_pack_entry)
             units_cost = hours * service_pack.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
             sp_entry ||= ServicePackEntry.find_or_initialize_by(time_entry_id: id)
-            sp_entry.update(service_pack_id: service_pack_id, units: units_cost)
+            sp_entry.update!(service_pack_id: service_pack_id, units: units_cost)
             service_pack.remained_units -= units_cost
             service_pack.save!(context: :consumption)
           end
