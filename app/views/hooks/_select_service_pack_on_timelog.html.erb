@@ -1,24 +1,24 @@
-<div class="form--field -required">
-  <label class="form--label -required" title="Which Service Pack this belongs to" for="service_pack_id">Service
-    Pack<span class="form--label-required" aria-hidden="true">*</span></label>
-  <span class="form--field-container">
-		<span class="form--select-container -slim">
-			<select name="[time_entry][service_pack_id]" required>
-        <% assigned_sp_id = project.assigns.where('assigned=true').pluck(:service_pack_id) %>
-        <% assigned_sp_name = [] %>
-        <% assigned_sp_id.each {|id| assigned_sp_name << ServicePack.find_by(id: id).name} %>
-        <% sp_availables = assigned_sp_id.zip(assigned_sp_name) %>
-        <% if te_spid = time_entry.service_pack_id %>
-					<% sp_availables.each do |sp| %>
-						<%= content_tag :option, sp[1], value: sp[0], selected: te_spid == sp[0] %>
-					<% end %>
-				<% else %>
-					<option selected>--- Pick a Service Pack ---</option>
-          <% sp_availables.each do |sp| %>
-						<option value="<%= sp[0] %>"><%= sp[1] %></option>
-					<% end %>
-				<% end %>
-			</select>
-		</span>
-	</span>
-</div>
+<% if @project.enabled_modules.find_by(name: -'service_packs')%>  
+  <div class="form--field -required">
+    <label class="form--label -required" title="Which Service Pack this belongs to" for="service_pack_id">Service
+      Pack<span class="form--label-required" aria-hidden="true">*</span></label>
+    <span class="form--field-container">
+      <span class="form--select-container -slim">
+        <select name="[time_entry][service_pack_id]" required>
+          <%= get_assigned_sp_id = @project.assigns.active.select(:service_pack_id)
+              sp_availables = ServicePack.availables.where("id IN (#{get_assigned_sp_id.to_sql})").pluck(:id, :name) %>
+          <% if te_spid = time_entry.service_pack_id %>
+            <% sp_availables.each do |sp| %>
+              <%= content_tag :option, sp[1], value: sp[0], selected: te_spid == sp[0] %>
+            <% end %>
+          <% else %>
+            <option value="" selected>--- Pick a Service Pack ---</option>
+            <% sp_availables.each do |sp| %>
+              <option value="<%= sp[0] %>"><%= sp[1] %></option>
+            <% end %>
+          <% end %>
+        </select>
+      </span>
+    </span>
+  </div>
+<% end %>

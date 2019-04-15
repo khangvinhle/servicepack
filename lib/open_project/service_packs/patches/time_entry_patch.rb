@@ -1,8 +1,6 @@
 module OpenProject::ServicePacks
   module Patches
     module TimeEntryPatch
-      module ClassMethods
-      end
       module InstanceMethods
         def log_consumed_units
 
@@ -11,6 +9,8 @@ module OpenProject::ServicePacks
           # Then find a rate associated with activity_id and sp in effect.
           # Create an SP_entry with the log entry cost.
           # Subtract the remaining counter of SP to the cost.
+
+          return unless @project.enabled_modules.find_by(name: -'service_packs')
 
           assignments = project.assigns.active.pluck(:service_pack_id)
           if assignments.empty?
@@ -35,6 +35,9 @@ module OpenProject::ServicePacks
           # then recalculate the cost in the entry
           # Update the entry
           # Take the delta and subtract to the remained count of SP.
+
+          return unless @project.enabled_modules.find_by(name: -'service_packs')
+
           sp_entry = service_pack_entry
           return if sp_entry.nil?
           
@@ -66,7 +69,7 @@ module OpenProject::ServicePacks
         end
 
         def get_consumed_units_back
-          refund_units_cost!
+          refund_units_cost! unless @project.enabled_modules.find_by(name: -'service_packs')
         end
 
         private
@@ -81,7 +84,7 @@ module OpenProject::ServicePacks
 
           def incur_units_cost!(activity_id_to_log = activity.parent_id || activity.id, sp_entry = service_pack_entry)
             units_cost = hours * service_pack.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
-            sp_entry ||= ServicePackEntry.find_or_initialize_by(time_entry_id: id)
+            sp_entry ||= ServicePackEntry.new(time_entry_id: id) # why this method is a !
             sp_entry.update!(service_pack_id: service_pack_id, units: units_cost)
             service_pack.remained_units -= units_cost
             service_pack.save!(context: :consumption)
@@ -89,8 +92,7 @@ module OpenProject::ServicePacks
       end
 
       def self.included(receiver)
-        receiver.extend ClassMethods
-        receiver.send :include, InstanceMethods
+        receiver.include InstanceMethods
         receiver.class_eval do
           has_one :service_pack_entry, dependent: :destroy
           belongs_to :service_pack
