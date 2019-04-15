@@ -6,7 +6,9 @@
       <span class="form--select-container -slim">
         <select name="[time_entry][service_pack_id]" required>
           <%= get_assigned_sp_id = @project.assigns.active.select(:service_pack_id)
-              sp_availables = ServicePack.availables.where("id IN (#{get_assigned_sp_id.to_sql})").pluck(:id, :name) %>
+              t = ServicePack.availables
+              t = t.where("id IN (#{get_assigned_sp_id.to_sql})") unless defined? ServicePack::SWITCH_USE_UNASSIGNED_CHECK
+              sp_availables = t.pluck(:id, :name) %>
           <% if te_spid = time_entry.service_pack_id %>
             <% sp_availables.each do |sp| %>
               <%= content_tag :option, sp[1], value: sp[0], selected: te_spid == sp[0] %>

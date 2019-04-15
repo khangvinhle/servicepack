@@ -1,4 +1,7 @@
 class ServicePack < ApplicationRecord
+  # put feature switch here
+  # SWITCH_USE_UNASSIGNED_CHECK = 1
+
   before_create :default_remained_units
 
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
