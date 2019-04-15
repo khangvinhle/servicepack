@@ -1,5 +1,5 @@
 <style>
-	td { max-width: 12vw !important; }
+	td { max-width: 15vw !important; }
 </style>
 <h2>Service Pack Report</h2>
 <form id="query_form" action="<%= sp_report_path %>" accept-charset="UTF-8" method="get">
@@ -17,7 +17,7 @@
 							<%# data-preloaded: prefilled on server or need ajax %>
 							<select name="proj_id" data-ajax-load="proj_available" data-preloaded="1" size="1" class="form--select filter-value">
 								<%# binding.pry %>
-								<% project_default_id = params[:proj_id].present? ? params[:proj_id].to_i : (@project ? @project.id : nil) %>
+								<% project_default_id = params[:proj_id].present? ? params[:proj_id].to_i : @project&.id %>
 								<% @projects.pluck(:id, :name).each do |project| %>
 									<%= content_tag :option, project[1], value: project[0], selected: project[0] == project_default_id %>
 								<% end %>

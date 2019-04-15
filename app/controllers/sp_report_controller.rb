@@ -2,7 +2,7 @@ class SpReportController < ApplicationController
   before_action :find_project_by_project_id, only: :proj_available
   include ServicePacksReportHelper
 
-  NUMBER_OF_FILLED_COLUMN = 8
+  NUMBER_OF_FILLED_COLUMN = 7
 
   def report
     # json & html endpoint
@@ -10,9 +10,9 @@ class SpReportController < ApplicationController
     # binding.pry
     begin
       if params[:proj_id].present?
-        raise ActiveRecord::RecordNotFound unless @project = Project.find_by(id: params[:proj_id])
+        @project = Project.find_by!(id: params[:proj_id])
       else
-        @project = Project.find(params[:project_id])
+        @project = Project.find(params[:project_id]) # find by slug
       end
       spid = params[:service_pack_id]
       if spid.present?
@@ -26,22 +26,23 @@ class SpReportController < ApplicationController
       render status: 404 and return
     end
 
-    sql = query(service_pack: sp, project: @project,
-                start_date: params[:start_date]&.to_date,
-                end_date: params[:end_date]&.to_date)
-
     respond_to do |format|
       format.html {
         # change this to debug
         # render plain: sp_available
+        query(service_pack: sp, project: @project,
+              lite: true)
         get_projects_available
         get_available_service_packs
         render -'show'
       }
       format.json {
+        query(service_pack: sp, project: @project,
+              lite: true)
         render json: @entries
       }
       format.csv {
+        query(service_pack: sp, project: @project)
         render csv: csv_extractor(@entries), filename: "sp-report-#{Date.today}.csv"
       }
     end

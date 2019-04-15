@@ -12,7 +12,6 @@
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Activity</span></div></div></th>
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Project</span></div></div></th>
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Work Package</span></div></div></th>
-					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Comment</span></div></div></th>
 					<th style="width: 4em;"><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Units</span></div></div></th>
 					<th style="width: 4em;"><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Hours</span></div></div></th>
 				</tr>
@@ -27,7 +26,6 @@
 						<%= content_tag :td, entry[-'activity_name'] %>
 						<%= content_tag :td, entry[-'project_name'], title: entry[-'project_name']%>
 						<%= content_tag :td, "#{entry[-'type_name']} \##{entry[-'work_package_id']}: #{entry[-'subject']}", title: entry[-'subject']%>
-						<%= content_tag :td, entry[-'comment'], title: entry['-comment'] %>
 						<%= content_tag :td, entry[-'units'].round(0) %>
 						<%= content_tag :td, -"%.2f" % entry[-'hours'].round(2) %>
 					</tr>

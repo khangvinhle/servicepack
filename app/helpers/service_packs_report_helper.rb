@@ -1,11 +1,12 @@
 module ServicePacksReportHelper
-  def query(service_pack: nil, project: nil, start_date: nil, end_date: nil)
+  def query(service_pack: nil, project: nil, start_date: nil, end_date: nil, **options)
     # binding.pry
     proj_clause = <<-SQL
                   SELECT t1.created_at AS spent_on, concat(t4.firstname, ' ', t4.lastname) AS user_name, 
                   t3.name AS activity_name, t5.id AS work_package_id, t5.subject AS subject,
-                  t2.comments AS comment, t1.units AS units, t2.hours AS hours, t6.name AS type_name
+                  t1.units AS units, t2.hours AS hours, t6.name AS type_name
                   SQL
+    proj_clause << -', t2.comments AS comment' unless options[:lite]
     query_to_sanitize = [proj_clause]
     from_clause = <<-SQL
                   FROM service_pack_entries t1
@@ -22,10 +23,8 @@ module ServicePacksReportHelper
                   SQL
 
     where_clause = 'WHERE 1 = 1'
-    dts = start_date&.to_s
-    ets = (end_date&.next_day)&.to_s
-    where_clause << " AND t1.created_at >= '#{dts}' " if dts
-    where_clause << " AND t1.created_at < '#{ets}' " if ets
+    where_clause << " AND t1.created_at >= '#{start_date}' " if start_date
+    where_clause << " AND t1.created_at < '#{end_date.next}' " if end_date
 
     if project&.id # project given?
       # specific project
