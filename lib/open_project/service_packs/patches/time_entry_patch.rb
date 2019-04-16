@@ -10,7 +10,7 @@ module OpenProject::ServicePacks
           # Create an SP_entry with the log entry cost.
           # Subtract the remaining counter of SP to the cost.
 
-          return unless @project.enabled_modules.find_by(name: -'service_packs')
+          return unless project.enabled_modules.find_by(name: -'service_packs')
 
           assignments = project.assigns.active.pluck(:service_pack_id)
           if assignments.empty?
@@ -36,7 +36,12 @@ module OpenProject::ServicePacks
           # Update the entry
           # Take the delta and subtract to the remained count of SP.
 
-          return unless @project.enabled_modules.find_by(name: -'service_packs')
+          unless project.enabled_modules.find_by(name: -'service_packs')
+            # SP must not change if module is not on
+            # and PermittedParams won't see @project
+            service_pack_id = service_pack_id_in_database # ActiveRecord::AttributeMethods::Dirty
+            return
+          end
 
           sp_entry = service_pack_entry
           return if sp_entry.nil?
@@ -69,7 +74,7 @@ module OpenProject::ServicePacks
         end
 
         def get_consumed_units_back
-          refund_units_cost! unless @project.enabled_modules.find_by(name: -'service_packs')
+          refund_units_cost! unless project.enabled_modules.find_by(name: -'service_packs')
         end
 
         private
@@ -97,7 +102,7 @@ module OpenProject::ServicePacks
           has_one :service_pack_entry, dependent: :destroy
           belongs_to :service_pack
           after_create :log_consumed_units
-          after_update :update_consumed_units
+          before_update :update_consumed_units # to stop persisting changed SP
           before_destroy :get_consumed_units_back
         end
       end
