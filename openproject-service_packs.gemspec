@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://gits.fromlabs.com/openproject/service-pack'
   s.summary = 'Allow to track units of service packs when logging time on tasks'
   s.description = 'Service Pack plugin'
-  s.license     = 'GPLv3' # e.g. 'MIT' or 'GPLv3'
+  s.license = 'GPL-3.0' # e.g. 'MIT' or 'GPLv3'
 
   s.files = Dir['{app,config,db,doc,lib}/**/*'] + %w[CHANGELOG.md README.md]
 
