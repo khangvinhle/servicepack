@@ -16,6 +16,6 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,doc,lib}/**/*'] + %w[CHANGELOG.md README.md]
 
-  s.require_ruby_version = '>= 2.5.0'
+  s.required_ruby_version = '>= 2.5.0'
   s.add_dependency 'rails', '>= 5.1.6', '< 6.x'
 end
