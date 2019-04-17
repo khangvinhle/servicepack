@@ -8,7 +8,6 @@ OpenProject::Application.routes.draw do
     get '/assigns/assign', to: 'assigns#to_assign'
     post '/assigns/assign', to: 'assigns#assign'
     post '/assigns/unassign/:service_pack_id', to: 'assigns#unassign'
-    get '/assigns/statistics', to: 'assigns#statistics', constraints: lambda { |req| req.format == :json }
     get '/assigns/', to: 'assigns#index'
   end
 end

@@ -53,20 +53,8 @@ class AssignsController < ApplicationController
   end
 
   def index
-    return head 403 unless current_user_can_see || current_user_can_assign || current_user_can_unassign
+    return head 403 unless current_user_can_see
     @assignments = @project.assigns.active.preload(:service_pack)
-  end
-
-  def report
-    # BROKEN
-    raise "Do Not Call This Method: #{self.class.name}\##{__method__}"
-
-    return head 403 unless User.current.allowed_to?(:see_assigned_service_packs, @project)
-    if assignment = assigned?(@project)
-      render csv: ServicePackReport.new(assignment.service_pack).call(@project), filename: "ServicePackReport_#{@project.name.gsub(/\s+/, -'_')}.csv"
-    else
-      render_404
-    end
   end
   
   # =======================================================
@@ -140,7 +128,9 @@ class AssignsController < ApplicationController
   # helper
 
   def current_user_can_see
-    User.current.allowed_to?(:see_assigned_service_packs, @project) # call once only
+    User.current.allowed_to?(:see_assigned_service_packs, @project) ||
+    current_user_can_assign ||
+    current_user_can_unassign # call once only
   end
 
   def current_user_can_assign
