@@ -21,6 +21,10 @@ class AssignsController < ApplicationController
       flash[:alert] = "Service Pack '#{@service_pack.name}' #{@service_pack.expired? ? -'is expired' : -'cannot be assigned'}"
       redirect_to action: :to_assign
     end
+
+  rescue
+    flash[:alert] = "Service Pack '#{@service_pack.name}' cannot be assigned"
+    redirect_to action: :to_assign
   end
 
   def unassign
