@@ -32,11 +32,12 @@
 							<select name="service_pack_id" data-ajax-load="sp_available" data-preloaded="1" size="1" class="form--select filter-value">
 								<% if params[:service_pack_id].present? %>
 									<% sp_default_id = params[:service_pack_id].to_i %>
+									<option value=''>All Service Packs</option>
 									<% @sps.each do |service_pack| %>
 										<%= content_tag :option, service_pack[1], value: service_pack[0], selected: service_pack[0] == sp_default_id %>
 									<% end %>
 								<% else %>
-									<option value='' selected>--- Pick a Service Pack ---</option>
+									<option value='' selected>All Service Packs</option>
 									<% @sps.each do |service_pack| %>
 										<%= content_tag :option, service_pack[1], value: service_pack[0] %>
 									<% end %>
