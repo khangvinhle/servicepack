@@ -3,7 +3,7 @@ module SPAssignmentManager
     # binding.pry
     ActiveRecord::Base.transaction do
       assignment = service_pack.assigns.find_or_initialize_by(project_id: project.id)
-      assignment.update!(assigned: true, assign_date: Date.today, unassign_date = service_pack.expired_date)
+      assignment.update!(assigned: true, assign_date: Date.today, unassign_date: service_pack.expired_date)
     end
   end
 
