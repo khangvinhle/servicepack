@@ -12,7 +12,7 @@ module OpenProject::ServicePacks
 	        # so #TEA patching doesn't work.
 				def update_sp_rates
 			    	if type == "TimeEntryActivity" && shared?
-			        	ServicePack.availables.each do |service_pack|
+			        	ServicePack.availables.find_each do |service_pack|
 			          	# service_pack.mapping_rates << self # WRONG: this is NOT a plain Ruby collection!
 	              	  	# trying to give a sensible default value
 			          		service_pack.mapping_rates.create!(units_per_hour: 0, activity_id: self.id)
@@ -21,12 +21,12 @@ module OpenProject::ServicePacks
 			    end
 			end
 		
-				def self.included(receiver)
-					receiver.extend         ClassMethods
-					receiver.send :include, InstanceMethods
+			def self.included(receiver)
+				receiver.extend         ClassMethods
+				receiver.send :include, InstanceMethods
 
-					receiver.class_eval do
-						after_create :update_sp_rates
+				receiver.class_eval do
+					after_create :update_sp_rates
 				end
 			end
 

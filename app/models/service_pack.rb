@@ -1,5 +1,8 @@
 # freeze_literal_string: true
 class ServicePack < ApplicationRecord
+  # put feature switch here
+  # SWITCH_USE_UNASSIGNED_CHECK = 1
+
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   after_save :knock_out, if: :used_up?, on: :consumption
@@ -29,8 +32,8 @@ class ServicePack < ApplicationRecord
   validates_numericality_of :total_units, greater_than: 0
   validates_numericality_of :threshold1, :threshold2, only_integer: true, greater_than: 0
 
-  validate :threshold2_is_greater_than_threshold1
-  validate :end_after_start
+  validate :threshold2_is_greater_than_threshold1, on: [:create, :update]
+  validate :end_after_start, on: [:create, :update]
   validate :must_not_expire_in_the_past
   validate :threshold1_is_greater_than_total_units
   validate :threshold2_is_greater_than_total_units
@@ -57,7 +60,7 @@ class ServicePack < ApplicationRecord
   end
 
   def unavailable? # available SP might not be assignable
-    used_up? && expired?
+    used_up? || expired?
   end
 
   def available?

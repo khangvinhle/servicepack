@@ -1,9 +1,6 @@
 <%= javascript_include_tag 'assigns.js', plugin: :openproject_service_packs %>
 
 <div id="sp-assign">
-  <h2>No Service Pack is assigned to this project.</h2>
-  <br/>
-
   <%= form_with model: @assignment, url: assigns_assign_path(@project), local: true, method: :post do |f| %>
     Choose a Service Pack to apply:
     <%= f.select :service_pack_id, {},{},{id: "select-sp"} do %>
