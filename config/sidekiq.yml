@@ -1,0 +1,4 @@
+:schedule:
+  expired_sp:
+    every: 12h
+    class: ExpiredSpWorker

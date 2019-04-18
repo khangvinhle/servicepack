@@ -3,7 +3,7 @@
   <% if @service_pack.errors.any? %>
     <div id="error-explanation">
       <h2>
-        <%= pluralize(@service_pack.errors.count, -"error") %> prohibited
+        <%= pluralize(@service_pack.errors.count, -'error') %> prohibited
         this service pack from being saved:
       </h2>
       <ul>
@@ -15,16 +15,16 @@
   <% end %>
 
   <div class="form--field">
-    <%= form.label :name, class: "form--label" %>
+    <%= form.label :name, class: 'form--label', title: -'The name of this service pack' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
-        <%= form.text_field :name, required: true, container_class:"-slim" %>
+        <%= form.text_field :name, required: true, container_class: -'-slim' %>
       </span>
     </span>
   </div>
 
   <div class="form--field">
-    <%= form.label :total_units, class: "form--label" %>
+    <%= form.label :total_units, class: 'form--label', title: 'The total units of this service pack' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
         <%= form.number_field :total_units, step: 'any', required: true %>
@@ -33,7 +33,7 @@
   </div>
 
   <div class="form--field">
-    <%= form.label :started_date, class: "form--label" %>
+    <%= form.label :started_date, class: 'form--label', title: 'The date this service pack activate' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
         <%= form.date_field :started_date, required: true %>
@@ -42,7 +42,7 @@
   </div>
 
   <div class="form--field">
-    <%= form.label :expired_date, class: "form--label" %>
+    <%= form.label :expired_date, class: 'form--label', title: 'The date this service pack expires' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
         <%= form.date_field :expired_date, required: true %>
@@ -51,30 +51,30 @@
   </div>
 
   <div class="form--field">
-    <%= form.label :threshold_1, class: "form--label" %>
+    <%= form.label :threshold_1, class: 'form--label', title: 'Notification will be sent when the available units below' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
-        <%= form.number_field :threshold1, required: true %>
+        <%= form.number_field :threshold1, required: true, placeholder: 'In units' %>
       </span>
     </span>
   </div>
 
   <div class="form--field">
-    <%= form.label :threshold_2, class: "form--label" %>
+    <%= form.label :threshold_2, class: 'form--label', title: 'Notification will be sent when the available units below' %>
     <span class="form--field-container">
       <span class="form--text-field-container -slim">
-        <%= form.number_field :threshold2, required: true %>
+        <%= form.number_field :threshold2, required: true, placeholder: 'In units' %>
       </span>
     </span>
   </div>
 
   <hr>
 
-  <%= render partial: 'rates_input' %>
+  <%= render partial: -'rates_input' %>
 
   <div class="button-container">
-    <%= form.submit class: "button -alt-highlight" %>
-    <%= link_to "Back", service_packs_path, class: -"button -alt-highlight -new" %>
+    <%= form.submit class: -'-highlight -with-icon icon-checkmark button' %>
+    <%#= link_to "Back", service_packs_path, class: "button -alt-highlight" %>
   </div>
 
 <% end %>

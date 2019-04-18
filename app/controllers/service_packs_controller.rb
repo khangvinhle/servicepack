@@ -7,6 +7,8 @@ class ServicePacksController < ApplicationController
 
   def index
     @service_packs = ServicePack.all
+    # for demo
+    #ServicePacksMailer.notify_under_threshold1(User.first,@service_packs.first).deliver_now
   end
 
   def new
@@ -82,6 +84,7 @@ class ServicePacksController < ApplicationController
       flash[:error] = -"Service Pack not found"
       redirect_to action: :index and return
     end
+
     mapping_rate_attribute = params[:service_pack][:mapping_rates_attributes]
     activity_id = []
     mapping_rate_attribute.each {|_index, hash_value| activity_id.push(hash_value[:activity_id])}
@@ -126,7 +129,7 @@ class ServicePacksController < ApplicationController
   end
 
   def default_breadcrumb
-    action_name == 'index'? -'Service Packs' : ActionController::Base.helpers.link_to(-'Service Packs', service_packs_path)
+    action_name == 'index' ? -'Service Packs' : ActionController::Base.helpers.link_to(-'Service Packs', service_packs_path)
   end
 
   # =======================================================
@@ -146,7 +149,7 @@ class ServicePacksController < ApplicationController
   # Top class: None
   # Content: Array of object having [name, consumed]
   # - consumed: How many units are consumed (in given period)
-  # - act_name: Name of activity 
+  # - act_name: Name of activity
   # Status: 200
   # * When raising error
   # HTTP 404: SP not found
@@ -201,8 +204,8 @@ class ServicePacksController < ApplicationController
   end
 
   def service_pack_edit_params
-    params.require(:service_pack).permit(:threshold1, :threshold2,
-                                        mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
+    params.require(:service_pack).permit(:total_units, :threshold1, :threshold2,
+                                         mapping_rates_attributes: [:id, :activity_id, :service_pack_id, :units_per_hour, :_destroy])
   end
 
   def add_units

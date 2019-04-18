@@ -38,7 +38,7 @@ module OpenProject::ServicePacks
            {controller: '/assigns', action: 'index'},
            after: :overview,
            param: :project_id,
-           caption: 'Service Pack assignments',
+           caption: 'Service packs',
            icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
 

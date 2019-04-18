@@ -4,32 +4,25 @@
 <% local_assigns[:additional_breadcrumb] = @service_pack.name %>
 <% html_title l(:label_administration), @service_pack.name %>
 
-<!-- this can be improved, less thick border, a bit more line-height and stuff -->
-
-<!--<div class='grid-container'>-->
-<!--  <div> Total Units: </div>-->
-<!--  <div> <%#= @service_pack.total_units %> </div>-->
-<!--  <div> Remained Units: </div>-->
-<!--  <div> <%#= @service_pack.remained_units %> </div>-->
-<!--  <div> Started Date: </div>  -->
-<!--  <div> <%#= @service_pack.started_date %> </div>-->
-<!--  <div> Expired Date: </div>-->
-<!--  <div> <%#= @service_pack.expired_date %> </div>-->
-
 <section id="detailed-sp">
-  <div class="sp description">
-    <div class="sp-content">
+  <div id="block-left">
+    <div class="sp description">
       <h2>Description</h2>
-      <p>Name: <%= @service_pack.name %> </p>
-      <p>Total units: <%= @service_pack.total_units %></p>
-      <p>Remain units: <%= @service_pack.remained_units %></p>
-      <p>Started date: <%= @service_pack.started_date %></p>
-      <p>Expired date: <%= @service_pack.expired_date %></p>
+      Name: <%= @service_pack.name %><br/>
+      Total units: <%= @service_pack.total_units %><br/>
+      Remain units: <%= @service_pack.remained_units %><br/>
+      Started date: <%= @service_pack.started_date %><br/>
+      Expired date: <%= @service_pack.expired_date %><br/>
+      Threshold 1: <%= pluralize(@service_pack.threshold1, 'unit', 'units') %> <br/>
+      Threshold 2: <%= pluralize(@service_pack.threshold2, 'unit', 'units') %><br/>
+    </div>
+    <div class="sp assigned">
+      <%= render partial: -'active_assignments' %>
     </div>
   </div>
 
-  <div class="sp rates">
-    <div class="sp-content">
+  <div id="block-right">
+    <div class="sp rates">
       <h2>Rates</h2>
       <ul>
         <% @rates.each do |rate| %>
@@ -46,15 +39,16 @@
   </div>
 </section>
 
-<div class='button-container'>
-  <%= link_to -'Edit Service Pack', edit_service_pack_path(@service_pack), class: -'button -alt-highlight' %>
-  <%= link_to -'Back to Service Pack home page', service_packs_path, class: -'button' %>
+<div class='button-container clearfix'>
+  <%#= link_to -'Back to Service Pack home page', service_packs_path, class: -'button float-left' %>
+
   <% if @service_pack.assigned? %>
-    <%= link_to -'Delete', -'#', class: -'button destroy blocked', disabled: true %>
-    <span id='warnbox'>Please unassign this from all projects before deleting.</span>
+    <%= link_to -'Delete', -'#', class: -'button destroy blocked float-right', disabled: true, :title => "Please unassign this service pack from all projects before deleting!" %>
   <% else %>
-    <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
+    <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy float-right', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
   <% end %>
+  <%= link_to -'Edit', edit_service_pack_path(@service_pack), class: -'button -alt-highlight float-right' %>
 </div>
+
 <hr/>
-<p class='other-formats'>Also available in: <%= link_to -'CSV', {action: :show, format: :csv} %></p>
+<p class='other-formats'>Report available in: <%= link_to -'CSV', {action: :show, format: :csv} %></p>

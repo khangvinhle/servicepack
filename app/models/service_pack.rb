@@ -1,12 +1,14 @@
+# freeze_literal_string: true
 class ServicePack < ApplicationRecord
   # put feature switch here
   # SWITCH_USE_UNASSIGNED_CHECK = 1
 
   before_create :default_remained_units
-
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
+  after_save :knock_out, if: :used_up?, on: :consumption
+
   has_many :assigns, dependent: :destroy
-  has_many :active_assignments, -> {where("assigned = ? and unassign_date >= ?", true, Date.today)}, class_name: 'Assign'
+  has_many :active_assignments, -> {where('assigned = ? and unassign_date >= ?', true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :delete_all
@@ -18,34 +20,37 @@ class ServicePack < ApplicationRecord
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
 
-  accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
-
+  accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: ->(attributes) {attributes['units_per_hour'].blank?}
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
-  validates_uniqueness_of :name, on: [:create, :update]
+
+  validates_uniqueness_of :name, on: :create # SP name never changes
   # https://rubular.com/r/CCtRDRq9jDuMmb
-  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)", on: [:create, :update]
+
+  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: 'has invalid character(s)'
 
   validates_numericality_of :total_units, greater_than: 0
-  validates_numericality_of :threshold1, :threshold2, on: [:create, :update] # OUTDATED: greater_than_or_equal_to: 0, less_than_or_equal_to: 100, only_integer: true
+  validates_numericality_of :threshold1, :threshold2, only_integer: true, greater_than: 0
 
   validate :threshold2_is_greater_than_threshold1, on: [:create, :update]
   validate :end_after_start, on: [:create, :update]
   validate :must_not_expire_in_the_past
+  validate :threshold1_is_greater_than_total_units
+  validate :threshold2_is_greater_than_total_units
 
   scope :assignments, -> {joins(:assigns).where(assigned: true)}
-  scope :availables, -> {where("remained_units > 0 and expired_date > ?", Date.today)}
-  # scope :gone_low, ->{where('remained_units <= total_units / 100.0 * threshold1')}
-
+  scope :availables, -> {where('remained_units > 0 and expired_date >= ?', Date.today)}
+  scope :notifiable, ->(thresno) {where("remained_units <= threshold#{thresno}")}
 
   def default_remained_units
-    self.remained_units = self.total_units
+    self.remained_units = total_units
   end
 
   def revoke_all_assignments
-    assignments.update_all(assigned: false, unassign_date: Date.today)
+    assignments.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
   end
 
+  ### CHECKERS ###
   def expired?
     true if Time.now > expired_date
   end
@@ -62,17 +67,41 @@ class ServicePack < ApplicationRecord
     !unavailable?
   end
 
+  def is_notify?
+    # so what is with the two thresholds!?
+    dates_to_notify = (expired_date - Date.today).to_i
+    dates_to_notify.between?(1, 2)
+  end
+
+  def assigned?
+    assigns.where(assigned: true).exists?
+  end
+
+  # def total_unit_updatable?(new_value, old_value = total_units)
+  #   # old_value=total_units
+  #   if new_value > old_value
+  #     true
+  #   elsif new_value == old_value
+  #     true
+  #   elsif new_value < old_value
+  #     unit_subtract_number = old_value - new_value
+  #     !(remained_units < unit_subtract_number)
+  #   end
+  # end
+
+  ### END CHECKERS ###
+
   # FOR TESTING ONLY
   def expired_notification # send to the first user in the first record in the DB
     if expired?
       user = User.first
-      ExpiredSpMailer.expired_email(user, self).deliver_later
+      ServicePacksMailer.expired_email(user, self).deliver_later
     end
   end
 
   def cron_send_specific
     # modify the User param
-    ExpiredSpMailer.expired_email(User.last, ServicePack.first).deliver_later
+    ServicePacksMailer.expired_email(User.last, ServicePack.first).deliver_later
   end
 
   # def self.cron_send_default
@@ -82,23 +111,6 @@ class ServicePack < ApplicationRecord
   #   end
   # end
   # END TESTING ONLY
-
-  def self.cron_send_default
-    # modify the User param
-    ServicePack.find_each do |sp|
-      ExpiredSpMailer.expired_email(User.last, sp).deliver_now if sp.is_notify?
-    end
-  end
-
-  def is_notify?
-    # so what is with the two thresholds!?
-    dates_to_notify = (sp.expired_date - Date.today).to_i
-    dates_to_notify.between?(1, 2)
-  end
-
-  def assigned?
-    assigns.where(assigned: true).exists?
-  end
 
   def assignments
     assigns.where(assigned: true)
@@ -110,10 +122,50 @@ class ServicePack < ApplicationRecord
     self
   end
 
+  ### START CRON JOBS ###
+  # modify User param first
+  # deliver_later doesn't work
+
+  def self.check_expired_sp
+    ServicePack.find_each do |sp|
+      ServicePacksMailer.expired_email(User.last, sp).deliver_now if sp.expired?
+    end
+  end
+
+  # will be replaced
+  # # notify immediately at entries
+  #   def self.check_used_up
+  #     ServicePack.find_each do |sp|
+  #       ServicePacksMailer.used_up_email(User.last, sp).deliver_now if sp.used_up?
+  #     end
+  #   end
+
+  def self.check_threshold1
+    ServicePack.notifiable(1).find_each do |sp|
+      ServicePacksMailer.notify_under_threshold1(User.last, sp).deliver_now
+    end
+  end
+
+  def self.check_threshold2
+    ServicePack.notifiable(2).find_each do |sp|
+      ServicePacksMailer.notify_under_threshold2(User.last, sp).deliver_now
+    end
+  end
+
+  ### END CRON JOBS ###
+
   private
 
+  def threshold1_is_greater_than_total_units
+    @errors.add(:threshold1, 'must be smaller than total units') if threshold1 >= total_units
+  end
+
+  def threshold2_is_greater_than_total_units
+    @errors.add(:threshold2, 'must be smaller than total units') if threshold2 >= total_units
+  end
+
   def threshold2_is_greater_than_threshold1
-    @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 > threshold1
+    @errors.add(:threshold2, 'must be less than threshold 1') if threshold2 >= threshold1
   end
 
   def end_after_start
@@ -122,5 +174,10 @@ class ServicePack < ApplicationRecord
 
   def must_not_expire_in_the_past
     @errors.add(:expired_date, 'must not be in the past') if expired_date < Date.today
+  end
+
+  def knock_out
+    revoke_all_assignments
+    Delayed::Job.enqueue UsedUpServicePackJob.new(self)
   end
 end
