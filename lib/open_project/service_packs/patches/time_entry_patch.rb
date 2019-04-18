@@ -10,10 +10,7 @@ module OpenProject::ServicePacks
           # Create an SP_entry with the log entry cost.
           # Subtract the remaining counter of SP to the cost.
 
-          unless project.enabled_modules.find_by(name: -'service_packs')
-            service_pack_id = nil
-            return
-          end
+          return unless project.enabled_modules.find_by(name: -'service_packs')
 
           assignments = project.assigns.active.pluck(:service_pack_id)
           if assignments.empty?
@@ -107,7 +104,7 @@ module OpenProject::ServicePacks
           after_create :log_consumed_units
           before_update :update_consumed_units # to stop persisting changed SP
           before_destroy :get_consumed_units_back
-          validates :service_pack_id, numericality: {only_integer: true, greater_than: 0}, allow_nil: true
+          # validates :service_pack_id, numericality: {only_integer: true, greater_than: 0}, allow_nil: true
         end
       end
     end
