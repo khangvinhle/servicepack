@@ -31,6 +31,12 @@
       </ul>
     </div>
   </div>
+
+  <div class="sp assigned">
+    <div class="sp-content">
+      <%=  render partial: -'active_assignments' %>
+    </div>
+  </div>
 </section>
 
 <div class='button-container clearfix'>
@@ -41,7 +47,7 @@
   <% else %>
     <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy float-right', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
   <% end %>
-  <%= link_to -'Edit Service Pack', edit_service_pack_path(@service_pack), class: -'button -alt-highlight float-right' %>
+  <%= link_to -'Edit', edit_service_pack_path(@service_pack), class: -'button -alt-highlight float-right' %>
 </div>
 
 <hr/>

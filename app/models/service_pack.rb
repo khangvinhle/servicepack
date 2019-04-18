@@ -1,5 +1,8 @@
 # freeze_literal_string: true
 class ServicePack < ApplicationRecord
+  # put feature switch here
+  # SWITCH_USE_UNASSIGNED_CHECK = 1
+
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # should be time-based only.
   after_save :knock_out, if: :used_up?, on: :consumption
@@ -17,42 +20,35 @@ class ServicePack < ApplicationRecord
   # Rails will look for :dog_breeds by default! (e.g. User.pets.dog_breeds)
   # sauce: https://stackoverflow.com/a/4632472
 
-  accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: lambda {|attributes| attributes['units_per_hour'].blank?}
-
+  accepts_nested_attributes_for :mapping_rates, allow_destroy: true, reject_if: ->(attributes) {attributes['units_per_hour'].blank?}
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
 
   validates_uniqueness_of :name, on: :create # SP name never changes
   # https://rubular.com/r/CCtRDRq9jDuMmb
 
-  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: "has invalid character(s)"
+  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: 'has invalid character(s)'
 
   validates_numericality_of :total_units, greater_than: 0
   validates_numericality_of :threshold1, :threshold2, only_integer: true, greater_than: 0
 
-  validate :threshold2_is_greater_than_threshold1
-  validate :end_after_start
+  validate :threshold2_is_greater_than_threshold1, on: [:create, :update]
+  validate :end_after_start, on: [:create, :update]
   validate :must_not_expire_in_the_past
   validate :threshold1_is_greater_than_total_units
   validate :threshold2_is_greater_than_total_units
 
   scope :assignments, -> {joins(:assigns).where(assigned: true)}
   scope :availables, -> {where('remained_units > 0 and expired_date >= ?', Date.today)}
-  scope :notifiable, -> thresno {where("remained_units <= threshold#{thresno}")}
-
+  scope :notifiable, ->(thresno) {where("remained_units <= threshold#{thresno}")}
 
   def default_remained_units
-    self.remained_units = self.total_units
+    self.remained_units = total_units
   end
 
   def revoke_all_assignments
-    # 
     assignments.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
   end
-
-  # def remain_units_in_percent
-  #   ((remained_units * 100.0) / total_units).to_f
-  # end
 
   ### CHECKERS ###
   def expired?
@@ -64,7 +60,7 @@ class ServicePack < ApplicationRecord
   end
 
   def unavailable? # available SP might not be assignable
-    used_up? && expired?
+    used_up? || expired?
   end
 
   def available?
@@ -80,6 +76,18 @@ class ServicePack < ApplicationRecord
   def assigned?
     assigns.where(assigned: true).exists?
   end
+
+  # def total_unit_updatable?(new_value, old_value = total_units)
+  #   # old_value=total_units
+  #   if new_value > old_value
+  #     true
+  #   elsif new_value == old_value
+  #     true
+  #   elsif new_value < old_value
+  #     unit_subtract_number = old_value - new_value
+  #     !(remained_units < unit_subtract_number)
+  #   end
+  # end
 
   ### END CHECKERS ###
 
@@ -104,7 +112,6 @@ class ServicePack < ApplicationRecord
   # end
   # END TESTING ONLY
 
-
   def assignments
     assigns.where(assigned: true)
   end
@@ -126,13 +133,12 @@ class ServicePack < ApplicationRecord
   end
 
   # will be replaced
-=begin # notify immediately at entries
-  def self.check_used_up
-    ServicePack.find_each do |sp|
-      ServicePacksMailer.used_up_email(User.last, sp).deliver_now if sp.used_up?
-    end
-  end
-=end
+  # # notify immediately at entries
+  #   def self.check_used_up
+  #     ServicePack.find_each do |sp|
+  #       ServicePacksMailer.used_up_email(User.last, sp).deliver_now if sp.used_up?
+  #     end
+  #   end
 
   def self.check_threshold1
     ServicePack.notifiable(1).find_each do |sp|
@@ -171,7 +177,7 @@ class ServicePack < ApplicationRecord
   end
 
   def knock_out
-    self.revoke_all_assignments
+    revoke_all_assignments
     Delayed::Job.enqueue UsedUpServicePackJob.new(self)
   end
 end

@@ -1,0 +1,17 @@
+<h2>Assigned Service Packs</h2>
+
+<% if @can_assign ||= User.current.allowed_to?(:assign_service_packs, @project) %>
+  <a class="button -alt-highlight float-right" href="<%= assigns_assign_path %>">
+    <i class="button--icon icon-add" aria-hidden="true"></i><span class="button--text">Assign</span>
+  </a>
+<% end %>
+
+<% if @assignments.empty? %>
+  <div id="result-table" style="clear: right;">
+    <div class="generic-table--no-results-container">
+      <i class="icon-info1"></i> <h3 class="generic-table--no-results-title">No Service Pack is assigned to this project.</h3>
+    </div>
+  </div>
+<% else %>
+  <%= render partial: -'assignment_table' %>
+<% end %>
