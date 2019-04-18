@@ -20,7 +20,7 @@ module OpenProject::ServicePacks
         # permission :delete_ServicePacks, {ServicePacks: [:destroy]}
         permission :assign_service_packs, {assigns: [:assign, :index]}, require: :member
         permission :unassign_service_packs, {assigns: [:unassign, :index]}, require: :member
-        permission :see_assigned_service_packs, {assigns: [:index], sp_report: [:report]}, require: :member
+        permission :see_assigned_service_packs, {assigns: [:index]}, require: :member
       end
 
       menu :admin_menu,
@@ -38,18 +38,9 @@ module OpenProject::ServicePacks
            {controller: '/assigns', action: 'index'},
            after: :overview,
            param: :project_id,
-           caption: 'Service Pack Assignment',
+           caption: 'Service packs',
            icon: 'icon2 icon-bug',
            html: {id: 'assign-menu-item'}
-
-      menu :project_menu,
-           :sp_report,
-           {controller: 'sp_report', action: 'report'},
-           after: :assigns,
-           param: :project_id,
-           caption: 'Service Pack Report',
-           icon: 'icon2 icon-bug',
-           html: {id: 'report-sp-menu-item'}
 
     end
     patches %i[Project TimeEntryActivity TimeEntry Enumeration]
