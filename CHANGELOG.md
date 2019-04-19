@@ -14,6 +14,18 @@ See doc/COPYRIGHT.md for more details.
 
 ++-->
 
-# Changelog
+# Change log
 
-* `#<ticket number>` Create plugin
+### v1.0.2
+
+- Assign multiple service packs to a project
+- Choose which assigned service pack to time
+- Service pack logs
+
+### v1.0.1
+
+- Manage service packs
+
+- Assign one service pack to a project
+
+- Service pack report
