@@ -7,7 +7,6 @@ class SpReportController < ApplicationController
   def report
     # json & html endpoint
     # params[:service_pack, :start_date, :end_date]
-    # binding.pry
     begin
       if params[:proj_id].present?
         @project = Project.find_by!(id: params[:proj_id])
@@ -34,7 +33,7 @@ class SpReportController < ApplicationController
               lite: true)
         get_projects_available
         get_available_service_packs
-        render -'show'
+        render -'show' and return
       }
       format.json {
         query(service_pack: sp, project: @project,
@@ -43,7 +42,7 @@ class SpReportController < ApplicationController
       }
       format.csv {
         query(service_pack: sp, project: @project)
-        render csv: csv_extractor(@entries), filename: "sp-report-#{Date.today}.csv"
+        render csv: csv_extractor(@entries), filename: "sp-report-#{Date.today}.csv" and return # test
       }
     end
   end
@@ -55,4 +54,5 @@ class SpReportController < ApplicationController
   def sp_available
     render json: { service_packs: get_available_service_packs, preselect: nil } # just use the first one
   end
+
 end

@@ -9,7 +9,7 @@
       </colgroup>
       <thead>
         <tr>
-          <% [-'Service Pack', -'Assign Date', -'Expiration Date', -'Units'].each do |column_name| %>
+          <% [-'Service Pack', -'Assign Date', -'Expiration Date', -'Units'].freeze.each do |column_name| %>
             <th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span><%= column_name %></span></div></div></th>
           <% end %>
           <th><div class="generic-table--empty-header"></div></th>
@@ -17,7 +17,7 @@
       </thead>
       <tbody>
         <% unassign_ok_to_display = (@can_unassign ||= User.current.allowed_to?(:unassign_service_packs, @project)) %>
-        <% @assignments.each do |assignment| %>
+        <% @assignments.find_each do |assignment| # save 10-15ms by find_each %>
           <tr>
             <%= content_tag :td, assignment.service_pack.name %>
             <%= content_tag :td, assignment.assign_date %>
