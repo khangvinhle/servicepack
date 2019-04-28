@@ -10,8 +10,7 @@ You need to be an administrator to manage service packs:
 
 The main page shows you the list of service packs and their summary information.
 
-![https://drive.google.com/open?id=1foXUItPATi7wMI-58E893i9DgPjWQdds]()
-
+![https://drive.google.com/drive/u/1/folders/1GeWxLsvLpJHer4KBUN313etlsQetiDl1](https://drive.google.com/drive/u/1/folders/1GeWxLsvLpJHer4KBUN313etlsQetiDl1)
 
 
 
