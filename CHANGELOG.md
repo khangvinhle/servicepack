@@ -16,6 +16,14 @@ See doc/COPYRIGHT.md for more details.
 
 # Change log
 
+### v1.0.4
+
+This version does not have the notification feature. Please use other versions if you want the notification feature
+
+### v1.0.3
+
+The version v1.0.2 missed some files. This version add those files.
+
 ### v1.0.2
 
 - Assign multiple service packs to a project
