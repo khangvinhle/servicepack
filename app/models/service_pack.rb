@@ -74,7 +74,7 @@ class ServicePack < ApplicationRecord
   end
 
   def assigned?
-    assigns.where(assigned: true).exists?
+    active_assignments.exists?
   end
 
   # def total_unit_updatable?(new_value, old_value = total_units)
