@@ -8,7 +8,7 @@ class ServicePack < ApplicationRecord
   after_save :knock_out, if: :used_up?, on: :consumption
 
   has_many :assigns, dependent: :destroy
-  has_many :active_assignments, -> {where('assigned = ? and unassign_date >= ?', true, Date.today)}, class_name: 'Assign'
+  has_many :active_assignments, -> {where('assigned = ? and unassign_date > ?', true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :delete_all
@@ -34,7 +34,7 @@ class ServicePack < ApplicationRecord
 
   validate :threshold2_is_greater_than_threshold1, on: [:create, :update]
   validate :end_after_start, on: [:create, :update]
-  validate :must_not_expire_in_the_past
+  validate :must_not_expire_in_the_past, on: [:create, :update]
   validate :threshold1_is_greater_than_total_units
   validate :threshold2_is_greater_than_total_units
 
@@ -74,7 +74,7 @@ class ServicePack < ApplicationRecord
   end
 
   def assigned?
-    assigns.where(assigned: true).exists?
+    active_assignments.exists?
   end
 
   # def total_unit_updatable?(new_value, old_value = total_units)
@@ -111,10 +111,6 @@ class ServicePack < ApplicationRecord
   #   end
   # end
   # END TESTING ONLY
-
-  def assignments
-    assigns.where(assigned: true)
-  end
 
   def grant(units)
     self.total_units += units
