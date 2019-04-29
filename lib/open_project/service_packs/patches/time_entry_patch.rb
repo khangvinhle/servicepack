@@ -97,12 +97,6 @@ module OpenProject::ServicePacks
               ServicePacksMailer.notify_under_threshold2(u, service_pack).deliver_later
             end
           end
-
-          if service_pack.remained_units.zero?
-            User.where('admin = 1').find_each do |u|
-              ServicePacksMailer.used_up_email(u, service_pack).deliver_later
-            end
-          end
         end
       end
 
