@@ -37,7 +37,7 @@
   <%#= link_to -'Back to Service Pack home page', service_packs_path, class: -'button float-left' %>
 
   <% if @service_pack.assigned? %>
-    <%= link_to -'Delete', -'#', class: -'button destroy blocked float-right', disabled: true, :title => "Please unassign this service pack from all projects before deleting!" %>
+    <%= link_to -'Delete', -'#', class: -'button destroy blocked float-right', disabled: true, title: "Please unassign this service pack from all projects before deleting!" %>
   <% else %>
     <%= link_to 'Delete', service_pack_path(@service_pack), class: -'button destroy float-right', method: :delete, data: {confirm: -'Are you sure?', disable_with: -'Deleting...'} %>
   <% end %>

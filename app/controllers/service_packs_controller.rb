@@ -32,7 +32,7 @@ class ServicePacksController < ApplicationController
       format.html {
         # http://www.chrisrolle.com/en/blog/benchmark-preload-vs-eager_load
         @rates = @service_pack.mapping_rates.preload(:activity)
-        @assignments = @service_pack.assignments.preload(:project)
+        @assignments = @service_pack.active_assignments.preload(:project)
       }
       format.csv {
         render csv: csv_extractor(query(service_pack: @service_pack)), filename: "service_pack_#{@service_pack.name}.csv"
