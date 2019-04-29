@@ -3,13 +3,6 @@ module OpenProject::ServicePacks
     module TimeEntryPatch
       module InstanceMethods
         def log_consumed_units
-
-          # Find an assignment in effect, if not then stop the logging.
-          # Then check the SP in the log against the assignment list.
-          # Then find a rate associated with activity_id and sp in effect.
-          # Create an SP_entry with the log entry cost.
-          # Subtract the remaining counter of SP to the cost.
-
           return unless project.enabled_modules.find_by(name: -'service_packs')
 
           assignments = project.assigns.active.pluck(:service_pack_id)
@@ -30,12 +23,6 @@ module OpenProject::ServicePacks
         end
 
         def update_consumed_units
-          # First examine the entry
-          # then read the service pack related
-          # then recalculate the cost in the entry
-          # Update the entry
-          # Take the delta and subtract to the remained count of SP.
-
           unless project.enabled_modules.find_by(name: -'service_packs')
             # SP must not change if module is not on
             # and PermittedParams won't see @project
@@ -45,18 +32,16 @@ module OpenProject::ServicePacks
 
           sp_entry = service_pack_entry
           return if sp_entry.nil?
-          
+
           unless project.assigns.active.find_by(service_pack_id: service_pack_id)
             errors[:base] << -'The selected Service Pack is not assigned to this project'
             raise ActiveRecord::Rollback
           end
 
-          # handle if SP is in unavailable state here - leaving safely
-
           activity_id_to_log = activity.parent_id || activity.id
 
+          # if SP is not updated
           if sp_entry.service_pack_id == service_pack_id
-            # if SP is not updated
             old_sp_of_project = sp_entry.service_pack # the SP entry is binded at the point of creation
             units_cost = hours * old_sp_of_project.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
             if units_cost != sp_entry.units
@@ -78,22 +63,47 @@ module OpenProject::ServicePacks
         end
 
         private
-          # FOR THIS PATCH ONLY
 
-          def refund_units_cost!(sp_entry = service_pack_entry)
-            return if sp_entry.nil?
-            service_pack = sp_entry.service_pack
-            service_pack.remained_units += sp_entry.units
-            service_pack.save!(context: :consumption)
+        # FOR THIS PATCH ONLY
+
+        def refund_units_cost!(sp_entry = service_pack_entry)
+          return if sp_entry.nil?
+          service_pack = sp_entry.service_pack
+          service_pack.remained_units += sp_entry.units
+          service_pack.save!(context: :consumption)
+        end
+
+        def incur_units_cost!(activity_id_to_log = activity.parent_id || activity.id, sp_entry = service_pack_entry)
+          units_cost = hours * service_pack.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
+
+          if service_pack.remained_units - units_cost < 0
+            errors[:base] << -'The remained unit of the selected service pack is not enough!'
+            raise ActiveRecord::Rollback
           end
 
-          def incur_units_cost!(activity_id_to_log = activity.parent_id || activity.id, sp_entry = service_pack_entry)
-            units_cost = hours * service_pack.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
-            sp_entry ||= ServicePackEntry.new(time_entry_id: id) # why this method is a !
-            sp_entry.update!(service_pack_id: service_pack_id, units: units_cost)
-            service_pack.remained_units -= units_cost
-            service_pack.save!(context: :consumption)
+          sp_entry ||= ServicePackEntry.new(time_entry_id: id) # why this method is a !
+          sp_entry.update!(service_pack_id: service_pack_id, units: units_cost)
+          service_pack.remained_units -= units_cost
+          service_pack.save!(context: :consumption)
+
+          if service_pack.remained_units < service_pack.threshold1
+            User.where('admin = 1').find_each do |u|
+              ServicePacksMailer.notify_under_threshold1(u, service_pack).deliver
+            end
           end
+
+          if service_pack.remained_units < service_pack.threshold2
+            User.where('admin = 1').find_each do |u|
+              ServicePacksMailer.notify_under_threshold2(u, service_pack).deliver
+            end
+          end
+
+          if service_pack.remained_units.zero?
+            User.where('admin = 1').find_each do |u|
+              ServicePacksMailer.used_up_email(u, service_pack).deliver
+            end
+          end
+        end
       end
 
       def self.included(receiver)
