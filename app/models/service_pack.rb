@@ -4,10 +4,10 @@ class ServicePack < ApplicationRecord
   # SWITCH_USE_UNASSIGNED_CHECK = 1
 
   before_create :default_remained_units
-  after_save :revoke_all_assignments, if: :expired? # should be time-based only.
+  after_save :revoke_all_assignments, if: :expired? # last-ditch effort, should be done by cron or jobs
   after_save :knock_out, if: :used_up?, on: :consumption
 
-  has_many :assigns, dependent: :destroy
+  has_many :assigns, dependent: :delete_all
   has_many :active_assignments, -> {where('assigned = ? and unassign_date > ?', true, Date.today)}, class_name: 'Assign'
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
@@ -24,10 +24,10 @@ class ServicePack < ApplicationRecord
 
   validates_presence_of :name, :threshold1, :threshold2, :expired_date, :started_date, :total_units
 
-  validates_uniqueness_of :name, on: :create # SP name never changes
+  validates_uniqueness_of :name, on: [:create, :update]
   # https://rubular.com/r/CCtRDRq9jDuMmb
 
-  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: 'has invalid character(s)'
+  validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: 'has invalid character(s)', on: [:create, :update]
 
   validates_numericality_of :total_units, greater_than: 0
   validates_numericality_of :threshold1, :threshold2, only_integer: true, greater_than: 0
@@ -47,7 +47,7 @@ class ServicePack < ApplicationRecord
   end
 
   def revoke_all_assignments
-    assignments.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
+    assigns.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
   end
 
   ### CHECKERS ###
