@@ -13,9 +13,7 @@ Firstly, you need to have Open Project installed on your server.
  ![](https://i.imgur.com/cl7fY9Y.png)
 
 5. Run `bundle install`.
- 
-    ![](https://i.imgur.com/7AR73KB.png)
+ ![](https://i.imgur.com/7AR73KB.png)
 
 6. Run `openproject configure`.
-
-    ![](https://i.imgur.com/TnBPowa.png)
+ ![](https://i.imgur.com/TnBPowa.png)
