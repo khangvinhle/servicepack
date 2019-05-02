@@ -16,6 +16,14 @@ See doc/COPYRIGHT.md for more details.
 
 # Change log
 
+### v1.0.5
+* Show error when units cost when log time exceed remain units of selected service pack.
+* Fixed the issue that user can not un-assign on the expired date of service pack, which lead to can not delete the service pack.
+* Fixed the error that can not log the last unit of service pack.
+* Notify the admin through email when:
+    * Run out of unit.
+    * Remain unit below thresholds.
+
 ### v1.0.4
 
 This version does not have the notification feature. Please use other versions if you want the notification feature
