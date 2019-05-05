@@ -30,7 +30,7 @@
 						<%= content_tag :td, entry[-'project_name'], title: entry[-'project_name']%>
 						<%= content_tag :td, "#{entry[-'type_name']} \##{entry[-'work_package_id']}: #{entry[-'subject']}", title: entry[-'subject']%>
 						<%= content_tag :td, (user_time_zone.nil? ? entry[-'spent_on'] : entry[-'spent_on'].to_time.in_time_zone(user_time_zone)).strftime(-'%F %H:%M') %>
-						<%= content_tag :td, entry[-'units'].round(0) %>
+            <%= content_tag :td, -"%.2f" % entry[-'units'].round(2) %>
 						<%= content_tag :td, -"%.2f" % entry[-'hours'].round(2) %>
 					</tr>
 				<% end %>
