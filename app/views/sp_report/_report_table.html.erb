@@ -7,14 +7,15 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th style="width: 4em;"><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span class="sort desc">Time</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span class="sort desc">Date</span></div></div></th>
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>User</span></div></div></th>
-					<th><div class="generic-table--sort-header-outer" style="width: 6em;"><div class="generic-table--sort-header"><span>Service Pack</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Service Pack</span></div></div></th>
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Activity</span></div></div></th>
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Project</span></div></div></th>
 					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Work Package</span></div></div></th>
-					<th style="width: 4em;"><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Units</span></div></div></th>
-					<th style="width: 4em;"><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Hours</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Time</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Units</span></div></div></th>
+					<th><div class="generic-table--sort-header-outer"><div class="generic-table--sort-header"><span>Hours</span></div></div></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -22,12 +23,13 @@
 				<%# offset = (user_time_zone || Time.now).utc_offset.to_i / 60 %>
 				<% @entries.each do |entry| %>
 					<tr>
-						<%= content_tag :td, (user_time_zone.nil? ? entry[-'spent_on'] : entry[-'spent_on'].to_time.in_time_zone(user_time_zone)).strftime(-'%F %H:%M') %>
+						<%= content_tag :td, entry[-'log_date'] %>
 						<%= content_tag :td, entry[-'user_name'] %>
 						<%= content_tag :td, entry[-'sp_name'] %>
 						<%= content_tag :td, entry[-'activity_name'] %>
 						<%= content_tag :td, entry[-'project_name'], title: entry[-'project_name']%>
 						<%= content_tag :td, "#{entry[-'type_name']} \##{entry[-'work_package_id']}: #{entry[-'subject']}", title: entry[-'subject']%>
+						<%= content_tag :td, (user_time_zone.nil? ? entry[-'spent_on'] : entry[-'spent_on'].to_time.in_time_zone(user_time_zone)).strftime(-'%F %H:%M') %>
 						<%= content_tag :td, entry[-'units'].round(0) %>
 						<%= content_tag :td, -"%.2f" % entry[-'hours'].round(2) %>
 					</tr>

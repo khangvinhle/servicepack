@@ -2,7 +2,8 @@ module ServicePacksReportHelper
   def query(service_pack: nil, project: nil, start_date: nil, end_date: nil, **options)
     # binding.pry
     proj_clause = <<-SQL
-                  SELECT t1.created_at AS spent_on, concat(t4.firstname, ' ', t4.lastname) AS user_name, 
+                  SELECT t2.spent_on AS log_date, t1.created_at AS spent_on,
+                  concat(t4.firstname, ' ', t4.lastname) AS user_name, 
                   t3.name AS activity_name, t5.id AS work_package_id, t5.subject AS subject,
                   t1.units AS units, t2.hours AS hours, t6.name AS type_name
                   SQL

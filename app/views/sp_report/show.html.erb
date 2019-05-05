@@ -16,7 +16,7 @@
 						<span class="inline-value">
 							<%# data-preloaded: prefilled on server or need ajax %>
 							<select name="proj_id" data-ajax-load="proj_available" data-preloaded="1" size="1" class="form--select filter-value">
-								<option value=''>All Projects</option>
+								<option value=''>--- All Projects ---</option>
 								<% project_default_id = params[:proj_id].present? ? params[:proj_id].to_i : @project&.id %>
 								<% @projects.pluck(:id, :name).each do |project| %>
 									<%= content_tag :option, project[1], value: project[0], selected: project[0] == project_default_id %>
@@ -32,12 +32,12 @@
 							<select name="service_pack_id" data-ajax-load="sp_available" data-preloaded="1" size="1" class="form--select filter-value">
 								<% if params[:service_pack_id].present? %>
 									<% sp_default_id = params[:service_pack_id].to_i %>
-									<option value=''>All Service Packs</option>
+									<option value=''>--- All Service Packs ---</option>
 									<% @sps.each do |service_pack| %>
 										<%= content_tag :option, service_pack[1], value: service_pack[0], selected: service_pack[0] == sp_default_id %>
 									<% end %>
 								<% else %>
-									<option value='' selected>All Service Packs</option>
+									<option value='' selected>--- All Service Packs ---</option>
 									<% @sps.each do |service_pack| %>
 										<%= content_tag :option, service_pack[1], value: service_pack[0] %>
 									<% end %>

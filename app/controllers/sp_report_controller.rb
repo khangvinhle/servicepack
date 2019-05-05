@@ -2,7 +2,7 @@ class SpReportController < ApplicationController
   before_action :find_project_by_project_id, only: :proj_available
   include ServicePacksReportHelper
 
-  NUMBER_OF_FILLED_COLUMN = 8
+  NUMBER_OF_FILLED_COLUMN = 9
 
   def report
     # json & html endpoint
