@@ -60,10 +60,10 @@ module ServicePacksReportHelper
     raise -'Query failed'
   end
 
-  def csv_extractor(entries = @entries)
+  def csv_extractor(entries: @entries, using_excel: true)
     raise -'Query not run yet' unless entries
     decimal_separator = I18n.t(:general_csv_decimal_separator)
-    export = CSV.generate(col_sep: -';') { |csv|
+    csv_lambda = lambda { |csv|
       headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type',
                  -'Subject', -'Service Pack', -'Units', -'Comments']
       # headers += custom_fields.map(&:name) # not supported
@@ -85,6 +85,8 @@ module ServicePacksReportHelper
         csv << fields
       end
     }
+    export = using_excel ? CSV.generate(col_sep: -';', headers: -'sep=;', write_headers: true, &csv_lambda) :
+                           CSV.generate(col_sep: -';', &csv_lambda)
   end
 
   def get_projects_available

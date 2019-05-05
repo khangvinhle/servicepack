@@ -42,7 +42,7 @@ class SpReportController < ApplicationController
       }
       format.csv {
         query(service_pack: sp, project: @project)
-        render csv: csv_extractor(@entries), filename: "sp-report-#{Date.today}.csv" and return # test
+        render csv: csv_extractor, filename: "sp-report-#{Date.today}.csv" and return # test
       }
     end
   end
