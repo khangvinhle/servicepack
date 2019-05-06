@@ -1,7 +1,7 @@
 # freeze_literal_string: true
 class ServicePack < ApplicationRecord
   # put feature switch here
-  # SWITCH_USE_UNASSIGNED_CHECK = 1
+  SWITCH_USE_UNASSIGNED_CHECK = 1
 
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # last-ditch effort, should be done by cron or jobs
