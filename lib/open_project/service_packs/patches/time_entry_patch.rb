@@ -4,7 +4,7 @@ module OpenProject::ServicePacks
       module InstanceMethods
         def log_consumed_units
           return unless project.enabled_modules.find_by(name: -'service_packs')
-
+          
           assignments = project.assigns.active.pluck(:service_pack_id)
           if assignments.empty?
             errors[:base] << -'Cannot log time because no SP were assigned'

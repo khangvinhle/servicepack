@@ -54,6 +54,11 @@ module OpenProject::ServicePacks
     patches %i[Project TimeEntryActivity TimeEntry Enumeration]
     assets %w(assigns.js service_packs.js assigns.css service_packs.css)
 
+    extend_api_response(:v3, :time_entries, :time_entry) do
+      property :service_pack_id,
+                getter: -> (*){ service_pack&.name }
+    end
+
     initializer 'service_packs.register_hooks' do
       require 'open_project/service_packs/hooks'
     end
