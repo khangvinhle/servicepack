@@ -2,7 +2,7 @@ module API
   module V3
     module ServicePacks
       class AssignmentRepresenter < ::API::Decorators::Single
-        include API::Decorators::LinkedResource
+        include ::API::Decorators::LinkedResource
 
         associated_resource :project
         property :service_pack_id

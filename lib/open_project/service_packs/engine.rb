@@ -58,15 +58,13 @@ module OpenProject::ServicePacks
       "#{project(project_id)}/assignments"
     end
 
-    add_api_endpoint ['API::V3::Projects::ProjectAPI', :id] do
-      mount ::API::V3::ServicePacks::AssignmentsAPI
-    end
-
     extend_api_response(:v3, :time_entries, :time_entry) do
       property :service_pack_id,
                 getter: -> (*){ service_pack&.name }
     end
+
 =begin
+    # added fields to ProjectRepresenter don't show up, reason unknown.
     extend_api_response(:v3, :projects, :project) do
       property :service_packs_enabled,
                 exec_context: :decorator,

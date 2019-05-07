@@ -9,7 +9,7 @@ module OpenProject::ServicePacks
               before do
                 @project = Project.find(params[:id])
               end
-              mount API::V3::ServicePacks::AssignmentsAPI
+              mount ::API::V3::ServicePacks::AssignmentsAPI
             end
           end
         end
