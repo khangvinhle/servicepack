@@ -25,7 +25,7 @@ module API
 
           get do
             unless @project.enabled_modules.find_by(name: -'service_packs')
-              raise ::API::Errors::ErrorsBase.new(message: -'Service Packs module is disabled for this project')
+              raise ::API::Errors::ErrorBase.new(422, -'Service Packs module is disabled for this project')
             end
             
             @assignments = @project.assigns.active.preload(:service_pack)
