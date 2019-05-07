@@ -17,10 +17,9 @@ module OpenProject::ServicePacks
           sp_entry = service_pack_entry
           # if SP is not updated
           if sp_entry.service_pack_id == service_pack_id
-            if calculate_units_cost != sp_entry.units
-              extra_consumption = @units_cost - sp_entry.units
+            if delta_units_cost(sp_entry) != 0.0
               sp_entry.update!(units: @units_cost)
-              old_sp_of_project.remained_units -= extra_consumption
+              old_sp_of_project.remained_units -= delta_units_cost
               old_sp_of_project.save!(context: :consumption)
             end
           else
@@ -32,6 +31,7 @@ module OpenProject::ServicePacks
         end
 
         def get_consumed_units_back
+          # lose units when SP is off
           refund_units_cost! unless project.enabled_modules.find_by(name: -'service_packs')
         end
 
@@ -40,6 +40,12 @@ module OpenProject::ServicePacks
           return @units_cost if defined? @units_cost
           activity_id_to_log = activity.parent_id || activity_id
           @units_cost = hours * service_pack.mapping_rates.find_by(activity_id: activity_id_to_log).units_per_hour
+        end
+
+        def delta_units_cost(sp_entry = service_pack_entry)
+          # return calculate_units_cost if new_record?
+          @delta_cost ||= (sp_entry.service_pack_id == service_pack_id ? calculate_units_cost - sp_entry.units
+                                                                       : calculate_units_cost)
         end
 
         private
