@@ -16,7 +16,9 @@ The main page shows you the list of service packs and their summary information.
 
 You can create a new service pack by clicking the green "New" button in the service pack main page.
 
-![](https://i.imgur.com/D6XnCJQ.png)
+![](https://i.imgur.com/QIqCUoi.png)
+
+The service pack will be un-assigned on the expired date.
 
 The purpose of thresholds is to notify administrators by mailing if remain units of service pack below them.
 
@@ -30,7 +32,7 @@ You could see detail information of a service pack by clicking on the service pa
 
 Click the green "Edit" button in the details view of each service pack.
 
-![](https://i.imgur.com/pOVF3VL.png)
+![](https://i.imgur.com/HuZaHuF.png)
 
 ### Add or subtract unit of a service pack
 
@@ -59,6 +61,8 @@ You can assign multiple service pack to a project.
 ## Un-assign
 
 You also need to go to the "Service Packs Assignment" and look for the row that has the name of the service pack you want to un-assign. Then you need to click on the recycle bin button to un-assign.
+
+**Note**: service packs will be un-assigned on their expired date.
 
 # Service pack report
 
