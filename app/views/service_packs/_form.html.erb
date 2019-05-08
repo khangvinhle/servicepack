@@ -68,6 +68,15 @@
     </span>
   </div>
 
+  <div class="form--field">
+    <%= form.label :additional_notification_email, class: 'form--label', title: '(Optional) Additional notification email' %>
+    <span class="form--field-container">
+      <span class="form--text-field-container -slim">
+        <%= form.text_field :additional_notification_email, required: false, placeholder: 'one email only' %>
+      </span>
+    </span>
+  </div>
+
   <hr>
 
   <%= render partial: -'rates_input' %>
