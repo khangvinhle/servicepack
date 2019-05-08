@@ -65,7 +65,7 @@ module ServicePacksReportHelper
     decimal_separator = I18n.t(:general_csv_decimal_separator)
     flag = decimal_separator.blank? || decimal_separator == -'.'
     csv_lambda = lambda { |csv|
-      headers = [-'Date', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type',
+      headers = [-'Created', -'User', -'Activity', -'Project', -'Work Package', -'Hours', -'Type',
                  -'Subject', -'Service Pack', -'Units', -'Comments']
       # headers += custom_fields.map(&:name) # not supported
       # round() is Ruby >= 2.5
