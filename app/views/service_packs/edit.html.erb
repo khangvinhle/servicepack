@@ -21,30 +21,39 @@
     <% end %>
 
     <div class="form--field">
-      <%= form.label :total_units, class: "form--label" %>
+      <%= form.label :total_units, class: -'form--label' %>
       <span class="form--field-container">
         <span class="form--text-field-container -slim">
-          <%= form.number_field :total_units, placeholder: 'must not below zero' %>
+          <%= form.number_field :total_units, placeholder: -'must not below zero' %>
         </span>
       </span>
     </div>
   <div class="form--field">
-    <%= form.label :threshold1, class: "form--label" %>
+    <%= form.label :threshold1, class: -'form--label' %>
     <span class="form--field-container">
         <span class="form--text-field-container -slim">
-          <%= form.number_field :threshold1, placeholder: 'Threshold 1' %>
+          <%= form.number_field :threshold1, placeholder: -'Threshold 1' %>
         </span>
       </span>
   </div>
 
     <div class="form--field">
-      <%= form.label :threshold2, class: "form--label" %>
+      <%= form.label :threshold2, class: -'form--label' %>
       <span class="form--field-container">
         <span class="form--text-field-container -slim">
-          <%= form.number_field :threshold2, placeholder: 'Threshold 2' %>
+          <%= form.number_field :threshold2, placeholder: -'Threshold 2' %>
         </span>
       </span>
     </div>
+
+  <div class="form--field">
+    <%= form.label :additional_notification_email, class: -'form--label' %>
+    <span class="form--field-container">
+      <span class="form--text-field-container -slim">
+        <%= form.text_field :additional_notification_email, placeholder: -'(Optional) Additional notification email' %>
+      </span>
+    </span>
+  </div>
 
     <hr>
 
@@ -65,7 +74,7 @@
     </div>
 
    <div class="button-container">
-    <%= form.submit '&#x2714  Update'.html_safe, class: 'button -highlight' %>
+    <%= form.submit '&#x2714  Update'.html_safe, class: -'button -highlight' %>
    </div>
 
 <% end %>

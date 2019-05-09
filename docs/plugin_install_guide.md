@@ -11,9 +11,13 @@ Firstly, you need to have Open Project installed on your server.
 
 4. Tell Open Project to use the custom gemfile via a config setting:
  ![](https://i.imgur.com/cl7fY9Y.png)
-
-5. Run `bundle install`.
+ 
+5. Install plugin dependencies:
+   
+   Add this line to the Gemfile: `gem 'validate_email_format_of'`
+   
+6. Run `bundle install`.
  ![](https://i.imgur.com/7AR73KB.png)
 
-6. Run `openproject configure`.
+7. Run `openproject configure`.
  ![](https://i.imgur.com/TnBPowa.png)

@@ -3,6 +3,7 @@ class ServicePack < ApplicationRecord
   # put feature switch here
   # SWITCH_USE_UNASSIGNED_CHECK = 1
 
+  # before_validation :clean_up_additional_notification_email
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # last-ditch effort, should be done by cron or jobs
   after_save :knock_out, if: :used_up?, on: :consumption
@@ -28,6 +29,7 @@ class ServicePack < ApplicationRecord
   # https://rubular.com/r/CCtRDRq9jDuMmb
 
   validates_format_of :name, with: /\A[^_`~^*\\+=\{\}\|\\;"'<>.\/]+\Z/, message: 'has invalid character(s)', on: [:create, :update]
+  validates_email_format_of :additional_notification_email, allow_blank: true, on: [:create, :update]
 
   validates_numericality_of :total_units, greater_than: 0
   validates_numericality_of :threshold1, :threshold2, only_integer: true, greater_than: 0
@@ -122,6 +124,7 @@ class ServicePack < ApplicationRecord
   # modify User param first
   # deliver_later doesn't work
 
+=begin
   def self.check_expired_sp
     ServicePack.find_each do |sp|
       ServicePacksMailer.expired_email(User.last, sp).deliver_now if sp.expired?
@@ -147,10 +150,15 @@ class ServicePack < ApplicationRecord
       ServicePacksMailer.notify_under_threshold2(User.last, sp).deliver_now
     end
   end
+=end
 
   ### END CRON JOBS ###
 
   private
+
+  # def clean_up_additional_notification_email
+  #   additional_notification_email = nil if additional_notification_email == ''
+  # end
 
   def threshold1_is_greater_than_total_units
     @errors.add(:threshold1, 'must be smaller than total units') if threshold1 >= total_units
