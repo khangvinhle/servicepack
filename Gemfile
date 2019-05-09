@@ -1,3 +1,3 @@
 source 'https://rubygems.org'
-	gem 'whenever', require: false
+gem 'validates_email_format_of', require: true
 gemspec

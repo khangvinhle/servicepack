@@ -13,8 +13,10 @@
       Remain units: <%= @service_pack.remained_units %><br/>
       Started date: <%= @service_pack.started_date %><br/>
       Expired date: <%= @service_pack.expired_date %><br/>
-      Threshold 1: <%= pluralize(@service_pack.threshold1, 'unit', 'units') %> <br/>
+      Threshold 1: <%= pluralize(@service_pack.threshold1, 'unit', 'units') %><br/>
       Threshold 2: <%= pluralize(@service_pack.threshold2, 'unit', 'units') %><br/>
+      Additional notification email: <%= @service_pack.additional_notification_email.nil? -'None' : 
+      @service_pack.additional_notification_email %>
     </div>
     <div class="sp assigned">
       <%= render partial: -'active_assignments' %>
