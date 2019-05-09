@@ -87,17 +87,21 @@ module OpenProject::ServicePacks
           service_pack.save!(context: :consumption)
 
           if service_pack.remained_units < service_pack.threshold1
-            User.where('admin = 1').find_each do |u|
+            User.where(admin: true).find_each do |u|
               ServicePacksMailer.notify_under_threshold1(u.mail, service_pack).deliver_later
             end
-            ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
+            unless service_pack.additional_notification_email.nil?
+              ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
+            end
           end
 
           if service_pack.remained_units < service_pack.threshold2
-            User.where('admin = 1').find_each do |u|
+            User.where(admin: true).find_each do |u|
               ServicePacksMailer.notify_under_threshold2(u.mail, service_pack).deliver_later
             end
-            ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
+            unless service_pack.additional_notification_email.nil?
+              ServicePacksMailer.notify_under_threshold2(service_pack.additional_notification_email, service_pack).deliver_later
+            end
           end
         end
       end
