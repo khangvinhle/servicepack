@@ -133,3 +133,24 @@ The body request cannot be parsed as valid JSON.
 
 Please refer to OpenProject API.
 
+### Show Time Entry
+
+`GET` `api/v3/time_entries/{id}`
+
+Request body: None
+
+Response body:
+
+`200 OK`
+
+Same as `201 Created` from the section **Create Time Entry**. Besides from servicePackId now has the **name** of Service Pack consumed by this entry, the response structure is unchanged from the core API.
+
+`404 Not Found`
+
+See OpenProject API documentation.
+
+### Edit Time Entry
+
+`PATCH` `api/v3/time_entries/{id}`
+
+Same as Create Time Entry. For more information please consult the more authortative OpenProject API documentation.
