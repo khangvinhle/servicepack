@@ -12,7 +12,10 @@ module API
         property :unassign_date
         property :remained_units,
                  getter: ->(*) { service_pack.remained_units }
-                 
+        
+        def _type
+          -'Assignment'
+        end
       end
     end
   end

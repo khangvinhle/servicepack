@@ -32,8 +32,7 @@ module API
             # raise ::API::Errors::NotFound.new(message: -'No Service Packs are assigned to this project') if @assignments.empty?
             lite_etag
             # just an empty array should be enough
-            ::API::V3::ServicePacks::AssignmentCollectionRepresenter.new(@assignments, @assignments.length, -'',
-                                                                         current_user: current_user)
+            ::API::V3::ServicePacks::AssignmentCollectionRepresenter.new(@assignments, current_user: current_user)
           end
         end
       end
