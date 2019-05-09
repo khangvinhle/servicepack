@@ -16,7 +16,7 @@ This module added `servicePackId` to TimeEntry request and response body.
 
 Request body:
 
-```json
+~~~json
 {
  "_links": {
     "project": {
@@ -34,7 +34,7 @@ Request body:
   "spentOn": "2017-07-28",
   "servicePackId": 1
 }
-```
+~~~
 
 Response body:
 
@@ -154,3 +154,5 @@ See OpenProject API documentation.
 `PATCH` `api/v3/time_entries/{id}`
 
 Same as Create Time Entry. For more information please consult the more authortative OpenProject API documentation.
+
+<b><center>End of part 1</center></b>
