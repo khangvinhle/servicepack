@@ -10,7 +10,7 @@ class UsedUpServicePackJob < ApplicationJob
     User.where(admin: true).each do |user|
       ServicePacksMailer.used_up_email(user.mail, @sp).deliver_later
     end
-    ServicePacksMailer.used_up_email(@sp.additional_notification_email, @sp).deliver_later unless @sp.additional_notification_email.nil?
+    ServicePacksMailer.used_up_email(@sp.additional_notification_email, @sp).deliver_later unless @sp.additional_notification_email.blank?
   end
 
 end

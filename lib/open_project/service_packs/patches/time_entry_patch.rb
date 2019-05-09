@@ -69,7 +69,7 @@ module OpenProject::ServicePacks
             User.where(admin: true).find_each do |u|
               ServicePacksMailer.notify_under_threshold1(u.mail, service_pack).deliver_later
             end
-            unless service_pack.additional_notification_email.nil?
+            unless service_pack.additional_notification_email.blank?
               ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
             end
           end
@@ -78,7 +78,7 @@ module OpenProject::ServicePacks
             User.where(admin: true).find_each do |u|
               ServicePacksMailer.notify_under_threshold2(u.mail, service_pack).deliver_later
             end
-            unless service_pack.additional_notification_email.nil?
+            unless service_pack.additional_notification_email.blank?
               ServicePacksMailer.notify_under_threshold2(service_pack.additional_notification_email, service_pack).deliver_later
             end
           end
