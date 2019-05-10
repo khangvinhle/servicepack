@@ -3,8 +3,8 @@ module OpenProject::ServicePacks
     module CreateContractPatch
       def validate
         # binding.pry
-        if model.project.enabled_modules.find_by(name: -'service_packs')
-          unless model.project.assigns.active.find_by(service_pack_id: service_pack_id)
+        if EnabledModule.find_by(name: -'service_packs', project_id: model.project_id)
+          unless Assign.active.find_by(service_pack_id: service_pack_id, project_id: model.project_id)
             errors.add :service_pack_id, -'This Service Pack is not assigned to this project'
           else
             if ServicePack.find(service_pack_id).remained_units < model.calculate_units_cost

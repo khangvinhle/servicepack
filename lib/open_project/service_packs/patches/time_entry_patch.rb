@@ -3,7 +3,10 @@ module OpenProject::ServicePacks
     module TimeEntryPatch
       module InstanceMethods
         def log_consumed_units
-          return unless project.enabled_modules.find_by(name: -'service_packs')
+          unless project.enabled_modules.find_by(name: -'service_packs')
+            service_pack_id = nil
+            return
+          end
           incur_units_cost!
         end
 
@@ -31,7 +34,7 @@ module OpenProject::ServicePacks
         end
 
         def get_consumed_units_back
-          # lose units when SP is off
+          # lose units when SP module is disabled
           refund_units_cost! unless project.enabled_modules.find_by(name: -'service_packs')
         end
 
