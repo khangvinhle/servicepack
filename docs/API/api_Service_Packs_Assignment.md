@@ -12,7 +12,7 @@ First part of this document is [Extension to TimeEntry API](api_extension_TimeEn
 
 Request body: None
 
-`GET localhost:3000/api/v3/projects/1/assignments`
+`GET localhost:3000/api/v3/projects/7/assignments`
 
 Response:
 
@@ -28,48 +28,57 @@ Each element is composed of these fields:
 + `unassignDate`	 Date when this assignment expire
 + `remainedUnits` The number of units left
 + `project` 
- * `title` The name of the project
- * `href`  Link to get more information and submit to [TimeEntry API](api_extension_TimeEntry.md)
+	* `title` The name of the project
+	* `href`  Link to get more information and submit to [TimeEntry API](api_extension_TimeEntry.md)
 
 Example:
 
 ~~~json
 {
-  "_type": "Assignments",
+  "_type": "Collection",
+  "total": 2,
   "count": 2,
-  "elements": [
-    {
-      "_type": "Assignment",
-      "servicePackId": 1,
-      "servicePackName": "SPPJ",
-      "assignDate": "2019-04-12",
-      "unassignDate": "2019-06-07",
-      "remainedUnits": 1668,
-      "_links": {
-        "project": {
-          "href": "/api/v3/projects/7",
-          "title": "Test project"
+  "_embedded": {
+    "elements": [
+      {
+        "_type": "Assignment",
+        "servicePackId": 1,
+        "servicePackName": "SPPJ",
+        "assignDate": "2019-04-12",
+        "unassignDate": "2019-06-07",
+        "remainedUnits": 1668,
+        "_links": {
+          "project": {
+            "href": "/api/v3/projects/7",
+            "title": "Test project"
+          }
+        }
+      },
+      {
+        "_type": "Assignment",
+        "servicePackId": 5,
+        "servicePackName": "SPPJ2",
+        "assignDate": "2019-03-21",
+        "unassignDate": "2019-06-07",
+        "remainedUnits": 13183,
+        "_links": {
+          "project": {
+            "href": "/api/v3/projects/7",
+            "title": "Test project"
+          }
         }
       }
-    },
-    {
-      "_type": "Assignment",
-      "servicePackId": 5,
-      "servicePackName": "SPPJ2",
-      "assignDate": "2019-03-21",
-      "unassignDate": "2019-06-07",
-      "remainedUnits": 13183,
-      "_links": {
-        "project": {
-          "href": "/api/v3/projects/7",
-          "title": "Test project"
-        }
-      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": ""
     }
-  ]
+  }
+}
 ~~~
 
-`204 Not Modified`
+`304 Not Modified`
 
 Clients are advised to make use of `If-None-Match` HTTP header in an user session for promptly checking of assignments change by filling it with the `ETag` header from the corresponding server response.
 
@@ -92,7 +101,7 @@ Response body:
 
 `422 Unprocessable Entity`
 
-Client has necessary permission mentioned, however Service Packs module is disabled for this project.
+Client has necessary permission(s) mentioned, however Service Packs module is disabled for this project.
 
 Response body:
 
