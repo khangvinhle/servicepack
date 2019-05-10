@@ -1,7 +1,7 @@
 # freeze_literal_string: true
 class ServicePack < ApplicationRecord
   # put feature switch here
-  # SWITCH_USE_UNASSIGNED_CHECK = 1
+  SWITCH_USE_UNASSIGNED_CHECK = 1
 
   # before_validation :clean_up_additional_notification_email
   before_create :default_remained_units

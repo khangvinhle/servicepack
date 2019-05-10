@@ -54,6 +54,26 @@ module OpenProject::ServicePacks
     patches %i[Project TimeEntryActivity TimeEntry Enumeration]
     assets %w(assigns.js service_packs.js assigns.css service_packs.css)
 
+    add_api_path :sp_assignments_by_project do |project_id|
+      "#{project(project_id)}/assignments"
+    end
+
+    extend_api_response(:v3, :time_entries, :time_entry) do
+      property :service_pack_id,
+                getter: -> (*){ service_pack&.name }
+    end
+
+=begin
+    # added fields to ProjectRepresenter don't show up, reason unknown.
+    extend_api_response(:v3, :projects, :project) do
+      property :service_packs_enabled,
+                exec_context: :decorator,
+                getter: -> (*){ represented.enabled_module.where(name: -'service_packs').any?.to_s },
+                writable: false
+      link :assignments do { href: api_v3_paths.sp_assignments_by_project(represented.id) } end
+    end
+=end
+
     initializer 'service_packs.register_hooks' do
       require 'open_project/service_packs/hooks'
     end
@@ -62,10 +82,16 @@ module OpenProject::ServicePacks
       # Getting service_pack_id into time_entry
       require 'open_project/service_packs/patches/permitted_params_patch'
       require 'open_project/service_packs/patches/base_contract_patch'
+      require 'open_project/service_packs/patches/create_contract_patch'
+      require 'open_project/service_packs/patches/update_contract_patch'
+      require 'open_project/service_packs/patches/project_api_patch'
 
-      TimeEntries::BaseContract.send(:include, OpenProject::ServicePacks::Patches::BaseContractPatch)
+      TimeEntries::BaseContract.include OpenProject::ServicePacks::Patches::BaseContractPatch
       # prepend has higher priority.
-      PermittedParams.send(:prepend, OpenProject::ServicePacks::Patches::PermittedParamsPatch)
+      TimeEntries::CreateContract.prepend OpenProject::ServicePacks::Patches::CreateContractPatch
+      TimeEntries::UpdateContract.prepend OpenProject::ServicePacks::Patches::UpdateContractPatch
+      PermittedParams.prepend OpenProject::ServicePacks::Patches::PermittedParamsPatch
+      API::V3::Projects::ProjectsAPI.include OpenProject::ServicePacks::Patches::ProjectApiPatch
     end
   end
 end
