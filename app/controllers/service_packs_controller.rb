@@ -215,6 +215,7 @@ class ServicePacksController < ApplicationController
       @sp.errors.add(:total_units, 'is invalid') and return
     end
     @sp.grant(t - @sp.total_units) unless t == @sp.total_units
+    @sp.reset_threshold_notified_flag
   end
 
 end

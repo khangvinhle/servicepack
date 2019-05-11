@@ -52,6 +52,18 @@ class ServicePack < ApplicationRecord
     assigns.where(assigned: true).update_all(assigned: false, unassign_date: Date.today)
   end
 
+  def grant(units)
+    self.total_units += units
+    self.remained_units += units
+    self
+  end
+
+  def reset_threshold_notified_flag
+    self.threshold1_notified = false
+    self.threshold2_notified = false
+    self
+  end
+
   ### CHECKERS ###
   def expired?
     true if Time.now > expired_date
@@ -113,12 +125,6 @@ class ServicePack < ApplicationRecord
   #   end
   # end
   # END TESTING ONLY
-
-  def grant(units)
-    self.total_units += units
-    self.remained_units += units
-    self
-  end
 
   ### START CRON JOBS ###
   # modify User param first

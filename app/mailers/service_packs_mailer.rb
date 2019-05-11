@@ -14,7 +14,7 @@ class ServicePacksMailer < ApplicationMailer
     # @user = user
     @sp = service_pack
     # binding.pry
-    mail to: email, subject: "The service pack #{@sp.name} is running out" do |format|
+    mail to: email, subject: "The remain units service pack #{@sp.name} reached below the FIRST threshold!" do |format|
       format.text
       format.html
     end
@@ -24,7 +24,7 @@ class ServicePacksMailer < ApplicationMailer
     # @user = user
     @sp = service_pack
     # binding.pry
-    mail to: email, subject: "The service pack #{@sp.name} is running out" do |format|
+    mail to: email, subject: "The service pack #{@sp.name} reached below the SECOND threshold!" do |format|
       format.text
       format.html
     end
