@@ -59,9 +59,11 @@ class ServicePack < ApplicationRecord
   end
 
   def reset_threshold_notified_flag
-    self.threshold1_notified = false
-    self.threshold2_notified = false
-    self
+    if self.remained_units > self.threshold1
+      self.threshold1_notified = false
+      self.threshold2_notified = false
+      self
+    end
   end
 
   ### CHECKERS ###
