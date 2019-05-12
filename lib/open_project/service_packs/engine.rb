@@ -75,16 +75,16 @@ module OpenProject::ServicePacks
 =end
 
     initializer 'service_packs.register_hooks' do
-      require 'open_project/service_packs/hooks'
+      require_relative 'hooks'
     end
 
     config.to_prepare do
       # Getting service_pack_id into time_entry
-      require 'open_project/service_packs/patches/permitted_params_patch'
-      require 'open_project/service_packs/patches/base_contract_patch'
-      require 'open_project/service_packs/patches/create_contract_patch'
-      require 'open_project/service_packs/patches/update_contract_patch'
-      require 'open_project/service_packs/patches/project_api_patch'
+      require_relative 'patches/permitted_params_patch'
+      require_relative 'patches/base_contract_patch'
+      require_relative 'patches/create_contract_patch'
+      require_relative 'patches/update_contract_patch'
+      require_relative 'patches/project_api_patch'
 
       TimeEntries::BaseContract.include OpenProject::ServicePacks::Patches::BaseContractPatch
       # prepend has higher priority.
