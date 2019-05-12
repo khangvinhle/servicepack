@@ -1,5 +1,5 @@
 module ServicePacksReportHelper
-  def query(service_pack: nil, project: nil, start_date: nil, end_date: nil, **options)
+  def query(service_pack: nil, project: nil, start_date: nil, end_date: nil, order_by: :created, **options)
     # binding.pry
     proj_clause = <<-SQL
                   SELECT t2.spent_on AS log_date, t1.created_at AS spent_on,
@@ -8,7 +8,7 @@ module ServicePacksReportHelper
                   t1.units AS units, t2.hours AS hours, t6.name AS type_name
                   SQL
     proj_clause << -', t2.comments AS comment' unless options[:lite]
-    query_to_sanitize = [proj_clause]
+    query_to_sanitize = [proj_clause] # note that this array only store copy of a pointer to object...
     from_clause = <<-SQL
                   FROM service_pack_entries t1
                   LEFT JOIN #{TimeEntry.table_name} t2
@@ -49,8 +49,8 @@ module ServicePacksReportHelper
       from_clause << -' INNER JOIN service_packs t8 ON t1.service_pack_id = t8.id '
       proj_clause << -', t8.name AS sp_name'
     end
-    proj_clause << from_clause << where_clause
-    proj_clause << -' ORDER BY spent_on DESC '
+    # ... that's why we append
+    proj_clause << "#{from_clause} #{where_clause} ORDER BY #{order_by == :date ? -'log_date' : -'spent_on'} DESC"
 
     sql = ActiveRecord::Base.send(:sanitize_sql_array, query_to_sanitize)
 
