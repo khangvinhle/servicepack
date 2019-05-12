@@ -68,32 +68,30 @@ module OpenProject::ServicePacks
           service_pack.remained_units -= @units_cost
           service_pack.save!(context: :consumption)
 
-          if service_pack.remained_units < service_pack.threshold1
-            unless service_pack.threshold1_notified
-              User.where(admin: true).find_each do |u|
-                ServicePacksMailer.notify_under_threshold1(u.mail, service_pack).deliver_later
-              end
+          # should be an after_commit callback
 
-              unless service_pack.additional_notification_email.blank?
-                ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
-              end
-
-              service_pack.update!(threshold1_notified: true)
+          if service_pack.remained_units < service_pack.threshold1 && !service_pack.threshold1_notified
+            User.where(admin: true).find_each do |u|
+              ServicePacksMailer.notify_under_threshold1(u.mail, service_pack).deliver_later
             end
+
+            unless service_pack.additional_notification_email.blank?
+              ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
+            end
+
+            service_pack.update!(threshold1_notified: true)
           end
 
-          if service_pack.remained_units < service_pack.threshold2
-            unless service_pack.threshold2_notified
-              User.where(admin: true).find_each do |u|
-                ServicePacksMailer.notify_under_threshold2(u.mail, service_pack).deliver_later
-              end
-
-              unless service_pack.additional_notification_email.blank?
-                ServicePacksMailer.notify_under_threshold2(service_pack.additional_notification_email, service_pack).deliver_later
-              end
-
-              service_pack.update!(threshold2_notified: true)
+          if service_pack.remained_units < service_pack.threshold2 && !service_pack.threshold2_notified
+            User.where(admin: true).find_each do |u|
+              ServicePacksMailer.notify_under_threshold2(u.mail, service_pack).deliver_later
             end
+
+            unless service_pack.additional_notification_email.blank?
+              ServicePacksMailer.notify_under_threshold2(service_pack.additional_notification_email, service_pack).deliver_later
+            end
+
+            service_pack.update!(threshold2_notified: true)
           end
         end
       end
