@@ -35,7 +35,7 @@ module OpenProject::ServicePacks
 
         def get_consumed_units_back
           # lose units when SP module is disabled
-          refund_units_cost! unless project.enabled_modules.find_by(name: -'service_packs')
+          refund_units_cost! if project.enabled_modules.find_by(name: -'service_packs')
         end
 
 
