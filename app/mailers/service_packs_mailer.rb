@@ -1,4 +1,5 @@
-class ServicePacksMailer < ApplicationMailer
+class ServicePacksMailer < BaseMailer
+  # layout -'user_mailer' # this layout has something about notifying choice that is unavailable for our plugin.
   def expired_email(email, service_pack)
     # @user = user
     @sp = service_pack
