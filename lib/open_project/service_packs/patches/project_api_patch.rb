@@ -3,7 +3,7 @@ module OpenProject::ServicePacks
     module ProjectApiPatch
       def self.included(base)
         base.class_eval do
-          p -"Patching API\n" # remove this line after testing
+          # p -"Patching API\n" # remove this line after testing
           resource :projects do
             route_param :id do
               before do

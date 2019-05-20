@@ -164,10 +164,6 @@ class ServicePack < ApplicationRecord
 
   private
 
-  # def clean_up_additional_notification_email
-  #   additional_notification_email = nil if additional_notification_email == ''
-  # end
-
   def threshold1_is_greater_than_total_units
     @errors.add(:threshold1, 'must be smaller than total units') if threshold1 >= total_units
   end

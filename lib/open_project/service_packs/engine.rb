@@ -27,7 +27,6 @@ module OpenProject::ServicePacks
            :service_packs,
            { controller: '/service_packs', action: 'index' },
            after: :overview,
-           param: :project_id,
            caption: 'Service Packs',
            icon: 'icon2 icon-settings',
            html: {id: 'service_packs-menu-item'}
@@ -44,7 +43,7 @@ module OpenProject::ServicePacks
 
       menu :project_menu,
            :sp_report,
-           {controller: 'sp_report', action: 'report'},
+           {controller: '/sp_report', action: 'report'},
            after: :assigns,
            param: :project_id,
            caption: 'Service Pack Report',
