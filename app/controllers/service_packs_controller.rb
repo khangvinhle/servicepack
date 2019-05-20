@@ -35,7 +35,8 @@ class ServicePacksController < ApplicationController
         @assignments = @service_pack.active_assignments.preload(:project)
       }
       format.csv {
-        render csv: csv_extractor(query(service_pack: @service_pack)), filename: "service_pack_#{@service_pack.name}.csv"
+        query(service_pack: @service_pack)
+        render csv: csv_extractor, filename: "service_pack_#{@service_pack.name}.csv"
       }
     end
   end
