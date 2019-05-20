@@ -9,7 +9,7 @@ class AssignsController < ApplicationController
 
     @service_pack = ServicePack.find_by(id: params[:service_pack_id])
     if @service_pack.nil?
-      flash[:alert] = "Service Pack not found"
+      flash[:error] = "Service Pack not found"
       redirect_to action: :to_assign and return
     end
     if @service_pack.available?
@@ -18,12 +18,12 @@ class AssignsController < ApplicationController
       flash[:notice] = "Service Pack '#{@service_pack.name}' successfully assigned to project '#{@project.name}'"
       redirect_to action: :index
     else
-      flash[:alert] = "Service Pack '#{@service_pack.name}' #{@service_pack.expired? ? -'is expired' : -'cannot be assigned'}"
+      flash[:error] = "Service Pack '#{@service_pack.name}' #{@service_pack.expired? ? -'is expired' : -'cannot be assigned'}"
       redirect_to action: :to_assign
     end
 
   rescue
-    flash[:alert] = "Service Pack '#{@service_pack.name}' cannot be assigned"
+    flash[:error] = "Service Pack '#{@service_pack.name}' cannot be assigned"
     redirect_to action: :to_assign
   end
 
@@ -33,7 +33,7 @@ class AssignsController < ApplicationController
       begin
         unassign_from @service_pack, @project
       rescue ActiveRecord::RecordNotFound
-        flash[:alert] = "Service Pack '#{@service_pack.name}' is not assigned from project '#{@project.name}'"
+        flash[:error] = "Service Pack '#{@service_pack.name}' is not assigned from project '#{@project.name}'"
         redirect_to action: :index and return
       rescue
         return head 500
