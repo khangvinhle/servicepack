@@ -7,7 +7,7 @@
         <select name="[time_entry][service_pack_id]" required>
           <%= get_assigned_sp_id = @project.assigns.active.select(:service_pack_id)
               t = ServicePack.availables
-              t = t.where("id IN (#{get_assigned_sp_id.to_sql})") unless defined? ServicePack::SWITCH_USE_UNASSIGNED_CHECK
+              t = t.where("id IN (#{get_assigned_sp_id.to_sql})") # unless defined? ServicePack::SWITCH_USE_UNASSIGNED_CHECK
               sp_availables = t.pluck(:id, :name) %>
           <% if te_spid = time_entry.service_pack_id %>
             <% sp_availables.each do |sp| %>
