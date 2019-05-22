@@ -101,7 +101,7 @@ module ServicePacksReportHelper
                 ServicePack.all.pluck(:id, :name)
               else
                 Assign.active.joins(:service_pack)
-                .where('project_id IS IN (#{get_projects_available.select(:id).to_sql})')
+                .where("assigns.project_id IN (#{get_projects_available.select(:id).to_sql})")
                 .pluck(-'service_packs.id', -'service_packs.name')
               end
   end
