@@ -28,7 +28,7 @@
         <select name="status" id="status" class="simple-filters--filter-value">
           <% status = params[:status] %>
           <%= content_tag :option, -'all', value: -'all', selected: status == -'all' %>
-          <%= content_tag :option, -'available', value: -'available', selected: status.present? || status == -'available' %>
+          <%= content_tag :option, -'available', value: -'available', selected: !status.present? || status == -'available' %>
           <%= content_tag :option, -'assigned', value: -'assigned', selected: status == -'assigned' %>
           <%= content_tag :option, -'under threshold 1', value: -'thres1', selected: status == -'thres1' %>
           <%= content_tag :option, -'under threshold 2', value: -'thres2', selected: status == -'thres2' %>
