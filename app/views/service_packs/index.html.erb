@@ -2,8 +2,49 @@
 
 <% html_title l(:label_administration), -'Service Packs' %>
 
-<%= link_to -'New', new_service_pack_path, class: -"button -alt-highlight float-right" %>
+<div class="toolbar-container">
+  <div class="toolbar">
+    <div class="title-container">
+      <h2 class="no-padding-bottom">Service Packs</h2>
+    </div>
+    <ul class="toolbar-items">
+     <li class="toolbar-item">
+      <a class="button -alt-highlight" aria-label="New Service Pack" title="New Service Pack" href="<%= new_service_pack_path %>">
+        <i class="button--icon icon-add" aria-hidden="true"></i>
+        <span class="button--text">New</span>
+      </a>
+     </li>
+    </ul>
+  </div>
+</div>
 
+<form action="/service_packs" accept-charset="UTF-8" method="get">
+  <input name="utf8" type="hidden" value="✓">
+  <fieldset class="simple-filters--container ">
+    <legend>Filters</legend>
+    <ul class="simple-filters--filters">
+      <li class="simple-filters--filter">
+        <label class="simple-filters--filter-name" for="status">Status:</label>
+        <select name="status" id="status" class="simple-filters--filter-value">
+          <% status = params[:status] %>
+          <%= content_tag :option, -'all', value: -'all', selected: status == -'all' %>
+          <%= content_tag :option, -'available', value: -'available', selected: status.present? || status == -'available' %>
+          <%= content_tag :option, -'assigned', value: -'assigned', selected: status == -'assigned' %>
+          <%= content_tag :option, -'under threshold 1', value: -'thres1', selected: status == -'thres1' %>
+          <%= content_tag :option, -'under threshold 2', value: -'thres2', selected: status == -'thres2' %>
+        </select>
+      </li>
+      <li class="simple-filters--filter">
+        <label class="simple-filters--filter-name" for="name">Name:</label>
+        <input type="text" name="name" id="name" class="simple-filters--filter-value" <%= params[:name].present? ? "value='#{params[:name]}'" : -'' %> >
+      </li>
+      <li class="simple-filters--controls">
+        <input type="submit" value="Apply" class="button -highlight -small" data-disable-with="Loading...">
+      </li>
+    </ul>
+  </fieldset>
+</form>
+<br/>
 <table>
   
   <tr>

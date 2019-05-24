@@ -7,9 +7,24 @@ class ServicePacksController < ApplicationController
   layout 'admin'
 
   def index
-    @service_packs = ServicePack.all
-    # for demo
-    #ServicePacksMailer.notify_under_threshold1(User.first,@service_packs.first).deliver_now
+    @service_packs = case params[:status]
+                      when -'available'
+                        ServicePack.availables
+                      when -'assigned'
+                        ServicePack.assigned
+                      when -'thres1'
+                        ServicePack.notifiable(1)
+                      when -'thres2'
+                        ServicePack.notifiable(2)
+                      when -'all'
+                        ServicePack.all
+                      else
+                        ServicePack.availables
+                    end
+    if params[:name].present?
+      wildcard_sanitized_name = "%#{ActiveRecord::Base.send(:sanitize_sql_like, params[:name], -'!')}%"
+      @service_packs = @service_packs.where(-"name LIKE ?", wildcard_sanitized_name)
+    end
   end
 
   def new
@@ -21,9 +36,7 @@ class ServicePacksController < ApplicationController
 
   def show
     @service_pack = ServicePack.find(params[:id])
-    # controller chooses not to get the thresholds.
-    # assume the service pack exists.
-    # TODO: make a separate action JSON only.
+
     respond_to do |format|
       format.json {
         # the function already converted this to json
@@ -77,7 +90,6 @@ class ServicePacksController < ApplicationController
       flash[:error] = -"Service Pack not found"
       redirect_to action: :index and return
     end
-    # @activity = @sp.time_entry_activities.build
   end
 
   def update

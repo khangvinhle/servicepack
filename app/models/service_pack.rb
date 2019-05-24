@@ -40,7 +40,7 @@ class ServicePack < ApplicationRecord
   validate :threshold1_is_greater_than_total_units
   validate :threshold2_is_greater_than_total_units
 
-  scope :assignments, -> {joins(:assigns).where(assigned: true)}
+  scope :assigned, -> {where("id IN (#{Assign.active.select(:service_pack_id).to_sql})")}
   scope :availables, -> {where('remained_units > 0 and expired_date >= ?', Date.today)}
   scope :notifiable, ->(thresno) {where("remained_units <= threshold#{thresno}")}
 
@@ -59,11 +59,9 @@ class ServicePack < ApplicationRecord
   end
 
   def reset_threshold_notified_flag
-    if self.remained_units > self.threshold1
-      self.threshold1_notified = false
-      self.threshold2_notified = false
-      self
-    end
+    self.threshold1_notified = false if self.remained_units > self.threshold1
+    self.threshold2_notified = false if self.remained_units > self.threshold2
+    self
   end
 
   ### CHECKERS ###
