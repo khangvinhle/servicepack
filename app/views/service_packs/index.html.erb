@@ -36,7 +36,7 @@
       </li>
       <li class="simple-filters--filter">
         <label class="simple-filters--filter-name" for="name">Name:</label>
-        <input type="text" name="name" id="name" class="simple-filters--filter-value" <%= params[:name].present? ? "value='#{params[:name]}'" : -'' %> >
+        <input type="text" name="name" id="name" class="simple-filters--filter-value" maxlength="40" <%= (params[:name].present? ? "value='#{params[:name]}'" : -'').html_safe %> >
       </li>
       <li class="simple-filters--controls">
         <input type="submit" value="Apply" class="button -highlight -small" data-disable-with="Loading...">
