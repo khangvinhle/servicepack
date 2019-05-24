@@ -1,5 +1,5 @@
 class SpReportController < ApplicationController
-  before_action :find_project_by_project_id, only: :proj_available
+  before_action :find_project_by_project_id, only: :report
   include ServicePacksReportHelper
 
   NUMBER_OF_FILLED_COLUMN = 9
@@ -9,11 +9,11 @@ class SpReportController < ApplicationController
       set_by_filter_proj_id = params[:proj_id]
       unless set_by_filter_proj_id == -'all'
         if set_by_filter_proj_id.present?
-          @project = Project.find_by!(id: set_by_filter_proj_id)
+          @project_to_report = Project.find_by!(id: set_by_filter_proj_id)
         else
-          @project = Project.find(params[:project_id]) # find by slug
+          @project_to_report = @project # used by OpenProject for layout
         end
-        unless User.current.admin? || User.current.allowed_to?(:see_assigned_service_packs, @project)
+        unless User.current.admin? || User.current.allowed_to?(:see_assigned_service_packs, @project_to_report)
           render status: 404 and return
         end
       end
@@ -26,19 +26,19 @@ class SpReportController < ApplicationController
     respond_to do |format|
       # @project will be nil if "all" choice is on bypassing the "unless set_by_filter_proj_id" block
       format.html {
-        query(service_pack: sp, project: @project,
+        query(service_pack: sp, project: @project_to_report,
               lite: true)
         get_projects_available
         get_available_service_packs
         render -'show' and return
       }
       format.json {
-        query(service_pack: sp, project: @project,
+        query(service_pack: sp, project: @project_to_report,
               lite: true)
         render json: @entries
       }
       format.csv {
-        query(service_pack: sp, project: @project)
+        query(service_pack: sp, project: @project_to_report)
         render csv: csv_extractor, filename: "sp-report-#{Date.today}.csv" and return
       }
     end

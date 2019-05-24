@@ -19,11 +19,11 @@
 							    <% if params[:proj_id] == -'all' %>
 							        <option value='all' selected>--- All Projects ---</option>
 							        <% @projects.pluck(:id, :name).each do |project| %>
-							            <%= content_tag :option, projects[1], value: project[0], selected: false %>
+							            <%= content_tag :option, project[1], value: project[0], selected: false %>
 							        <% end %>
 							    <% else %>
 								    <option value='all'>--- All Projects ---</option>
-								    <% project_default_id = params[:proj_id].present? ? params[:proj_id].to_i : @project&.id %>
+								    <% project_default_id = params[:proj_id].present? ? params[:proj_id].to_i : @project_to_report&.id %>
 								    <% @projects.pluck(:id, :name).each do |project| %>
 									    <%= content_tag :option, project[1], value: project[0], selected: project[0] == project_default_id %>
 								    <% end %>
