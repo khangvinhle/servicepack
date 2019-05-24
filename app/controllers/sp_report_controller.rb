@@ -5,30 +5,27 @@ class SpReportController < ApplicationController
   NUMBER_OF_FILLED_COLUMN = 9
 
   def report
-    # json & html endpoint
-    # params[:service_pack, :start_date, :end_date]
     begin
-      if params[:proj_id].present?
-        @project = Project.find_by!(id: params[:proj_id])
-      else
-        @project = Project.find(params[:project_id]) # find by slug
+      set_by_filter_proj_id = params[:proj_id]
+      unless set_by_filter_proj_id == -'all'
+        if set_by_filter_proj_id.present?
+          @project = Project.find_by!(id: set_by_filter_proj_id)
+        else
+          @project = Project.find(params[:project_id]) # find by slug
+        end
+        unless User.current.admin? || User.current.allowed_to?(:see_assigned_service_packs, @project)
+          render status: 404 and return
+        end
       end
       spid = params[:service_pack_id]
-      if spid.present?
-        sp = ServicePack.find(spid)
-      end
+      sp = ServicePack.find(spid) if spid.present?
     rescue ActiveRecord::RecordNotFound
-      render(status: 404) and return
-    end
-
-    unless User.current.admin? || User.current.allowed_to?(:see_assigned_service_packs, @project)
       render status: 404 and return
     end
 
     respond_to do |format|
+      # @project will be nil if "all" choice is on bypassing the "unless set_by_filter_proj_id" block
       format.html {
-        # change this to debug
-        # render plain: sp_available
         query(service_pack: sp, project: @project,
               lite: true)
         get_projects_available
@@ -42,7 +39,7 @@ class SpReportController < ApplicationController
       }
       format.csv {
         query(service_pack: sp, project: @project)
-        render csv: csv_extractor, filename: "sp-report-#{Date.today}.csv" and return # test
+        render csv: csv_extractor, filename: "sp-report-#{Date.today}.csv" and return
       }
     end
   end
