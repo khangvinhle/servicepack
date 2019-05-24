@@ -70,7 +70,10 @@ module OpenProject::ServicePacks
 
           # should be an after_commit callback
 
-          if service_pack.remained_units < service_pack.threshold1 && !service_pack.threshold1_notified
+          if !service_pack.threshold1_notified && service_pack.remained_units < service_pack.threshold1
+            # line 306, lib/open_project/configuration.rb
+            # see from line 399 for more details
+            OpenProject::Configuration.reload_mailer_configuration!
             User.where(admin: true).find_each do |u|
               ServicePacksMailer.notify_under_threshold1(u.mail, service_pack).deliver_later
             end
@@ -82,7 +85,8 @@ module OpenProject::ServicePacks
             service_pack.update!(threshold1_notified: true)
           end
 
-          if service_pack.remained_units < service_pack.threshold2 && !service_pack.threshold2_notified
+          if !service_pack.threshold2_notified && service_pack.remained_units < service_pack.threshold2
+            OpenProject::Configuration.reload_mailer_configuration!
             User.where(admin: true).find_each do |u|
               ServicePacksMailer.notify_under_threshold2(u.mail, service_pack).deliver_later
             end
