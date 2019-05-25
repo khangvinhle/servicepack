@@ -11,6 +11,7 @@ module OpenProject::ServicePacks
         end
 
         def update_consumed_units
+          # check again because of Costs plugin
           unless must_recalculate_units_cost?
             # SP must not change if module is not on
             # and PermittedParams won't see @project
@@ -53,7 +54,7 @@ module OpenProject::ServicePacks
 
         def must_recalculate_units_cost?
           return @have_to_rec_units_cost if defined? @have_to_rec_units_cost
-          @have_to_rec_units_cost = !service_pack_entry_id.nil? && EnabledModule.find_by(name: -'service_packs', project_id: project_id)
+          @have_to_rec_units_cost = EnabledModule.find_by(name: -'service_packs', project_id: project_id) && service_pack_entry.nil?
         end
 
         private
