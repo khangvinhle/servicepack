@@ -11,7 +11,7 @@ module OpenProject::ServicePacks
         end
 
         def update_consumed_units
-          unless project.enabled_modules.find_by(name: -'service_packs')
+          unless must_recalculate_units_cost?
             # SP must not change if module is not on
             # and PermittedParams won't see @project
             service_pack_id = service_pack_id_in_database # ActiveRecord::AttributeMethods::Dirty
@@ -49,6 +49,11 @@ module OpenProject::ServicePacks
           # return calculate_units_cost if new_record?
           @delta_cost ||= (sp_entry.service_pack_id == service_pack_id ? calculate_units_cost - sp_entry.units
                                : calculate_units_cost)
+        end
+
+        def must_recalculate_units_cost?
+          return @have_to_rec_units_cost if defined? @have_to_rec_units_cost
+          @have_to_rec_units_cost = !service_pack_entry_id.nil? && EnabledModule.find_by(name: -'service_packs', project_id: project_id)
         end
 
         private
