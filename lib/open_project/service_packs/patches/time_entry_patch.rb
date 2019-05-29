@@ -88,7 +88,7 @@ module OpenProject::ServicePacks
               ServicePacksMailer.notify_under_threshold1(service_pack.additional_notification_email, service_pack).deliver_later
             end
 
-            service_pack.update!(threshold1_notified: true)
+            service_pack.update_column :threshold1_notified,true
           end
 
           if !service_pack.threshold2_notified && service_pack.remained_units < service_pack.threshold2
@@ -101,7 +101,7 @@ module OpenProject::ServicePacks
               ServicePacksMailer.notify_under_threshold2(service_pack.additional_notification_email, service_pack).deliver_later
             end
 
-            service_pack.update!(threshold2_notified: true)
+            service_pack.update_column :threshold2_notified,true
           end
         end
       end
