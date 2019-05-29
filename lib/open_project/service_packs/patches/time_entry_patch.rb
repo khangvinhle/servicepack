@@ -101,7 +101,7 @@ module OpenProject::ServicePacks
               ServicePacksMailer.notify_under_threshold2(service_pack.additional_notification_email, service_pack).deliver_later
             end
 
-            service_pack.update_attribute :threshold2_notified,true)
+            service_pack.update_attribute :threshold2_notified,true
           end
         end
       end
