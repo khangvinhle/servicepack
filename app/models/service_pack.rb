@@ -3,7 +3,6 @@ class ServicePack < ApplicationRecord
   # put feature switch here
   # SWITCH_USE_UNASSIGNED_CHECK = 1
 
-  # before_validation :clean_up_additional_notification_email
   before_create :default_remained_units
   after_save :revoke_all_assignments, if: :expired? # last-ditch effort, should be done by cron or jobs
   after_save :knock_out, if: :used_up?, on: :consumption
@@ -13,6 +12,8 @@ class ServicePack < ApplicationRecord
   has_many :projects, through: :assigns
   has_many :consuming_projects, through: :active_assignments, source: :project
   has_many :mapping_rates, inverse_of: :service_pack, dependent: :delete_all
+  # Nothing can be done in TimelogController
+  has_many :time_entries, dependent: :nullify # disassociate immediately after deleting
   has_many :time_entry_activities, through: :mapping_rates, source: :activity
   has_many :service_pack_entries, inverse_of: :service_pack, dependent: :delete_all
   # :source is the name of association on the "going out" side of the joining table
