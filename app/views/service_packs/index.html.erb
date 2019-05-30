@@ -67,7 +67,7 @@
       <td><%= sp.expired_date %></td>
       <td><%= sp.threshold1 %></td>
       <td><%= sp.threshold2 %></td>
-      <td><%= (sp.assigned? ? -'&#x2714' : -'').html_safe %></td>
+      <td><%= (sp.assigned == 1 ? -'&#x2714' : -'').html_safe %></td>
     </tr>
   <% end %>
 

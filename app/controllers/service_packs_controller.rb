@@ -25,6 +25,10 @@ class ServicePacksController < ApplicationController
       wildcard_sanitized_name = "%#{ActiveRecord::Base.send(:sanitize_sql_like, params[:name], -'!')}%"
       @service_packs = @service_packs.where(-"name LIKE ?", wildcard_sanitized_name)
     end
+    # to remove N+1 query 'EXISTS'
+    for_added_column = Assign.active.where(-'service_pack_id = service_packs.id').to_sql
+    @service_packs = @service_packs.select(-'service_packs.*',
+                                           "(CASE WHEN EXISTS (#{for_added_column}) THEN 1 ELSE 0 END) AS assigned")
   end
 
   def new
